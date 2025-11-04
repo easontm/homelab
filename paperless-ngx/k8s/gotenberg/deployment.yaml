@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: paperless-ngx
+    component: gotenberg
+  name: gotenberg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-ngx
+      component: gotenberg
+  template:
+    metadata:
+      labels:
+        app: paperless-ngx
+        component: gotenberg
+    spec:
+      containers:
+        - args:
+            - gotenberg
+            - --chromium-disable-javascript=true
+            - --chromium-allow-list=file:///tmp/.*
+          image: docker.io/gotenberg/gotenberg:8.24
+          name: gotenberg
+      restartPolicy: Always

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tika
+spec:
+  selector:
+    app: paperless-ngx
+    component: tika
+  ports:
+    - port: 9998

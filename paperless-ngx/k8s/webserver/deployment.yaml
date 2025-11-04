@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: paperless-ngx
+    component: webserver
+  name: webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-ngx
+      component: webserver
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: paperless-ngx
+        component: webserver
+    spec:
+      containers:
+        - env:
+            - name: PAPERLESS_DBHOST
+              value: db
+            - name: PAPERLESS_REDIS
+              value: redis://broker:6379
+            - name: PAPERLESS_TIKA_ENABLED
+              value: "1"
+            - name: PAPERLESS_TIKA_ENDPOINT
+              value: http://tika:9998
+            - name: PAPERLESS_TIKA_GOTENBERG_ENDPOINT
+              value: http://gotenberg:3000
+          # envFrom:
+          #   - configMapRef:
+          #       name: docker-compose-env
+          image: ghcr.io/paperless-ngx/paperless-ngx:latest
+          name: webserver
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /usr/src/paperless/data
+              name: data
+            - mountPath: /usr/src/paperless/media
+              name: media
+            - mountPath: /usr/src/paperless/export
+              name: webserver-export
+            - mountPath: /usr/src/paperless/consume
+              name: webserver-consume
+      restartPolicy: Always
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+        - name: media
+          persistentVolumeClaim:
+            claimName: media
+        - name: webserver-export
+          persistentVolumeClaim:
+            claimName: webserver-export
+        - name: webserver-consume
+          persistentVolumeClaim:
+            claimName: webserver-consume

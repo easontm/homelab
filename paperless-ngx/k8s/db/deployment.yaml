@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  labels:
+    app: paperless-ngx
+    component: db
+spec:
+  replicas: 1
+  selector:
+    # must match template.metadata.labels exactly
+    matchLabels:
+      app: paperless-ngx
+      component: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yaml convert
+        kompose.version: 1.37.0 (HEAD)
+      labels:
+        app: paperless-ngx
+        component: db
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_DB
+              value: paperless
+            - name: POSTGRES_PASSWORD
+              value: paperless
+            - name: POSTGRES_USER
+              value: paperless
+          image: docker.io/library/postgres:18
+          name: db
+          volumeMounts:
+            - mountPath: /var/lib/postgresql
+              name: pgdata
+      restartPolicy: Always
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: pgdata

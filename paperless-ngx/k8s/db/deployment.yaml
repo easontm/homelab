@@ -28,7 +28,10 @@ spec:
             - name: POSTGRES_DB
               value: paperless
             - name: POSTGRES_PASSWORD
-              value: paperless
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_USER
               value: paperless
           image: docker.io/library/postgres:18

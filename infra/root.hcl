@@ -21,7 +21,7 @@ generate "provider" {
 }
 
 generate "variables" {
-  path      = "variables.tf"
+  path      = "pmx_variables.tf"
   if_exists = "overwrite"
-  contents  = file("${local.terraform_source_root}/variables.tf")
+  contents  = file("${local.terraform_source_root}/pmx_variables.tf")
 }

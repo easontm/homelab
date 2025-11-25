@@ -1,0 +1,23 @@
+api:
+  insecure: true
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  file:
+    directory: /etc/traefik/conf
+    watch: true
+  # kubernetesCRD:
+  #   enabled: true
+  #   namespaces: ["default", "ingress"]
+
+# certificatesResolvers:
+#   letsencrypt:
+#     acme:
+#       email: you@example.com
+#       storage: /etc/traefik/acme.json
+#       httpChallenge:
+#         entryPoint: web

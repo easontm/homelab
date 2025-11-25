@@ -1,0 +1,10 @@
+server:
+  endpoints:
+    authz:
+      forward-auth:
+        implementation: 'ForwardAuth'
+session:
+  cookies:
+    - domain: 'easontm.com'
+      authelia_url: 'https://auth.easontm.com'
+      default_redirection_url: 'https://www.easontm.com'

@@ -1,0 +1,25 @@
+http:
+  routers:
+    nginx:
+      rule: "Host(`nginx.example.local`)"
+      service: nginx
+      # tls: true
+      middlewares:
+        - authelia@file
+      entrypoints:
+        - https
+  services:
+    nginx:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.73:80"
+middlewares:
+    authelia:
+      forwardAuth:
+        address: 'https://authelia:9091/api/authz/forward-auth'
+        trustForwardHeader: true
+        # authResponseHeaders:
+        #   - 'Remote-User'
+        #   - 'Remote-Groups'
+        #   - 'Remote-Email'
+        #   - 'Remote-Name'

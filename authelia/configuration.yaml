@@ -1,10 +1,55 @@
 server:
+  host: 0.0.0.0
+  port: 9091
   endpoints:
     authz:
       forward-auth:
         implementation: 'ForwardAuth'
+
+log:
+  level: info
+
+theme: auto
+
+totp:
+  issuer: homelab
+  period: 30
+  skew: 1
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+    password_reset:
+      disable: false
+
 session:
+  name: authelia_session
+  same_site: lax
+  inactivity: 1h
+  expiration: 12h
+  remember_me_duration: 7d
   cookies:
-    - domain: 'easontm.com'
-      authelia_url: 'https://auth.easontm.com'
-      default_redirection_url: 'https://www.easontm.com'
+    - domain: '192.168.1.72'
+      authelia_url: '<AUTHELIA_URL>'
+      default_redirection_url: 'https://192.168.1.72'
+
+storage:
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: '192.168.1.72'
+      policy: one_factor
+      resources:
+        - '^/nginx.*'
+
+regulation:
+  max_retries: 5
+  find_time: 2m
+  ban_time: 5m

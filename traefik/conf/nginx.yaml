@@ -1,25 +1,52 @@
 http:
   routers:
     nginx:
-      rule: "Host(`nginx.example.local`)"
+      # Route test traffic via Traefik at 192.168.1.72 using a path prefix.
+      rule: "PathPrefix(`/nginx`)"
+      entryPoints:
+        - websecure
       service: nginx
-      # tls: true
       middlewares:
-        - authelia@file
-      entrypoints:
-        - https
+        - authelia
+        - secure-headers
+        - strip-nginx-prefix
+      tls: {}
+
+  middlewares:
+    authelia:
+      forwardAuth:
+        # Forward-Auth endpoint provided by Authelia.
+        address: '<AUTHELIA_URL>/api/authz/forward-auth'
+        trustForwardHeader: true
+        authResponseHeaders:
+          - 'Remote-User'
+          - 'Remote-Groups'
+          - 'Remote-Email'
+          - 'Remote-Name'
+
+    secure-headers:
+      headers:
+        sslRedirect: true
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "no-referrer"
+        permissionsPolicy: "geolocation=()"
+        customResponseHeaders:
+          X-Frame-Options: "DENY"
+          X-Content-Type-Options: "nosniff"
+          X-XSS-Protection: "1; mode=block"
+          Cache-Control: "no-store"
+
+    strip-nginx-prefix:
+      stripPrefix:
+        prefixes:
+          - /nginx
+
   services:
     nginx:
       loadBalancer:
         servers:
           - url: "http://192.168.1.73:80"
-middlewares:
-    authelia:
-      forwardAuth:
-        address: 'https://authelia:9091/api/authz/forward-auth'
-        trustForwardHeader: true
-        # authResponseHeaders:
-        #   - 'Remote-User'
-        #   - 'Remote-Groups'
-        #   - 'Remote-Email'
-        #   - 'Remote-Name'

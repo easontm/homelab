@@ -1,10 +1,19 @@
 api:
-  insecure: true
+  dashboard: true
+  insecure: false
 entryPoints:
   web:
     address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
   websecure:
     address: ":443"
+    http:
+      tls: {}
 
 providers:
   file:
@@ -13,6 +22,14 @@ providers:
   # kubernetesCRD:
   #   enabled: true
   #   namespaces: ["default", "ingress"]
+
+accessLog:
+  format: json
+  fields:
+    names:
+      ClientUsername: drop
+log:
+  level: INFO
 
 # certificatesResolvers:
 #   letsencrypt:

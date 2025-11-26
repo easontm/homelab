@@ -1,12 +1,14 @@
 # Authelia users database (file backend)
 # Use authelia hash-password to generate Argon2id hashes and replace the placeholder below.
-# Example: authelia crypto hash generate argon2 --password 'changeme'
+# Example:
+# docker run --entrypoint=/bin/sh -it authelia/authelia:latest
+# authelia crypto hash generate argon2 --password 'changeme'
 users:
   demo:
     displayname: "Demo User"
     # Replace with argon2id hash, e.g. "$argon2id$v=19$m=65536,t=3,p=4$..."
     # DO NOT commit real hashes for production users in public repos.
-    password: "$argon2id$v=19$m=65536,t=3,p=4$REPLACE_ME$REPLACE_ME"
+    password: "$argon2id$v=19$m=65536,t=3,p=4$MFHA81oyJ2n8U+5dFah4rg$CoD4PxzYQu7Sr68T4egkbO1RNcL9GGT/Ic6N4zGnVD4"
     email: demo@example.com
     groups:
       - admins

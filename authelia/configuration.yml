@@ -1,6 +1,7 @@
 server:
-  host: 0.0.0.0
-  port: 9091
+  address: 'tcp://0.0.0.0:9091/'
+  # host: 0.0.0.0
+  # port: 9091
   endpoints:
     authz:
       forward-auth:
@@ -19,21 +20,23 @@ totp:
 authentication_backend:
   file:
     path: /config/users_database.yml
-    password_reset:
-      disable: false
+  password_reset:
+    disable: true  # if this is false, jwt secret is required
 
 session:
   name: authelia_session
   same_site: lax
   inactivity: 1h
   expiration: 12h
-  remember_me_duration: 7d
+  remember_me: 7d
   cookies:
-    - domain: '192.168.1.72'
-      authelia_url: '<AUTHELIA_URL>'
-      default_redirection_url: 'https://192.168.1.72'
+    - domain: 'easontm.com'
+      # <AUTHELIA_URL>
+      authelia_url: 'https://auth.easontm.com'
+      default_redirection_url: 'https://easontm.com/auth'
 
 storage:
+  encryption_key: 'a_very_important_secret'
   local:
     path: /config/db.sqlite3
 
@@ -44,10 +47,12 @@ notifier:
 access_control:
   default_policy: deny
   rules:
-    - domain: '192.168.1.72'
+    # - domain: '192.168.1.72'
+    #   policy: one_factor
+    #   resources:
+    #     - '^/nginx.*'
+    - domain: "*.easontm.com"
       policy: one_factor
-      resources:
-        - '^/nginx.*'
 
 regulation:
   max_retries: 5

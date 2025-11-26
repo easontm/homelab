@@ -1,3 +1,5 @@
 .env
 .terragrunt-cache/
 .terraform/
+*.crt
+*.key

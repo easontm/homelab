@@ -3,12 +3,7 @@ variable "proxmox_api_url" {
   type        = string
 }
 
-variable "proxmox_api_token_id" {
-  description = "Proxmox API Token ID. Looks like root@pam!terraform"
-  type        = string
-}
-
-variable "proxmox_api_token_secret" {
-  description = "Proxmox API Token Secret"
+variable "proxmox_api_token" {
+  description = "Proxmox API Token in the format id=secret"
   type        = string
 }

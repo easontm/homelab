@@ -2,8 +2,12 @@ terraform {
   required_version = ">= 1.10.6"
   required_providers {
     proxmox = {
-      source  = "telmate/proxmox"
-      version = "3.0.2-rc05"
+      source  = "bpg/proxmox"
+      version = "0.87.0"
+    }
+    ansible = {
+      source  = "ansible/ansible"
+      version = "~> 1.3.0"
     }
   }
 }
@@ -11,8 +15,7 @@ terraform {
 
 
 provider "proxmox" {
-  pm_api_url          = var.proxmox_api_url
-  pm_api_token_id     = var.proxmox_api_token_id
-  pm_api_token_secret = var.proxmox_api_token_secret
-  pm_tls_insecure     = true
+  endpoint  = var.proxmox_api_url
+  api_token = "${var.proxmox_api_token_id}=${var.proxmox_api_token_secret}"
+  insecure  = true
 }

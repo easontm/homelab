@@ -1,0 +1,38 @@
+---
+- name: Copy local directory contents to remote host
+  hosts: all
+  become: true
+  become_method: su
+  tasks:
+    - name: Mount CT rootfs if not already mounted
+      ansible.builtin.command: /usr/sbin/pct mount {{ vmid }}
+      args:
+        creates: "{{ remote_etc_path }}"
+
+    - name: Verify local directory exists (runs on control node)
+      stat:
+        path: "{{ local_directory }}"
+      delegate_to: localhost
+      become: false
+      register: local_dir_stat
+      failed_when: not (local_dir_stat.stat.exists and local_dir_stat.stat.isdir)
+
+    - name: Ensure remote directory exists
+      file:
+        path: "{{ remote_etc_path }}/traefik"
+        state: directory
+        mode: "0755"
+
+    - name: Copy directory contents from control node to remote
+      ansible.builtin.copy:
+        src: "{{ local_directory }}"
+        dest: "{{ remote_etc_path }}/traefik/"
+        mode: "0755"
+
+    - name: Unmount CT rootfs
+      ansible.builtin.command: /usr/sbin/pct unmount {{ vmid}}
+      args:
+        removes: /var/lib/lxc/{{ vmid }}/rootfs/etc
+
+    - name: Start container
+      ansible.builtin.command: /usr/sbin/pct start {{ vmid }}

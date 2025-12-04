@@ -23,7 +23,8 @@ resource "proxmox_virtual_environment_container" "traefik_container" {
     size         = var.rootfs.size
   }
   network_interface {
-    name = "eth0"
+    name     = "eth0"
+    firewall = true
   }
   initialization {
     hostname = var.host_name
@@ -44,7 +45,7 @@ resource "ansible_playbook" "setup" {
   name = one([
     for e in data.proxmox_virtual_environment_hosts.target_node.entries :
     e.address
-    if contains(e.hostnames, "pve4")
+    if contains(e.hostnames, var.target_node)
   ])
 
   extra_vars = {

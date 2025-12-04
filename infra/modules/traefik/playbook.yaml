@@ -30,7 +30,7 @@
         mode: "0755"
 
     - name: Unmount CT rootfs
-      ansible.builtin.command: /usr/sbin/pct unmount {{ vmid}}
+      ansible.builtin.command: /usr/sbin/pct unmount {{ vmid }}
       args:
         removes: /var/lib/lxc/{{ vmid }}/rootfs/etc
 

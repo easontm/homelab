@@ -1,0 +1,70 @@
+---
+- name: Copy local directory contents to remote host
+  hosts: all
+  become: true
+  become_method: su
+  tasks:
+    - name: Mount CT rootfs if not already mounted
+      ansible.builtin.command: /usr/sbin/pct mount {{ vmid }}
+      args:
+        creates: "{{ remote_root_path }}/app/authelia"
+
+    - name: Verify local directory exists (runs on control node)
+      stat:
+        path: "{{ local_directory }}"
+      delegate_to: localhost
+      become: false
+      register: local_dir_stat
+      failed_when: not (local_dir_stat.stat.exists and local_dir_stat.stat.isdir)
+
+    - name: Ensure remote directory exists
+      file:
+        path: "{{ remote_root_path }}/config"
+        state: directory
+        owner: 100000
+        group: 100000
+        mode: "0755"
+
+    - name: Copy configuration file from template
+      ansible.builtin.template:
+        src: "{{ local_directory }}/configuration.j2"
+        dest: "{{ remote_root_path }}/config/configuration.yml"
+        owner: 100000
+        group: 100000
+        mode: "0755"
+      vars:
+        domain: "{{ domain }}"
+        authelia_url: "{{ authelia_url }}"
+        storage_encryption_key: "{{ storage_encryption_key }}"
+        access_control_rules: "{{ access_control_rules }}"
+
+    - name: Copy users database file from template
+      ansible.builtin.template:
+        src: "{{ local_directory }}/users_database.j2"
+        dest: "{{ remote_root_path }}/config/users_database.yml"
+        owner: 100000
+        group: 100000
+        mode: "0755"
+      vars:
+        users_yaml: "{{ users_yaml }}"
+
+    - name: Unmount CT rootfs
+      ansible.builtin.command: /usr/sbin/pct unmount {{ vmid }}
+      args:
+        removes: "{{ remote_root_path }}/app/authelia"
+
+    - name: Start container
+      ansible.builtin.command: /usr/sbin/pct start {{ vmid }}
+
+    - name: Wait for LXC container to be running
+      shell: "/usr/sbin/pct status {{ vmid }}| awk '/status/ {print $2}'"
+      register: lxc_state
+      changed_when: false
+      retries: 12
+      delay: 5
+      until: lxc_state.stdout | trim == "running"
+
+    # - name: Get container IP address
+    #   shell: >-
+    #     /usr/sbin/pct exec {{ vmid }} -- ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'
+    #   register: container_ip

@@ -57,3 +57,12 @@ services:
 1. Start Traefik and Authelia containers.
 2. Browse to https://192.168.1.72/nginx
 3. You should be redirected to Authelia, login as `demo` (after replacing the password hash and enrolling 2FA), then be forwarded to the Nginx test page.
+
+## Setup
+
+### SOPS
+
+ecause storing plaintext credentials is bad, it is recommended to use [SOPS](https://github.com/getsops/sops)
+to encrypt at rest. I am using [age](https://github.com/FiloSottile/age) as my encryption method. After
+installing `age` and creating a key, place the public key name in `.sops.yaml`. The default key storage location
+can be found in `.env.example`.

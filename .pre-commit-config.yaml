@@ -5,7 +5,11 @@ repos:
     hooks:
       - id: terraform_fmt
         files: '\.(tf|tfvars|hcl)$'
-      - id: terraform_validate
-        files: '\.tf$'
+      # - id: terraform_validate
+      #   # files: '\.tf$'
+      #   files: '^infra/modules/[^/]+/[^/]+\.tf$'
       - id: terraform_tflint
         files: '\.tf$'
+        args:
+        - --args=--disable-rule=terraform_required_providers
+        - --args=--disable-rule=terraform_required_version

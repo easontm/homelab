@@ -1,0 +1,40 @@
+api:
+  dashboard: {{ dashboard_enabled }}
+  insecure: {{ insecure_dashboard }}
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ":443"
+    http:
+      tls: {}
+
+providers:
+  file:
+    directory: /etc/traefik/conf
+    watch: true
+  # kubernetesCRD:
+  #   enabled: true
+  #   namespaces: ["default", "ingress"]
+
+accessLog:
+  format: json
+  fields:
+    names:
+      ClientUsername: drop
+log:
+  level: {{ log_level }}
+
+# certificatesResolvers:
+#   letsencrypt:
+#     acme:
+#       email: you@example.com
+#       storage: /etc/traefik/acme.json
+#       httpChallenge:
+#         entryPoint: web

@@ -1,3 +1,11 @@
+# Infra stuff
 .env
 .terragrunt-cache/
 .terraform/
+
+# Cert stuff
+*.crt
+*.key
+
+# Data storage
+*.sqlite3

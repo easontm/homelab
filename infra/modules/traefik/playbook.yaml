@@ -1,0 +1,80 @@
+---
+- name: Copy local directory contents to remote host
+  hosts: all
+  become: true
+  become_method: su
+  tasks:
+    - name: Mount CT rootfs if not already mounted
+      ansible.builtin.command: /usr/sbin/pct mount {{ vmid }}
+      args:
+        creates: "{{ remote_root_path }}/etc"
+
+    - name: Verify local directory exists (runs on control node)
+      stat:
+        path: "{{ local_directory }}"
+      delegate_to: localhost
+      become: false
+      register: local_dir_stat
+      failed_when: not (local_dir_stat.stat.exists and local_dir_stat.stat.isdir)
+
+    - name: Ensure remote directory exists
+      file:
+        path: "{{ remote_root_path }}/etc/traefik"
+        state: directory
+        mode: "0755"
+
+    - name: Ensure remote directory exists
+      file:
+        path: "{{ remote_root_path }}/etc/traefik/conf"
+        state: directory
+        mode: "0755"
+
+    - name: Copy Traefik configuration from template
+      ansible.builtin.template:
+        src: "{{ local_directory }}/traefik.j2"
+        dest: "{{ remote_root_path }}/etc/traefik/traefik.yaml"
+        owner: 100000
+        group: 100000
+        mode: "0755"
+      vars:
+        dashboard_enabled: "{{ dashboard_enabled }}"
+        insecure_dashboard: "{{ insecure_dashboard }}"
+        log_level: "{{ log_level }}"
+
+    - name: Copy middlewares from template
+      ansible.builtin.template:
+        src: "{{ local_directory }}/conf/middlewares.j2"
+        dest: "{{ remote_root_path }}/etc/traefik/conf/middlewares.yaml"
+        owner: 100000
+        group: 100000
+        mode: "0755"
+      vars:
+        middlewares_yaml: "{{ middlewares_yaml }}"
+
+    - name: Copy routers from template
+      ansible.builtin.template:
+        src: "{{ local_directory }}/conf/routers.j2"
+        dest: "{{ remote_root_path }}/etc/traefik/conf/routers.yaml"
+        owner: 100000
+        group: 100000
+        mode: "0755"
+      vars:
+        routers_yaml: "{{ routers_yaml }}"
+
+    - name: Copy services from template
+      ansible.builtin.template:
+        src: "{{ local_directory }}/conf/services.j2"
+        dest: "{{ remote_root_path }}/etc/traefik/conf/services.yaml"
+        owner: 100000
+        group: 100000
+        mode: "0755"
+      vars:
+        services_yaml: "{{ services_yaml }}"
+
+    - name: Unmount CT rootfs
+      ansible.builtin.command: /usr/sbin/pct unmount {{ vmid }}
+      args:
+        removes: /var/lib/lxc/{{ vmid }}/rootfs/etc
+
+    - name: Start container
+      ansible.builtin.command: /usr/sbin/pct start {{ vmid }}

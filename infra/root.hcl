@@ -15,7 +15,7 @@ locals {
 }
 
 generate "provider" {
-  path      = "provider.tf"
+  path      = "providers.tf"
   if_exists = "overwrite"
   contents  = file("${local.terraform_source_root}/providers.tf")
 }

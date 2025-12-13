@@ -1,0 +1,11 @@
+domain: example.com
+authelia_url: "https://auth.example.com"
+storage_encryption_key: "reallylongstring"
+users:
+- username: "johndoe"
+  display_name: "John Doe"
+  password: "$argon2id$v=..."
+  email: "johndoe@example.com"
+  groups:
+    - admins
+    - users

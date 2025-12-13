@@ -1,0 +1,15 @@
+---
+- name: Copy local directory contents to remote host
+  hosts: all
+  become: true
+  become_method: su
+  tasks:
+    - name: Download OCI image
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/pvesh
+          - create
+          - /nodes/{{ target_node }}/storage/{{ template_storage }}/oci-registry-pull
+          - --reference={{ oci_image_reference }}
+      args:
+        creates: "/mnt/pve/{{ template_storage}}/template/cache/{{ oci_image_filename }}"

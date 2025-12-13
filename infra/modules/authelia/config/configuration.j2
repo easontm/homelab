@@ -1,0 +1,55 @@
+server:
+  address: 'tcp://0.0.0.0:9091/'
+  endpoints:
+    authz:
+      forward-auth:
+        implementation: 'ForwardAuth'
+
+log:
+  level: 'info'
+  # format: 'text'
+  # file_path: '/config/authelia.log'
+  # keep_stdout: false
+
+theme: auto
+
+totp:
+  issuer: homelab
+  period: 30
+  skew: 1
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+  password_reset:
+    disable: true  # if this is false, jwt secret is required
+
+session:
+  name: authelia_session
+  same_site: lax
+  inactivity: 1h
+  expiration: 12h
+  remember_me: 7d
+  cookies:
+    - domain: '{{ domain }}'
+      # <AUTHELIA_URL>
+      authelia_url: '{{ authelia_url }}'
+
+storage:
+  encryption_key: '{{ storage_encryption_key }}'
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt
+
+access_control:
+  default_policy: deny
+  rules:
+    {{ access_control_rules | indent(4) }}
+
+regulation:
+  max_retries: 5
+  find_time: 2m
+  ban_time: 5m

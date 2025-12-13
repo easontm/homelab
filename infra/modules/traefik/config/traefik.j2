@@ -1,6 +1,6 @@
 api:
-  dashboard: true
-  insecure: true
+  dashboard: {{ dashboard_enabled }}
+  insecure: {{ insecure_dashboard }}
 entryPoints:
   web:
     address: ":80"
@@ -29,7 +29,7 @@ accessLog:
     names:
       ClientUsername: drop
 log:
-  level: INFO
+  level: {{ log_level }}
 
 # certificatesResolvers:
 #   letsencrypt:
@@ -38,8 +38,3 @@ log:
 #       storage: /etc/traefik/acme.json
 #       httpChallenge:
 #         entryPoint: web
-
-tls:
-  certificates:
-    - certFile: "/certs/easontm.com.crt"
-      keyFile: "/certs/easontm.com.key"

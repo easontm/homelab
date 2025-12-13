@@ -35,10 +35,15 @@ variable "template_storage" {
   type        = string
 }
 
-variable "template_name" {
-  description = "Name of the LXC template file"
+variable "container_repository" {
+  description = "OCI Container Repository"
   type        = string
-  default     = "traefik_v3.6.2.tar"
+}
+
+variable "container_tag" {
+  description = "OCI Container Tag"
+  type        = string
+  default     = "latest"
 }
 
 variable "rootfs" {
@@ -51,4 +56,47 @@ variable "rootfs" {
     storage = "local-lvm"
     size    = "4"
   }
+}
+
+##############
+# Traefik
+##############
+
+variable "dashboard_enabled" {
+  description = "Enable Traefik dashboard"
+  type        = bool
+  default     = true
+}
+
+variable "insecure_dashboard" {
+  description = "Enable insecure access to Traefik dashboard"
+  type        = bool
+  default     = false
+}
+
+variable "log_level" {
+  description = "Traefik log level"
+  type        = string
+  default     = "INFO"
+}
+
+variable "middlewares" {
+  description = "Traefik middlewares configuration"
+  type        = map(any)
+}
+
+variable "services" {
+  description = "Traefik services configuration"
+  type        = map(any)
+}
+
+variable "routers" {
+  description = "Traefik routers configuration"
+  type        = map(any)
+}
+
+locals {
+  middlewares_yaml = yamlencode(var.middlewares)
+  services_yaml    = yamlencode(var.services)
+  routers_yaml     = yamlencode(var.routers)
 }

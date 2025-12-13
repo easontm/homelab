@@ -1,18 +1,5 @@
 http:
   middlewares:
-    authelia:
-      forwardAuth:
-        # Forward-Auth endpoint provided by Authelia.
-        # <AUTHELIA_URL>
-        # address: 'https://auth.easontm.com/api/authz/forward-auth'
-        address: 'http://192.168.1.75:9091/api/authz/forward-auth'
-        trustForwardHeader: true
-        authResponseHeaders:
-          - 'Remote-User'
-          - 'Remote-Groups'
-          - 'Remote-Email'
-          - 'Remote-Name'
-
     secure-headers:
       headers:
         sslRedirect: true
@@ -28,3 +15,4 @@ http:
           X-Content-Type-Options: "nosniff"
           X-XSS-Protection: "1; mode=block"
           Cache-Control: "no-store"
+    {{ middlewares_yaml | indent(4) }}

@@ -53,8 +53,17 @@ should further edit the template.
 
 ## Other Notes
 
-This module also contains `fetch_template_playbook.yaml` and a section in
+- Authelia expects `yml`, not `yaml`.
+- This module also contains `fetch_template_playbook.yaml` and a section in
 `main.tf` for fetching the OCI image using commands run directly on the
 Proxmox host. These aren't needed currently, as the OCI image resource 
 seems to be working fine. However, I'm not 100% confident yet so these
 shall remain as an archive.
+- If the container doesn't start, there's a decent chance you have a config
+error. This can surface in the UI as a more generic error. To test, use
+`pct mount` to get access to the rendered templates (or run the playbook
+manually to render them). Then run the docker container locally with the
+rendered configs mounted, and you can see the logs in the terminal
+```bash
+docker run -v path/to/rendered/config:/config authelia/authelia:latest
+```

@@ -18,6 +18,52 @@ inputs = {
 
   target_node               = "pve4"
   vmid                      = 700
-  template_name             = "traefik_v3.6.2.tar"
+  container_repository      = "traefik"
+  container_tag             = "3.6.4"
   template_storage          = "pve-shared"
+  middlewares = {
+    authelia = {
+      forwardAuth = {
+        address             = "http://192.168.1.103:9091/api/authz/forward-auth"
+        trustForwardHeader  = true
+        authResponseHeaders = ["Remote-User", "Remote-Groups", "Remote-Email", "Remote-Name"]
+      }
+    }
+  }
+  services = {
+    nginx = {
+      loadBalancer = {
+        servers = [
+          {
+            url = "http://192.168.1.73:80"
+          }
+        ]
+      }
+    }
+    authelia = {
+      loadBalancer = {
+        servers = [
+          {
+            url = "http://192.168.1.103:9091"
+          }
+        ]
+      }
+    }
+  }
+  routers = {
+    nginx = {
+      rule        = "Host(`nginx.easontm.com`)"
+      entryPoints = ["websecure"]
+      tls         = {}
+      service     = "nginx"
+      middlewares = ["authelia", "secure-headers"]
+    }
+    authelia = {
+      rule        = "Host(`auth.easontm.com`)"
+      entryPoints = ["websecure"]
+      tls         = {}
+      service     = "authelia"
+      middlewares = []
+    }
+  }
 }

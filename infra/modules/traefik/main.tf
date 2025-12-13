@@ -1,12 +1,11 @@
-data "proxmox_virtual_environment_datastores" "available_storages" {
-  node_name = var.target_node
-  filters = {
-    id = var.template_storage
-  }
-}
-
 data "proxmox_virtual_environment_hosts" "target_node" {
   node_name = var.target_node
+}
+
+resource "proxmox_virtual_environment_oci_image" "traefik" {
+  node_name    = var.target_node
+  datastore_id = var.template_storage
+  reference    = "${var.container_repository}:${var.container_tag}"
 }
 
 resource "proxmox_virtual_environment_container" "traefik_container" {
@@ -15,7 +14,7 @@ resource "proxmox_virtual_environment_container" "traefik_container" {
   unprivileged = true
   started      = false
   operating_system {
-    template_file_id = "${data.proxmox_virtual_environment_datastores.available_storages.datastores[0].id}:vztmpl/${var.template_name}"
+    template_file_id = proxmox_virtual_environment_oci_image.traefik.id
   }
 
   disk {
@@ -49,9 +48,15 @@ resource "ansible_playbook" "setup" {
   ])
 
   extra_vars = {
-    ansible_user    = var.ansible_user
-    local_directory = "./config/"
-    remote_etc_path = "/var/lib/lxc/${var.vmid}/rootfs/etc"
-    vmid            = var.vmid
+    ansible_user       = var.ansible_user
+    local_directory    = "./config/"
+    remote_root_path   = "/var/lib/lxc/${var.vmid}/rootfs"
+    vmid               = var.vmid
+    dashboard_enabled  = var.dashboard_enabled
+    insecure_dashboard = var.insecure_dashboard
+    log_level          = var.log_level
+    services_yaml      = local.services_yaml
+    middlewares_yaml   = local.middlewares_yaml
+    routers_yaml       = local.routers_yaml
   }
 }

@@ -1,25 +1,11 @@
 # Traefik
 
-This is currently implemented by using Proxmox's OCI -> LXC converter on the
-image `traefik`.
+This is currently implemented by using Proxmox's OCI -> LXC converter on
+the image `traefik`.
 
-## Setup
+## Usage
 
-To set up, copy this folder (`traefik/`) to the Proxmox host where the container
-will have access to storage. For example:
-
-```
-/mnt/pve/pve-shared/ct/traefik/
-```
-
-The folder structure here is designed to match what Traefik expects for ease of
-use.
-
-You will also need to provide the certificates as specified in
-`traefik.yaml -> tls.certs`.
-
-To perform mounting, edit `/etc/pve/lxc/<CONTAINER_ID>.conf` and add lines like
-this:
-```
-mp0: /mnt/pve/pve-shared/ct/traefik/traefik,mp=/etc/traefik
-```
+Middlewares, services, and routers are all configured with schema-less objects.
+You can use whatever attributes you need, as long as they all have the same key
+list (that is, you may need to set the key as null/empty for objects which don't 
+need to use a specific feature).

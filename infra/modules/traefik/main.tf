@@ -6,6 +6,7 @@ resource "proxmox_virtual_environment_oci_image" "traefik" {
   node_name    = var.target_node
   datastore_id = var.template_storage
   reference    = "${var.container_repository}:${var.container_tag}"
+  overwrite_unmanaged = true
 }
 
 resource "proxmox_virtual_environment_container" "traefik_container" {
@@ -24,6 +25,7 @@ resource "proxmox_virtual_environment_container" "traefik_container" {
   network_interface {
     name     = "eth0"
     firewall = true
+    mac_address = var.mac_address
   }
   initialization {
     hostname = var.host_name
@@ -37,9 +39,9 @@ resource "proxmox_virtual_environment_container" "traefik_container" {
 }
 
 resource "ansible_playbook" "setup" {
-  depends_on = [proxmox_virtual_environment_container.traefik_container]
+  # depends_on = [proxmox_virtual_environment_container.traefik_container]
   playbook   = "./playbook.yaml"
-  replayable = false
+  replayable = true
 
   name = one([
     for e in data.proxmox_virtual_environment_hosts.target_node.entries :
@@ -55,6 +57,9 @@ resource "ansible_playbook" "setup" {
     dashboard_enabled  = var.dashboard_enabled
     insecure_dashboard = var.insecure_dashboard
     log_level          = var.log_level
+    k8s_gateway_yaml   = local.k8s_gateway_yaml
+    k8s_certificate_path = var.k8s_gateway.certAuthFilePath
+    k8s_certificate    = var.k8s_gateway.cert
     services_yaml      = local.services_yaml
     middlewares_yaml   = local.middlewares_yaml
     routers_yaml       = local.routers_yaml

@@ -19,9 +19,13 @@ providers:
   file:
     directory: /etc/traefik/conf
     watch: true
-  # kubernetesCRD:
-  #   enabled: true
-  #   namespaces: ["default", "ingress"]
+{% if k8s_gateway_yaml is not none %}
+  kubernetesGateway:
+{{ k8s_gateway_yaml | indent(4, true) }}
+  kubernetesCRD:
+    enabled: true
+{{ k8s_gateway_yaml | indent(4, true) }}
+{% endif %}
 
 accessLog:
   format: json
@@ -29,7 +33,9 @@ accessLog:
     names:
       ClientUsername: drop
 log:
-  level: {{ log_level }}
+  filePath: "/var/log/traefik.log"
+  level: DEBUG
+  # level: {{ log_level }}
 
 # certificatesResolvers:
 #   letsencrypt:

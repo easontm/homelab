@@ -9,3 +9,10 @@ Middlewares, services, and routers are all configured with schema-less objects.
 You can use whatever attributes you need, as long as they all have the same key
 list (that is, you may need to set the key as null/empty for objects which don't 
 need to use a specific feature).
+
+## Accessing the dashboard
+
+Access using the container's IP address using standard http, NOT https.
+```
+http://192.168.1.<X>:8080
+```

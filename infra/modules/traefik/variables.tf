@@ -58,6 +58,12 @@ variable "rootfs" {
   }
 }
 
+variable "mac_address" {
+  description = "MAC address for the container's network interface"
+  type        = string
+  nullable    = true
+}
+
 ##############
 # Traefik
 ##############
@@ -95,7 +101,24 @@ variable "routers" {
   type        = map(any)
 }
 
+variable "k8s_gateway" {
+  description = "Kubernetes Gateway configuration (optional)"
+  type = object({
+    endpoint         = string
+    token            = string
+    certAuthFilePath = string
+    cert             = string
+  })
+  nullable = true
+  default = null
+}
+
 locals {
+  k8s_gateway_yaml = yamlencode({
+    for key, value in var.k8s_gateway :
+    key => value
+    if key != "cert"
+  })
   middlewares_yaml = yamlencode(var.middlewares)
   services_yaml    = yamlencode(var.services)
   routers_yaml     = yamlencode(var.routers)

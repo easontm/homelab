@@ -4,6 +4,12 @@
   become: true
   become_method: su
   tasks:
+    - name: Shutdown container if active
+      ansible.builtin.command: /usr/sbin/pct shutdown {{ vmid }}
+      args:
+        removes: /var/lib/lxc/{{ vmid }}/rootfs/etc
+      ignore_errors: true
+
     - name: Mount CT rootfs if not already mounted
       ansible.builtin.command: /usr/sbin/pct mount {{ vmid }}
       args:
@@ -36,10 +42,11 @@
         owner: 100000
         group: 100000
         mode: "0755"
-      vars:
-        dashboard_enabled: "{{ dashboard_enabled }}"
-        insecure_dashboard: "{{ insecure_dashboard }}"
-        log_level: "{{ log_level }}"
+      # vars:
+        # dashboard_enabled: "{{ dashboard_enabled }}"
+        # insecure_dashboard: "{{ insecure_dashboard }}"
+        # log_level: "{{ log_level }}"
+        # k8s_gateway_yaml: "{{ k8s_gateway_yaml }}"
 
     - name: Copy middlewares from template
       ansible.builtin.template:
@@ -70,6 +77,14 @@
         mode: "0755"
       vars:
         services_yaml: "{{ services_yaml }}"
+
+    - name: Copy k8s certificate
+      ansible.builtin.copy:
+        content: "{{ k8s_certificate }}"
+        dest: "{{ remote_root_path }}//etc/traefik/k8s-ca.crt"
+        owner: 100000
+        group: 100000
+        mode: "0644"
 
     - name: Unmount CT rootfs
       ansible.builtin.command: /usr/sbin/pct unmount {{ vmid }}

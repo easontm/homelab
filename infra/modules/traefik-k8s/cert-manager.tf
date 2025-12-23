@@ -1,5 +1,5 @@
+# cert-manager must be installed, and so must its cluster-issuer
 resource "kubernetes_manifest" "traefik_certificate" {
-  depends_on = [ helm_release.cert_manager, kubernetes_manifest.cluster_issuer ]
   manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "Certificate"

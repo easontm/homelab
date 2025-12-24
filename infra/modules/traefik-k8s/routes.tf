@@ -1,4 +1,4 @@
-
+# TODO: ReferenceGrants should be managed by the modules allowing Traefik.
 resource "kubernetes_manifest" "traefik_httproute_service_grant" {
   for_each = toset(var.authelia_protected_namespaces)
 
@@ -28,13 +28,16 @@ resource "kubernetes_manifest" "traefik_httproute_service_grant" {
   }
 }
 
+#################
+# Paperless-ngx
+#################
+
 resource "kubernetes_manifest" "paperlessngx_http_route" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind = "HTTPRoute"
     metadata = {
       name = "paperless-ngx"
-      # namespace = "paperless-ngx"
       namespace = "traefik"
     }
     spec = {
@@ -76,5 +79,87 @@ resource "kubernetes_manifest" "paperlessngx_http_route" {
         }
       ]
     }
+  }
+}
+
+#################
+# Authelia
+#################
+resource "kubernetes_manifest" "authelia_http_route" {
+  manifest = {
+    apiVersion = "gateway.networking.k8s.io/v1"
+    kind = "HTTPRoute"
+    metadata = {
+      name = "authelia"
+      namespace = var.traefik_namespace
+    }
+    spec = {
+      parentRefs = [
+        {
+          name = "traefik-gateway"
+          namespace = var.traefik_namespace
+        }
+      ]
+      hostnames = ["auth.easontm.com"]
+      rules = [
+        {
+          matches = [
+            {
+              path = {
+                type = "PathPrefix"
+                value = "/"
+              }
+            }
+          ]
+          backendRefs = [
+            {
+              name = "authelia-external"
+              kind = "Service"
+              port = 9091
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+
+resource "kubernetes_manifest" "authelia_service" {
+  depends_on = [ helm_release.traefik ]
+  manifest = {
+    apiVersion = "v1"
+    kind = "Service"
+    metadata = {
+      name = "authelia-external"
+      namespace = var.traefik_namespace
+    }
+    spec = {
+      ports = [
+        {
+          port = 9091
+          targetPort = 9091
+          protocol = "TCP"
+        }
+      ]
+    }
+  }
+}
+
+resource "kubernetes_manifest" "authelia_endpoint" {
+  depends_on = [ helm_release.traefik ]
+  manifest = {
+    apiVersion = "v1"
+    kind = "Endpoints"
+    metadata = {
+      name = "authelia-external"
+      namespace = var.traefik_namespace
+    }
+    subsets = [
+      {
+        addresses = [{ ip = "192.168.1.103" }]
+        ports = [{ port = 9091 }]
+      }
+    ]
   }
 }

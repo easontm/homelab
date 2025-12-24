@@ -6,7 +6,6 @@ metadata:
     component: webserver
   name: webserver
 spec:
-  type: LoadBalancer
   ports:
     - name: '8000'
       port: 8000

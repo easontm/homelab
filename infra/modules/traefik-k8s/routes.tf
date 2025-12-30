@@ -1,6 +1,6 @@
 # TODO: ReferenceGrants should be managed by the modules allowing Traefik.
 resource "kubernetes_manifest" "traefik_httproute_service_grant" {
-  for_each = toset(var.authelia_protected_namespaces)
+  for_each = toset(var.traefik_granted_namespaces)
 
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1beta1"
@@ -31,19 +31,19 @@ resource "kubernetes_manifest" "traefik_httproute_service_grant" {
 #################
 # Paperless-ngx
 #################
-
+# TODO: turn into a loop of objs
 resource "kubernetes_manifest" "paperlessngx_http_route" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
-    kind = "HTTPRoute"
+    kind       = "HTTPRoute"
     metadata = {
-      name = "paperless-ngx"
+      name      = "paperless-ngx"
       namespace = "traefik"
     }
     spec = {
       parentRefs = [
         {
-          name = "traefik-gateway"
+          name      = "traefik-gateway"
           namespace = var.traefik_namespace
         }
       ]
@@ -53,7 +53,7 @@ resource "kubernetes_manifest" "paperlessngx_http_route" {
           matches = [
             {
               path = {
-                type = "PathPrefix"
+                type  = "PathPrefix"
                 value = "/"
               }
             }
@@ -70,10 +70,10 @@ resource "kubernetes_manifest" "paperlessngx_http_route" {
           ]
           backendRefs = [
             {
-              name = "webserver"
-              kind = "Service"
+              name      = "webserver"
+              kind      = "Service"
               namespace = "paperless-ngx"
-              port = 8000
+              port      = 8000
             }
           ]
         }
@@ -88,15 +88,15 @@ resource "kubernetes_manifest" "paperlessngx_http_route" {
 resource "kubernetes_manifest" "authelia_http_route" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
-    kind = "HTTPRoute"
+    kind       = "HTTPRoute"
     metadata = {
-      name = "authelia"
+      name      = "authelia"
       namespace = var.traefik_namespace
     }
     spec = {
       parentRefs = [
         {
-          name = "traefik-gateway"
+          name      = "traefik-gateway"
           namespace = var.traefik_namespace
         }
       ]
@@ -106,7 +106,7 @@ resource "kubernetes_manifest" "authelia_http_route" {
           matches = [
             {
               path = {
-                type = "PathPrefix"
+                type  = "PathPrefix"
                 value = "/"
               }
             }
@@ -126,20 +126,20 @@ resource "kubernetes_manifest" "authelia_http_route" {
 
 
 resource "kubernetes_manifest" "authelia_service" {
-  depends_on = [ helm_release.traefik ]
+  depends_on = [helm_release.traefik]
   manifest = {
     apiVersion = "v1"
-    kind = "Service"
+    kind       = "Service"
     metadata = {
-      name = "authelia-external"
+      name      = "authelia-external"
       namespace = var.traefik_namespace
     }
     spec = {
       ports = [
         {
-          port = 9091
+          port       = 9091
           targetPort = 9091
-          protocol = "TCP"
+          protocol   = "TCP"
         }
       ]
     }
@@ -147,18 +147,19 @@ resource "kubernetes_manifest" "authelia_service" {
 }
 
 resource "kubernetes_manifest" "authelia_endpoint" {
-  depends_on = [ helm_release.traefik ]
+  depends_on = [helm_release.traefik]
   manifest = {
     apiVersion = "v1"
-    kind = "Endpoints"
+    kind       = "Endpoints"
     metadata = {
-      name = "authelia-external"
+      name      = "authelia-external"
       namespace = var.traefik_namespace
     }
     subsets = [
       {
+        # TODO: parameterize
         addresses = [{ ip = "192.168.1.103" }]
-        ports = [{ port = 9091 }]
+        ports     = [{ port = 9091 }]
       }
     ]
   }

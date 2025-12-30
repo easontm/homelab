@@ -15,7 +15,25 @@ variable "chart_version" {
   type        = string
 }
 
-variable "authelia_protected_namespaces" {
+variable "traefik_granted_namespaces" {
   type    = set(string)
-  default = ["paperless-ngx"] 
+  default = []
+}
+
+variable "authelia_service_url" {
+  description = "URL of the Authelia service for forward authentication"
+  type        = string
+  default     = ""
+}
+
+#################
+# Cert Manager
+#################
+variable "common_name" {
+  description = "Common name for the TLS certificate"
+  type        = string
+}
+variable "dns_names" {
+  description = "DNS names for the TLS certificate"
+  type        = list(string)
 }

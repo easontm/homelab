@@ -19,7 +19,7 @@ resource "helm_release" "traefik" {
 }
 
 data "kubernetes_service_account_v1" "traefik_sa" {
-  depends_on = [ helm_release.traefik ]
+  depends_on = [helm_release.traefik]
   metadata {
     name      = "traefik"
     namespace = var.traefik_namespace
@@ -28,13 +28,13 @@ data "kubernetes_service_account_v1" "traefik_sa" {
 
 
 resource "kubernetes_secret_v1" "traefik_sa_token" {
-  depends_on = [ helm_release.traefik ]
+  depends_on = [helm_release.traefik]
   metadata {
     annotations = {
       "kubernetes.io/service-account.name" = data.kubernetes_service_account_v1.traefik_sa.metadata[0].name
     }
 
-    name = "traefik-sa-token"
+    name      = "traefik-sa-token"
     namespace = data.kubernetes_service_account_v1.traefik_sa.metadata[0].namespace
   }
 

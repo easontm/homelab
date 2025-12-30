@@ -9,8 +9,8 @@ resource "kubernetes_manifest" "traefik_certificate" {
     }
     spec = {
       secretName = "gateway-dummy-tls"
-      commonName = "*.easontm.com"
-      dnsNames   = ["*.easontm.com"]
+      commonName = var.common_name
+      dnsNames   = var.dns_names
       issuerRef = {
         name = "selfsigned"
         kind = "ClusterIssuer"

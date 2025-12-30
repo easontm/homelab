@@ -14,7 +14,8 @@ inputs = {
 
   namespace = "paperless-ngx"
 
-  # Database password - should be managed via SOPS or environment variable
+  # Database password - SECURITY: Set via environment variable or SOPS-encrypted .env file
+  # The default "paperless" password is ONLY for initial testing - change immediately!
   postgres_password = get_env("POSTGRES_PASSWORD", "paperless")
 
   storage_class_name = "local-path"
@@ -26,7 +27,11 @@ inputs = {
   tika_image          = "docker.io/apache/tika:latest"
   gotenberg_image     = "docker.io/gotenberg/gotenberg:8.24"
 
-  # Storage sizes
+  # Storage sizes (inherited from original k8s manifests)
+  # NOTE: These are minimal sizes suitable for testing. For production use, consider:
+  # - db_storage_size: 10Gi or more
+  # - webserver_media_storage_size: 50Gi or more
+  # - webserver_data_storage_size: 10Gi or more
   db_storage_size                 = "100Mi"
   broker_storage_size             = "100Mi"
   webserver_data_storage_size     = "100Mi"

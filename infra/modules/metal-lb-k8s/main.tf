@@ -10,13 +10,13 @@ provider "kubernetes" {
 
 
 resource "helm_release" "metallb" {
-  name       = "metallb"
-  repository = "https://metallb.github.io/metallb"
-  chart      = "metallb"
-  namespace  = var.namespace
+  name             = "metallb"
+  repository       = "https://metallb.github.io/metallb"
+  chart            = "metallb"
+  namespace        = var.namespace
   create_namespace = false
-  version    = var.chart_version
-  timeout    = 60
+  version          = var.chart_version
+  timeout          = 60
 }
 
 resource "kubernetes_manifest" "ip_address_pool" {

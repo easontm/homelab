@@ -7,8 +7,9 @@ metadata:
   name: webserver
 spec:
   ports:
-    - name: "8000"
+    - name: '8000'
       port: 8000
       targetPort: 8000
   selector:
-    io.kompose.service: webserver
+    app: paperless-ngx
+    component: webserver

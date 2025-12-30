@@ -1,0 +1,32 @@
+experimental:
+  kubernetesGateway:
+    enabled: true
+providers:
+  kubernetesGateway:
+    enabled: true
+ingressRoute:
+  dashboard:
+    enabled: true
+    matchRule: Host(`traefik.easontm.com`)
+    entryPoints:
+      - web
+      - websecure
+    middlewares:
+      - name: authelia
+gateway:
+  listeners:
+    web:
+      protocol: HTTP
+      hostname: "*.easontm.com"
+      namespacePolicy:
+        from: All
+    websecure:
+      protocol: HTTPS
+      port: 8443
+      hostname: "*.easontm.com"
+      namespacePolicy:
+        from: All
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: gateway-dummy-tls

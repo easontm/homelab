@@ -8,7 +8,7 @@ resource "kubernetes_manifest" "smoke_test_pvc" {
       namespace = "default"
     }
     spec = {
-      storageClassName = "nfs-retain"
+      storageClassName = var.storage_class_name
       accessModes      = ["ReadWriteMany"]
       resources = {
         requests = {

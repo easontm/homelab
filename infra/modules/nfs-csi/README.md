@@ -21,7 +21,7 @@ My lab uses TrueNAS, so that's where the setup is. There are some community
 ## Testing
 
 Here I also include a test PVC and pod to ensure it was set up correctly,
-toggleable with the `test` variable. Note that `tg destroy` doesn't seem to 
+toggleable with the `test` variable. Note that `terragrunt destroy` doesn't seem to 
 work properly here, so you may need to delete the pod/pvc yourself.
 
 ## Notes

@@ -1,5 +1,6 @@
 resource "kubernetes_manifest" "smoke_test_pvc" {
-  count = var.test ? 1 : 0
+  count      = var.test ? 1 : 0
+  depends_on = [helm_release.csi_driver_nfs]
   manifest = {
     apiVersion = "v1"
     kind       = "PersistentVolumeClaim"
@@ -20,7 +21,8 @@ resource "kubernetes_manifest" "smoke_test_pvc" {
 }
 
 resource "kubernetes_pod_v1" "smoke_test_pod" {
-  count = var.test ? 1 : 0
+  count      = var.test ? 1 : 0
+  depends_on = [kubernetes_manifest.smoke_test_pvc]
   metadata {
     name      = "nfs-test-pod"
     namespace = "default"

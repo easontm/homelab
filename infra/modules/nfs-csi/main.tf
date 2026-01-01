@@ -12,7 +12,7 @@ resource "helm_release" "csi_driver_nfs" {
   name       = "csi-driver-nfs"
   repository = "https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts"
   chart      = "csi-driver-nfs"
-  version    = var.csi_driver_nfs_chart_version
+  version    = var.chart_version
   namespace  = var.namespace
   timeout    = 120
   values = [

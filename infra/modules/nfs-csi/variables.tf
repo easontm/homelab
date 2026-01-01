@@ -10,7 +10,7 @@ variable "namespace" {
   default     = "kube-system"
 }
 
-variable "csi_driver_nfs_chart_version" {
+variable "chart_version" {
   description = "Version of the NFS CSI Helm chart to deploy"
   type        = string
 }

@@ -1,6 +1,6 @@
 creation_rules:
   - path_regex: '.*\.env(\.sops)?$'
-    encrypted_regex: '(?i)(PASSWORD|PASS|TOKEN)'
+    encrypted_regex: '(?i)(PASSWORD|PASS|TOKEN|ZONE_ID|ACCOUNT_ID)'
     age: 'age1cnf37e7jrmwth60a896enxu9vtu3j9r84c7lq4wdtdsvqnz43ymswhlrjz'
     file_format: dotenv
   - path_regex: 'authelia_vars\.yaml$'

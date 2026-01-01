@@ -38,3 +38,13 @@ resource "cloudflare_dns_record" "wildcard_tunnel_record" {
   content = "${cloudflare_zero_trust_tunnel_cloudflared.ingress.id}.cfargotunnel.com"
   proxied = true
 }
+
+resource "cloudflare_dns_record" "traefik_tunnel_record" {
+  zone_id = var.cloudflare_zone_id
+  name    = "traefik"
+  ttl     = 1
+  type    = "A"
+  comment = "Managed by Terraform"
+  content = var.traefik_service_ip
+  proxied = false
+}

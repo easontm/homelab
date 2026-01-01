@@ -32,6 +32,11 @@ variable "ingress_rules" {
   }))
 }
 
+variable "traefik_service_ip" {
+  description = "IP address of the Traefik service from the point of view of the tunnel daemon. Can be local."
+  type        = string
+}
+
 ##############
 # Access Controls
 ##############

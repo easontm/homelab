@@ -17,15 +17,16 @@ inputs = {
   cloudflare_tunnel_name = "homelab-01"
   ingress_rules = [
     {
-      hostname       = local.cloudflare_vars.domain
+      hostname       = "*.${local.cloudflare_vars.domain}"
       origin_request = {
-        no_tls_verify = true
+        no_tls_verify = false
       }
-      service        = "https://192.168.1.240:443"
+      service        = "https://traefik.${local.cloudflare_vars.domain}:443" # "https://192.168.1.240:443"
     }
   ]
 
   cloudflare_one_team_name = local.cloudflare_vars.one_team_name
   allowed_emails = local.cloudflare_vars.allowed_emails
-  cloudflare_access_application_domain = local.cloudflare_vars.domain
+  cloudflare_access_application_domain = "*.${local.cloudflare_vars.domain}"
+  traefik_service_ip = "192.168.1.240"
 }

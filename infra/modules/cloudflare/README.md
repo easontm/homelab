@@ -28,3 +28,9 @@ Cloudflared on a Debian LXC so here we are.
 
 If you have trouble connecting, you can actually view the tunnel daemon's
 logs in the Cloudflare UI instead of trying to get them from the container.
+
+## Notes
+
+- Using `no-tls-verify=false` requires giving Traefik a Cloudflare Origin 
+  CA cert. The requesting of this cert is not included in this module
+  because I didn't feel like it.

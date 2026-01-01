@@ -47,7 +47,7 @@ resource "kubernetes_manifest" "paperlessngx_http_route" {
           namespace = var.traefik_namespace
         }
       ]
-      hostnames = ["paperless.easontm.com"]
+      hostnames = ["paperless.${var.domain_name}"]
       rules = [
         {
           matches = [
@@ -100,7 +100,7 @@ resource "kubernetes_manifest" "authelia_http_route" {
           namespace = var.traefik_namespace
         }
       ]
-      hostnames = ["auth.easontm.com"]
+      hostnames = ["auth.${var.domain_name}"]
       rules = [
         {
           matches = [

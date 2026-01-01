@@ -7,7 +7,7 @@ providers:
 ingressRoute:
   dashboard:
     enabled: true
-    matchRule: Host(`traefik.easontm.com`)
+    matchRule: Host(`traefik-dashboard.easontm.com`)
     entryPoints:
       - web
       - websecure
@@ -29,4 +29,4 @@ gateway:
       mode: Terminate
       certificateRefs:
       - kind: Secret
-        name: gateway-dummy-tls
+        name: cloudflare-origin-cert  # gateway-dummy-tls

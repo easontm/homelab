@@ -1,29 +1,4 @@
 ##############
-# Global
-##############
-# variable "target_node" {
-#   description = "Proxmox Target Node"
-#   type        = string
-# }
-
-# variable "vmid" {
-#   description = "VMID for the container"
-#   type        = number
-# }
-
-# variable "container_repository" {
-#   description = "OCI Container Repository"
-#   type        = string
-#   default     = "cloudflare/cloudflared"
-# }
-
-# variable "container_tag" {
-#   description = "OCI Container Tag"
-#   type        = string
-#   default     = "latest"
-# }
-
-##############
 # Cloudflare
 ##############
 variable "cloudflare_api_token" {
@@ -57,14 +32,55 @@ variable "ingress_rules" {
   }))
 }
 
-# variable "cloudflare_tunnel_secret" {
-#   description = "Cloudflare Tunnel Secret"
+##############
+# Access Controls
+##############
+variable "cloudflare_one_team_name" {
+  description = "Cloudflare One Team Name"
+  type        = string
+}
+
+variable "allowed_emails" {
+  description = "Email whitelist"
+  type        = list(string)
+  default     = []
+}
+
+variable "session_duration" {
+  description = "Cloudflare Access Session Duration"
+  type        = string
+  default     = "72h"
+}
+
+variable "cloudflare_access_application_domain" {
+  description = "Cloudflare Access Application Domain"
+  type        = string
+}
+
+##############
+# Proxmox
+##############
+# variable "target_node" {
+#   description = "Proxmox Target Node"
 #   type        = string
 # }
 
-##############
-# Container
-##############
+# variable "vmid" {
+#   description = "VMID for the container"
+#   type        = number
+# }
+
+# variable "container_repository" {
+#   description = "OCI Container Repository"
+#   type        = string
+#   default     = "cloudflare/cloudflared"
+# }
+
+# variable "container_tag" {
+#   description = "OCI Container Tag"
+#   type        = string
+#   default     = "latest"
+# }
 
 # variable "host_name" {
 #   description = "Hostname for the LXC container"

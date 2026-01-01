@@ -55,3 +55,7 @@ variable "cloudflare_origin_ca_key" {
   type        = string
   default     = ""
 }
+
+locals {
+  use_origin_cert = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != ""
+}

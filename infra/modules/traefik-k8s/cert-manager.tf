@@ -1,6 +1,6 @@
 # cert-manager must be installed, and so must its cluster-issuer
 resource "kubernetes_manifest" "traefik_certificate" {
-  count = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != "" ? 0 : 1
+  count = local.use_origin_cert ? 0 : 1
   manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "Certificate"
@@ -21,7 +21,7 @@ resource "kubernetes_manifest" "traefik_certificate" {
 }
 
 resource "kubernetes_manifest" "cloudflare_origin_ca_cert" {
-  count = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != "" ? 1 : 0
+  count = local.use_origin_cert ? 1 : 0
   manifest = {
     apiVersion = "v1"
     kind       = "Secret"

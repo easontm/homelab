@@ -41,7 +41,7 @@ variable "cloudflare_one_team_name" {
 }
 
 variable "allowed_emails" {
-  description = "Email whitelist"
+  description = "Email allowlist"
   type        = list(string)
   default     = []
 }

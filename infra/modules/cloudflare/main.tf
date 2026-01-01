@@ -29,7 +29,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "ingress_config" {
   }
 }
 
-resource "cloudflare_dns_record" "example_dns_record" {
+resource "cloudflare_dns_record" "wildcard_tunnel_record" {
   zone_id = var.cloudflare_zone_id
   name    = "*"
   ttl     = 1

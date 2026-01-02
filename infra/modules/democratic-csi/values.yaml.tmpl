@@ -48,18 +48,10 @@ driver:
     iscsi:
       targetPortal: "${truenas_host}:3260"
       namePrefix: csi-
-      
-      # --- CRITICAL ADDITIONS BELOW ---
-      
-      # 1. The ID of the Portal you created in TrueNAS (usually 1)
-      # targetPortalPortals: [1]
-      
-      # 2. Defines how the iSCSI Target is created
       targetGroups:
         - targetGroupPortalGroup: ${portal_group_id}
           targetGroupInitiatorGroup: ${initiator_group_id}
           targetGroupAuthType: None
-          
       # allows TrueNAS to perform local transfers
       extentInsecureTpc: true
       # disables XEN compatibility mode

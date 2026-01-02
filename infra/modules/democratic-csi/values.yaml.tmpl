@@ -1,0 +1,60 @@
+controller:
+  driver:
+    image:
+      tag: next
+
+csiDriver:
+  name: "org.democratic-csi.iscsi"
+
+storageClasses:
+  - name: ${storage_class_name}
+    defaultClass: false
+    reclaimPolicy: Retain
+    volumeBindingMode: WaitForFirstConsumer
+    allowVolumeExpansion: true
+    parameters:
+      fsType: ext4
+    mountOptions:
+      - noatime
+    secrets: {}
+
+volumeSnapshotClasses:
+  - name: ${storage_class_name}
+    deletionPolicy: Delete
+    parameters:
+      snapshotPrefix: "k8s-vsc-"
+
+driver:
+  config:
+    driver: freenas-api-iscsi
+    instance_id: k8s-iscsi
+
+    httpConnection:
+      protocol: https
+      host: ${truenas_host}
+      port: 443
+      apiKey: ${truenas_api_key}
+      # don't have a cert on TrueNAS yet
+      allowInsecure: true
+
+    zfs:
+      datasetParentName: ${volume_path}
+      detachedSnapshotsDatasetParentName: ${snapshot_path}
+      zvolBlocksize: 16K
+      zvolCompression: lz4
+      zvolDedup: false
+      zvolEnableReservation: false
+
+    iscsi:
+      targetPortal: "${truenas_host}:3260"
+      namePrefix: csi-
+      targetGroups:
+        - targetGroupPortalGroup: ${portal_group_id}
+          targetGroupInitiatorGroup: ${initiator_group_id}
+          targetGroupAuthType: None
+      # allows TrueNAS to perform local transfers
+      extentInsecureTpc: true
+      # disables XEN compatibility mode
+      extentXenCompat: false
+      # really not sure about this one but online research says it's good for DB use cases.
+      extentDisablePhysicalBlocksize: true

@@ -1,8 +1,13 @@
+controller:
+  driver:
+    image:
+      tag: next
+
 csiDriver:
   name: "org.democratic-csi.iscsi"
 
 storageClasses:
-  - name: truenas-iscsi
+  - name: ${storage_class_name}
     defaultClass: false
     reclaimPolicy: Retain
     volumeBindingMode: WaitForFirstConsumer
@@ -14,14 +19,14 @@ storageClasses:
     secrets: {}
 
 volumeSnapshotClasses:
-  - name: truenas-iscsi
+  - name: ${storage_class_name}
     deletionPolicy: Delete
     parameters:
       snapshotPrefix: "k8s-vsc-"
 
 driver:
   config:
-    driver: truenas-api-iscsi
+    driver: freenas-api-iscsi
     instance_id: k8s-iscsi
 
     httpConnection:

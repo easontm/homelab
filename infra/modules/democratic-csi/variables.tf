@@ -4,14 +4,25 @@ variable "kubeconfig_paths" {
   default     = []
 }
 
-variable "namespace" {
-  description = "Kubernetes namespace where the NFS CSI driver will be deployed"
+variable "snapshot_controller_namespace" {
+  description = "Kubernetes namespace where the snapshot-controller will be deployed"
   type        = string
   default     = "kube-system"
 }
 
-variable "chart_version" {
-  description = "Version of the NFS CSI Helm chart to deploy"
+variable "snapshot_chart_version" {
+  description = "Version of the snapshot-controller Helm chart to deploy"
+  type        = string
+}
+
+variable "csi_namespace" {
+  description = "Kubernetes namespace where the democratic-csi driver will be deployed"
+  type        = string
+  default     = "democratic-csi"
+}
+
+variable "csi_chart_version" {
+  description = "Version of the democratic-csi Helm chart to deploy"
   type        = string
 }
 
@@ -22,6 +33,11 @@ variable "truenas_host" {
 
 variable "truenas_api_key" {
   description = "API key for TrueNAS access"
+  type        = string
+}
+
+variable "storage_class_name" {
+  description = "Name of the StorageClass to be created for test PVC"
   type        = string
 }
 
@@ -42,4 +58,10 @@ variable "portal_group_id" {
 variable "initiator_group_id" {
   description = "ID of the Initiator Group in TrueNAS"
   type        = number
+}
+
+variable "test" {
+  description = "Enable to create a test PVC"
+  type        = bool
+  default     = false
 }

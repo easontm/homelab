@@ -10,7 +10,7 @@ provider "kubernetes" {
 
 resource "kubernetes_namespace_v1" "democratic_csi" {
   metadata {
-    name = "democratic-csi"
+    name = var.csi_namespace
 
     labels = {
       "pod-security.kubernetes.io/enforce" = "privileged"

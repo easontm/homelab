@@ -27,7 +27,7 @@ variable "csi_chart_version" {
 }
 
 variable "truenas_host" {
-  description = "Name of the StorageClass to be created for NFS CSI"
+  description = "Hostname or IP address of the TrueNAS server"
   type        = string
 }
 
@@ -37,7 +37,7 @@ variable "truenas_api_key" {
 }
 
 variable "storage_class_name" {
-  description = "Name of the StorageClass to be created for test PVC"
+  description = "Name of the StorageClass to be created for iSCSI storage"
   type        = string
 }
 

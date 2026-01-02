@@ -12,14 +12,14 @@
 3. On each of the k8s nodes, run the following:
     ```bash
     sudo apt install nfs-common open-iscsi multipath-tools scsitools lsscsi
-    sudo cat <<EOF > /etc/multipath.conf
+    sudo tee /etc/multipath.conf >/dev/null <<EOF
     defaults {
         user_friendly_names yes
         find_multipaths yes
     }
     EOF
     # Save the output of this step
-    sudo cat /etc/iscsi/initiatorname.iscsi
+    cat /etc/iscsi/initiatorname.iscsi
     ```
 4. On TrueNAS, add the saved Initiator Names from the k8s nodes to the 
    initiator list. (`Shares` -> `Block (iSCSI) Shares Targets` -> `Initiators`)

@@ -7,9 +7,6 @@ resource "kubernetes_manifest" "smoke_test_pvc" {
     metadata = {
       name      = "iscsi-test-pvc"
       namespace = "default"
-      annotations = {
-        "volume.beta.kubernetes.io/storage-class" = var.storage_class_name
-      }
     }
     spec = {
       storageClassName = var.storage_class_name

@@ -1,0 +1,39 @@
+csiDriver:
+  name: org.democratic-csi.truenas.iscsi
+
+storageClasses:
+  - name: truenas-iscsi
+    defaultClass: false
+    reclaimPolicy: Retain
+    volumeBindingMode: WaitForFirstConsumer
+    allowVolumeExpansion: true
+    parameters:
+      fsType: ext4
+    mountOptions:
+      - noatime
+    secrets: {}
+
+driver:
+  config:
+    driver: truenas-api-iscsi
+    instance_id: k8s-iscsi
+
+    httpConnection:
+      protocol: https
+      host: ${truenas_host}
+      port: 443
+      apiKey: ${truenas_api_key}
+      # don't have a cert on TrueNAS yet
+      allowInsecure: true
+
+    zfs:
+      datasetParentName: storage/k8s/iscsi/volumes
+      zvolBlocksize: 16K
+      zvolCompression: lz4
+      zvolDedup: false
+      zvolEnableReservation: false
+
+    iscsi:
+      targetPortal: "${truenas_host}:3260"
+      namePrefix: csi-
+      # extentDisablePhysicalBlocksize: true

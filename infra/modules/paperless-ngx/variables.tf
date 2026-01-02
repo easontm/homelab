@@ -16,10 +16,16 @@ variable "postgres_password" {
   sensitive   = true
 }
 
-variable "storage_class_name" {
-  description = "Storage class name for PVCs"
+variable "nfs_storage_class_name" {
+  description = "NFS storage class name for webserver PVCs (data, media, export, consume)"
   type        = string
-  default     = "local-path"
+  default     = "nfs-retain"
+}
+
+variable "iscsi_storage_class_name" {
+  description = "iSCSI storage class name for database and broker PVCs"
+  type        = string
+  default     = "iscsi-retain"
 }
 
 # Container images

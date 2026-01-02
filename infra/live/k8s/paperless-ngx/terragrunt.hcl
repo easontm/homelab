@@ -18,7 +18,9 @@ inputs = {
   # The default "paperless" password is ONLY for initial testing - change immediately!
   postgres_password = get_env("POSTGRES_PASSWORD", "paperless")
 
-  storage_class_name = "local-path"
+  # Storage class names
+  nfs_storage_class_name   = "nfs-retain"
+  iscsi_storage_class_name = "iscsi-retain"
 
   # Container images
   postgres_image      = "docker.io/library/postgres:18"

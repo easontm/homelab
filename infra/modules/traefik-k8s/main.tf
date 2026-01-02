@@ -15,7 +15,12 @@ resource "helm_release" "traefik" {
   version    = var.chart_version
   namespace  = var.traefik_namespace
   timeout    = 120
-  values     = [file("${path.module}/values.yaml")]
+  values = [
+    templatefile("${path.module}/values.yaml.tmpl", {
+      domain_name      = var.domain_name
+      cert_secret_name = local.use_origin_cert ? kubernetes_manifest.cloudflare_origin_ca_cert[0].manifest.metadata.name : kubernetes_manifest.traefik_certificate[0].manifest.spec.secretName
+    })
+  ]
 }
 
 data "kubernetes_service_account_v1" "traefik_sa" {

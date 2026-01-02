@@ -1,0 +1,23 @@
+controller:
+  replicas: 1
+  runOnControlPlane: true
+node:
+  tolerations:
+    - operator: "Exists"
+feature:
+  # This is a default I'm just being explicit
+  enableFSGroupPolicy: true
+storageClasses:
+  - name: ${storage_class_name}
+    annotations:
+      storageclass.kubernetes.io/is-default-class: "false"
+    parameters:
+      server: ${nfs_server}
+      share: ${nfs_path}
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    allowVolumeExpansion: true
+    mountOptions:
+      - nfsvers=4.1
+      - hard
+      - noatime

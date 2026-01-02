@@ -26,14 +26,36 @@ variable "authelia_service_url" {
   default     = ""
 }
 
+variable "domain_name" {
+  description = "Domain name for Traefik"
+  type        = string
+}
+
 #################
-# Cert Manager
+# Cert Things
 #################
 variable "common_name" {
   description = "Common name for the TLS certificate"
   type        = string
 }
+
 variable "dns_names" {
   description = "DNS names for the TLS certificate"
   type        = list(string)
+}
+
+variable "cloudflare_origin_ca_cert" {
+  description = "Cloudflare Origin CA Certificate"
+  type        = string
+  default     = ""
+}
+
+variable "cloudflare_origin_ca_key" {
+  description = "Cloudflare Origin CA Private Key"
+  type        = string
+  default     = ""
+}
+
+locals {
+  use_origin_cert = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != ""
 }

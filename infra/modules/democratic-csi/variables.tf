@@ -34,3 +34,12 @@ variable "snapshot_path" {
   description = "Path on TrueNAS for snapshot storage"
   type        = string
 }
+
+variable "portal_group_id" {
+  description = "ID of the Portal Group in TrueNAS"
+  type        = number
+}
+variable "initiator_group_id" {
+  description = "ID of the Initiator Group in TrueNAS"
+  type        = number
+}

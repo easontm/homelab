@@ -19,6 +19,10 @@ resource "helm_release" "democratic_csi" {
     templatefile("${path.module}/values.yaml.tmpl", {
       truenas_host    = var.truenas_host
       truenas_api_key = var.truenas_api_key
+      volume_path     = var.volume_path
+      snapshot_path   = var.snapshot_path
+      portal_group_id = tostring(var.portal_group_id)
+      initiator_group_id = tostring(var.initiator_group_id)
     })
   ]
 }

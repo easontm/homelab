@@ -1,5 +1,5 @@
 csiDriver:
-  name: org.democratic-csi.truenas.iscsi
+  name: "org.democratic-csi.iscsi"
 
 storageClasses:
   - name: truenas-iscsi
@@ -12,6 +12,12 @@ storageClasses:
     mountOptions:
       - noatime
     secrets: {}
+
+volumeSnapshotClasses:
+  - name: truenas-iscsi
+    deletionPolicy: Delete
+    parameters:
+      snapshotPrefix: "k8s-vsc-"
 
 driver:
   config:
@@ -27,7 +33,8 @@ driver:
       allowInsecure: true
 
     zfs:
-      datasetParentName: storage/k8s/iscsi/volumes
+      datasetParentName: ${volume_path}
+      detachedSnapshotsDatasetParentName: ${snapshot_path}
       zvolBlocksize: 16K
       zvolCompression: lz4
       zvolDedup: false
@@ -36,4 +43,21 @@ driver:
     iscsi:
       targetPortal: "${truenas_host}:3260"
       namePrefix: csi-
-      # extentDisablePhysicalBlocksize: true
+      
+      # --- CRITICAL ADDITIONS BELOW ---
+      
+      # 1. The ID of the Portal you created in TrueNAS (usually 1)
+      # targetPortalPortals: [1]
+      
+      # 2. Defines how the iSCSI Target is created
+      targetGroups:
+        - targetGroupPortalGroup: ${portal_group_id}
+          targetGroupInitiatorGroup: ${initiator_group_id}
+          targetGroupAuthType: None
+          
+      # allows TrueNAS to perform local transfers
+      extentInsecureTpc: true
+      # disables XEN compatibility mode
+      extentXenCompat: false
+      # really not sure about this one but online research says it's good for DB use cases.
+      extentDisablePhysicalBlocksize: true

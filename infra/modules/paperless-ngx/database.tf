@@ -1,8 +1,8 @@
 # Database (PostgreSQL) PVC
-resource "kubernetes_persistent_volume_claim" "pgdata" {
+resource "kubernetes_persistent_volume_claim_v1" "pgdata" {
   metadata {
     name      = "pgdata"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {
@@ -17,10 +17,10 @@ resource "kubernetes_persistent_volume_claim" "pgdata" {
 }
 
 # Database Deployment
-resource "kubernetes_deployment" "db" {
+resource "kubernetes_deployment_v1" "db" {
   metadata {
     name      = "db"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
     labels = {
       app       = "paperless-ngx"
       component = "db"
@@ -63,7 +63,7 @@ resource "kubernetes_deployment" "db" {
             name = "POSTGRES_PASSWORD"
             value_from {
               secret_key_ref {
-                name = kubernetes_secret.db_secret.metadata[0].name
+                name = kubernetes_secret_v1.db_secret.metadata[0].name
                 key  = "POSTGRES_PASSWORD"
               }
             }
@@ -85,7 +85,7 @@ resource "kubernetes_deployment" "db" {
         volume {
           name = "pgdata"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.pgdata.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.pgdata.metadata[0].name
           }
         }
       }
@@ -94,10 +94,10 @@ resource "kubernetes_deployment" "db" {
 }
 
 # Database Service
-resource "kubernetes_service" "db" {
+resource "kubernetes_service_v1" "db" {
   metadata {
     name      = "db"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {

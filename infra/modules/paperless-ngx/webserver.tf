@@ -1,8 +1,8 @@
 # Webserver PVCs
-resource "kubernetes_persistent_volume_claim" "data" {
+resource "kubernetes_persistent_volume_claim_v1" "data" {
   metadata {
     name      = "data"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {
@@ -16,10 +16,10 @@ resource "kubernetes_persistent_volume_claim" "data" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "media" {
+resource "kubernetes_persistent_volume_claim_v1" "media" {
   metadata {
     name      = "media"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {
@@ -33,10 +33,10 @@ resource "kubernetes_persistent_volume_claim" "media" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "webserver_export" {
+resource "kubernetes_persistent_volume_claim_v1" "webserver_export" {
   metadata {
     name      = "webserver-export"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {
@@ -50,10 +50,10 @@ resource "kubernetes_persistent_volume_claim" "webserver_export" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "webserver_consume" {
+resource "kubernetes_persistent_volume_claim_v1" "webserver_consume" {
   metadata {
     name      = "webserver-consume"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {
@@ -68,29 +68,29 @@ resource "kubernetes_persistent_volume_claim" "webserver_consume" {
 }
 
 # Webserver ConfigMap for environment variables
-resource "kubernetes_config_map" "webserver_env" {
+resource "kubernetes_config_map_v1" "webserver_env" {
   metadata {
     name      = "webserver-env"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   data = merge(
     {
-      PAPERLESS_DBHOST                     = "db"
-      PAPERLESS_REDIS                      = "redis://broker:6379"
-      PAPERLESS_TIKA_ENABLED               = "1"
-      PAPERLESS_TIKA_ENDPOINT              = "http://tika:9998"
-      PAPERLESS_TIKA_GOTENBERG_ENDPOINT    = "http://gotenberg:3000"
+      PAPERLESS_DBHOST                  = "db"
+      PAPERLESS_REDIS                   = "redis://broker:6379"
+      PAPERLESS_TIKA_ENABLED            = "1"
+      PAPERLESS_TIKA_ENDPOINT           = "http://tika:9998"
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT = "http://gotenberg:3000"
     },
     var.paperless_env_vars
   )
 }
 
 # Webserver Deployment
-resource "kubernetes_deployment" "webserver" {
+resource "kubernetes_deployment_v1" "webserver" {
   metadata {
     name      = "webserver"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
     labels = {
       app       = "paperless-ngx"
       component = "webserver"
@@ -126,7 +126,7 @@ resource "kubernetes_deployment" "webserver" {
 
           env_from {
             config_map_ref {
-              name = kubernetes_config_map.webserver_env.metadata[0].name
+              name = kubernetes_config_map_v1.webserver_env.metadata[0].name
             }
           }
 
@@ -134,7 +134,7 @@ resource "kubernetes_deployment" "webserver" {
             name = "PAPERLESS_DBPASS"
             value_from {
               secret_key_ref {
-                name = kubernetes_secret.db_secret.metadata[0].name
+                name = kubernetes_secret_v1.db_secret.metadata[0].name
                 key  = "POSTGRES_PASSWORD"
               }
             }
@@ -171,28 +171,28 @@ resource "kubernetes_deployment" "webserver" {
         volume {
           name = "data"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.data.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.data.metadata[0].name
           }
         }
 
         volume {
           name = "media"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.media.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.media.metadata[0].name
           }
         }
 
         volume {
           name = "webserver-export"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.webserver_export.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.webserver_export.metadata[0].name
           }
         }
 
         volume {
           name = "webserver-consume"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.webserver_consume.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.webserver_consume.metadata[0].name
           }
         }
       }
@@ -201,10 +201,10 @@ resource "kubernetes_deployment" "webserver" {
 }
 
 # Webserver Service
-resource "kubernetes_service" "webserver" {
+resource "kubernetes_service_v1" "webserver" {
   metadata {
     name      = "webserver"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
     labels = {
       app       = "paperless-ngx"
       component = "webserver"

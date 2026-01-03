@@ -1,8 +1,8 @@
 # Broker (Redis) PVC
-resource "kubernetes_persistent_volume_claim" "redisdata" {
+resource "kubernetes_persistent_volume_claim_v1" "redisdata" {
   metadata {
     name      = "redisdata"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {
@@ -17,10 +17,10 @@ resource "kubernetes_persistent_volume_claim" "redisdata" {
 }
 
 # Broker Deployment
-resource "kubernetes_deployment" "broker" {
+resource "kubernetes_deployment_v1" "broker" {
   metadata {
     name      = "broker"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
     labels = {
       app       = "paperless-ngx"
       component = "broker"
@@ -65,7 +65,7 @@ resource "kubernetes_deployment" "broker" {
         volume {
           name = "redisdata"
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.redisdata.metadata[0].name
+            claim_name = kubernetes_persistent_volume_claim_v1.redisdata.metadata[0].name
           }
         }
       }
@@ -74,10 +74,10 @@ resource "kubernetes_deployment" "broker" {
 }
 
 # Broker Service
-resource "kubernetes_service" "broker" {
+resource "kubernetes_service_v1" "broker" {
   metadata {
     name      = "broker"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {

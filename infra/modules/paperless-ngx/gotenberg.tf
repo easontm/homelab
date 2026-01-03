@@ -1,8 +1,8 @@
 # Gotenberg Deployment
-resource "kubernetes_deployment" "gotenberg" {
+resource "kubernetes_deployment_v1" "gotenberg" {
   metadata {
     name      = "gotenberg"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
     labels = {
       app       = "paperless-ngx"
       component = "gotenberg"
@@ -46,10 +46,10 @@ resource "kubernetes_deployment" "gotenberg" {
 }
 
 # Gotenberg Service
-resource "kubernetes_service" "gotenberg" {
+resource "kubernetes_service_v1" "gotenberg" {
   metadata {
     name      = "gotenberg"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {

@@ -10,6 +10,12 @@ variable "namespace" {
   default     = "paperless-ngx"
 }
 
+variable "ingress_namespaces" {
+  description = "List of namespaces allowed to reference paperless-ngx services via ReferenceGrant"
+  type        = list(string)
+  default     = []
+}
+
 variable "postgres_password" {
   description = "Password for PostgreSQL database"
   type        = string

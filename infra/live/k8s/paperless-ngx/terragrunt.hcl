@@ -6,6 +6,10 @@ terraform {
   source = "../../../modules/paperless-ngx"
 }
 
+locals {
+  sensitive_vars = yamldecode(sops_decrypt_file("./paperless_vars.sops.yaml"))
+}
+
 inputs = {
   kubeconfig_paths = [
     "${get_terragrunt_dir()}/.kube/config",
@@ -13,17 +17,18 @@ inputs = {
   ]
 
   namespace = "paperless-ngx"
+  ingress_namespaces = ["traefik"]
 
   # Database password - SECURITY: Set via environment variable or SOPS-encrypted .env file
   # The default "paperless" password is ONLY for initial testing - change immediately!
-  postgres_password = get_env("POSTGRES_PASSWORD", "paperless")
+  postgres_password = local.sensitive_vars.postgres_password
 
   # Storage class names
   nfs_storage_class_name   = "nfs-retain"
   iscsi_storage_class_name = "iscsi-retain"
   paperless_env_vars = {
-    PAPERLESS_URL = "https://paperless.easontm.com"
-    PAPERLESS_CSRF_TRUSTED_ORIGINS = "https://paperless.easontm.com"
+    PAPERLESS_URL = local.sensitive_vars.paperless_url
+    PAPERLESS_CSRF_TRUSTED_ORIGINS = local.sensitive_vars.paperless_csrf_trusted_origins
     PAPERLESS_USE_X_FORWARD_HOST = "true"
     PAPERLESS_PROXY_SSL_HEADER = jsonencode(["HTTP_X_FORWARDED_PROTO", "https"])
     PAPERLESS_CONSUMER_POLLING = "30"

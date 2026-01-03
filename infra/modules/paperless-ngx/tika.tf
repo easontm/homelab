@@ -1,8 +1,8 @@
 # Tika Deployment
-resource "kubernetes_deployment" "tika" {
+resource "kubernetes_deployment_v1" "tika" {
   metadata {
     name      = "tika"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
     labels = {
       app       = "paperless-ngx"
       component = "tika"
@@ -40,10 +40,10 @@ resource "kubernetes_deployment" "tika" {
 }
 
 # Tika Service
-resource "kubernetes_service" "tika" {
+resource "kubernetes_service_v1" "tika" {
   metadata {
     name      = "tika"
-    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {

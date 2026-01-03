@@ -36,15 +36,13 @@ inputs = {
     PAPERLESS_OCR_LANGUAGE = "eng+jpn"
   }
 
-  # Storage sizes (inherited from original k8s manifests)
-  # NOTE: These are minimal sizes suitable for testing. For production use, consider:
-  # - db_storage_size: 10Gi or more
-  # - webserver_media_storage_size: 50Gi or more
-  # - webserver_data_storage_size: 10Gi or more
-  db_storage_size                 = "100Mi"
-  broker_storage_size             = "100Mi"
-  webserver_data_storage_size     = "100Mi"
-  webserver_media_storage_size    = "100Mi"
-  webserver_export_storage_size   = "100Mi"
-  webserver_consume_storage_size  = "100Mi"
+  # These should be roughly unchanging
+  webserver_consume_storage_size  = "20Gi"
+  broker_storage_size             = "512Mi"
+  # Both storage types support resizing (I tested), so these can be increased as needed.
+  db_storage_size                 = "10Gi"
+  webserver_data_storage_size     = "15Gi"
+  webserver_media_storage_size    = "200Gi"
+  webserver_export_storage_size   = "10Gi"
+  
 }

@@ -1,33 +1,3 @@
-# TODO: ReferenceGrants should be managed by the modules allowing Traefik.
-# resource "kubernetes_manifest" "traefik_httproute_service_grant" {
-#   for_each = toset(var.traefik_granted_namespaces)
-
-#   manifest = {
-#     apiVersion = "gateway.networking.k8s.io/v1beta1"
-#     kind       = "ReferenceGrant"
-#     metadata = {
-#       name      = "allow-traefik-access"
-#       namespace = each.value
-#     }
-#     spec = {
-#       from = [
-#         {
-#           group     = "gateway.networking.k8s.io"
-#           kind      = "HTTPRoute"
-#           namespace = var.traefik_namespace
-#         }
-#       ]
-#       to = [
-#         {
-#           group = ""
-#           kind  = "Service"
-#           name  = "webserver"
-#         }
-#       ]
-#     }
-#   }
-# }
-
 #################
 # Paperless-ngx
 #################

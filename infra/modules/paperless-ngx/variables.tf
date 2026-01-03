@@ -95,3 +95,10 @@ variable "webserver_consume_storage_size" {
   type        = string
   default     = "100Mi"
 }
+
+# Paperless-ngx environment variables
+variable "paperless_env_vars" {
+  description = "Additional environment variables for paperless-ngx webserver"
+  type        = map(string)
+  default     = {}
+}

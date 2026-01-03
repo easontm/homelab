@@ -67,6 +67,25 @@ resource "kubernetes_persistent_volume_claim" "webserver_consume" {
   }
 }
 
+# Webserver ConfigMap for environment variables
+resource "kubernetes_config_map" "webserver_env" {
+  metadata {
+    name      = "webserver-env"
+    namespace = kubernetes_namespace.paperless_ngx.metadata[0].name
+  }
+
+  data = merge(
+    {
+      PAPERLESS_DBHOST                     = "db"
+      PAPERLESS_REDIS                      = "redis://broker:6379"
+      PAPERLESS_TIKA_ENABLED               = "1"
+      PAPERLESS_TIKA_ENDPOINT              = "http://tika:9998"
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT    = "http://gotenberg:3000"
+    },
+    var.paperless_env_vars
+  )
+}
+
 # Webserver Deployment
 resource "kubernetes_deployment" "webserver" {
   metadata {
@@ -105,29 +124,10 @@ resource "kubernetes_deployment" "webserver" {
           name  = "webserver"
           image = var.paperless_ngx_image
 
-          env {
-            name  = "PAPERLESS_DBHOST"
-            value = "db"
-          }
-
-          env {
-            name  = "PAPERLESS_REDIS"
-            value = "redis://broker:6379"
-          }
-
-          env {
-            name  = "PAPERLESS_TIKA_ENABLED"
-            value = "1"
-          }
-
-          env {
-            name  = "PAPERLESS_TIKA_ENDPOINT"
-            value = "http://tika:9998"
-          }
-
-          env {
-            name  = "PAPERLESS_TIKA_GOTENBERG_ENDPOINT"
-            value = "http://gotenberg:3000"
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.webserver_env.metadata[0].name
+            }
           }
 
           env {

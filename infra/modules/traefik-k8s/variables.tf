@@ -15,11 +15,6 @@ variable "chart_version" {
   type        = string
 }
 
-variable "traefik_granted_namespaces" {
-  type    = set(string)
-  default = []
-}
-
 variable "authelia_service_url" {
   description = "URL of the Authelia service for forward authentication"
   type        = string

@@ -21,13 +21,15 @@ inputs = {
   # Storage class names
   nfs_storage_class_name   = "nfs-retain"
   iscsi_storage_class_name = "iscsi-retain"
-
-  # Container images
-  postgres_image      = "docker.io/library/postgres:18"
-  redis_image         = "docker.io/library/redis:8"
-  paperless_ngx_image = "ghcr.io/paperless-ngx/paperless-ngx:latest"
-  tika_image          = "docker.io/apache/tika:latest"
-  gotenberg_image     = "docker.io/gotenberg/gotenberg:8.24"
+  paperless_env_vars = {
+    PAPERLESS_URL = "https://paperless.easontm.com"
+    PAPERLESS_CSRF_TRUSTED_ORIGINS = "https://paperless.easontm.com"
+    PAPERLESS_USE_X_FORWARD_HOST = "true"
+    PAPERLESS_PROXY_SSL_HEADER = jsonencode(["HTTP_X_FORWARDED_PROTO", "https"])
+    PAPERLESS_CONSUMER_POLLING = "30"
+    PAPERLESS_OCR_LANGUAGES = "eng jpn"
+    PAPERLESS_OCR_LANGUAGE = "eng+jpn"
+  }
 
   # Storage sizes (inherited from original k8s manifests)
   # NOTE: These are minimal sizes suitable for testing. For production use, consider:

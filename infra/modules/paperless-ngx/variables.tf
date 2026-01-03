@@ -25,13 +25,13 @@ variable "postgres_password" {
 variable "nfs_storage_class_name" {
   description = "NFS storage class name for webserver PVCs (data, media, export, consume)"
   type        = string
-  default     = "nfs-retain"
+  default     = ""
 }
 
 variable "iscsi_storage_class_name" {
   description = "iSCSI storage class name for database and broker PVCs"
   type        = string
-  default     = "iscsi-retain"
+  default     = ""
 }
 
 # Container images

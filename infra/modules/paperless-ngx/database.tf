@@ -1,12 +1,13 @@
 # Database (PostgreSQL) PVC
 resource "kubernetes_persistent_volume_claim_v1" "pgdata" {
+  wait_until_bound = false
   metadata {
     name      = "pgdata"
     namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
   }
 
   spec {
-    storage_class_name = var.iscsi_storage_class_name
+    storage_class_name = var.iscsi_storage_class_name != "" ? var.iscsi_storage_class_name : var.nfs_storage_class_name
     access_modes       = ["ReadWriteOnce"]
     resources {
       requests = {

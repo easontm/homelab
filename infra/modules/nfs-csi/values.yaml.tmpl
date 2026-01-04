@@ -8,16 +8,18 @@ feature:
   # This is a default I'm just being explicit
   enableFSGroupPolicy: true
 storageClasses:
-  - name: ${storage_class_name}
+%{ for sc in storage_classes ~}
+  - name: ${sc.name}
     annotations:
-      storageclass.kubernetes.io/is-default-class: "false"
+      storageclass.kubernetes.io/is-default-class: "${sc.is_default}"
     parameters:
-      server: ${nfs_server}
-      share: ${nfs_path}
-    reclaimPolicy: Retain
-    volumeBindingMode: Immediate
-    allowVolumeExpansion: true
+      server: ${sc.nfs_server}
+      share: ${sc.nfs_path}
+    reclaimPolicy: ${sc.reclaim_policy}
+    volumeBindingMode: ${sc.volume_binding_mode}
+    allowVolumeExpansion: ${sc.allow_volume_expansion}
     mountOptions:
-      - nfsvers=4.1
-      - hard
-      - noatime
+%{ for option in sc.mount_options ~}
+      - ${option}
+%{ endfor ~}
+%{ endfor ~}

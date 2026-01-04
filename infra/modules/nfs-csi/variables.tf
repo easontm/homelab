@@ -15,19 +15,19 @@ variable "chart_version" {
   type        = string
 }
 
-variable "storage_class_name" {
-  description = "Name of the StorageClass to be created for NFS CSI"
-  type        = string
-}
-
-variable "nfs_server" {
-  description = "NFS server address"
-  type        = string
-}
-
-variable "nfs_path" {
-  description = "Path on the NFS server to be used for storage"
-  type        = string
+variable "storage_classes" {
+  description = "List of storage classes to create for NFS CSI"
+  type = list(object({
+    name                   = string
+    nfs_server             = string
+    nfs_path               = string
+    is_default             = optional(bool, false)
+    reclaim_policy         = optional(string, "Retain")
+    volume_binding_mode    = optional(string, "Immediate")
+    allow_volume_expansion = optional(bool, true)
+    mount_options          = optional(list(string), ["nfsvers=4.1", "hard", "noatime"])
+  }))
+  default = []
 }
 
 variable "test" {

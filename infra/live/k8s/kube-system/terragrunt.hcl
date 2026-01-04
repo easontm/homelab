@@ -12,8 +12,17 @@ inputs = {
     "${get_env("HOME")}/.kube/config",
   ]
   chart_version  = "4.12.1"
-  storage_class_name = "nfs-retain"
-  nfs_server = "192.168.1.254"
-  nfs_path = "/mnt/volume1/proxmox/k8s/nfs-01"
+  storage_classes = [
+    {
+      name                   = "nfs-retain"
+      nfs_server             = "192.168.1.254"
+      nfs_path               = "/mnt/volume1/proxmox/k8s/nfs/nfs-01"
+    },
+    {
+      name                   = "scan"
+      nfs_server             = "192.168.1.254"
+      nfs_path               = "/mnt/volume1/proxmox/k8s/nfs/scan"
+    }
+  ]
   test = false
 }

@@ -23,7 +23,13 @@ variable "postgres_password" {
 }
 
 variable "nfs_storage_class_name" {
-  description = "NFS storage class name for webserver PVCs (data, media, export, consume)"
+  description = "NFS storage class name for webserver PVCs (data, media, export)"
+  type        = string
+  default     = ""
+}
+
+variable "consume_storage_class_name" {
+  description = "Storage class name for the consume PVC on the webserver."
   type        = string
   default     = ""
 }

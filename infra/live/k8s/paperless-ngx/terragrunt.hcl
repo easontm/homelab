@@ -25,6 +25,7 @@ inputs = {
 
   # Storage class names
   nfs_storage_class_name   = "nfs-retain"
+  consume_storage_class_name = "scan"
   iscsi_storage_class_name = "iscsi-retain"
   paperless_env_vars = {
     PAPERLESS_URL = local.sensitive_vars.paperless_url

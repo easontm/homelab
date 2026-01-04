@@ -57,7 +57,7 @@ resource "kubernetes_persistent_volume_claim_v1" "webserver_consume" {
   }
 
   spec {
-    storage_class_name = var.nfs_storage_class_name
+    storage_class_name = var.consume_storage_class_name
     access_modes       = ["ReadWriteOnce"]
     resources {
       requests = {

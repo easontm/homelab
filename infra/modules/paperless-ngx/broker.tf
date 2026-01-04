@@ -51,6 +51,11 @@ resource "kubernetes_deployment_v1" "broker" {
       }
 
       spec {
+        security_context {
+          fs_group    = 999
+          run_as_user = 999
+        }
+
         container {
           name  = "broker"
           image = var.redis_image

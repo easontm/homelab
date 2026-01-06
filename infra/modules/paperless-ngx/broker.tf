@@ -60,6 +60,17 @@ resource "kubernetes_deployment_v1" "broker" {
           name  = "broker"
           image = var.redis_image
 
+          resources {
+            limits = {
+              cpu    = "250m"
+              memory = "256Mi"
+            }
+            requests = {
+              cpu    = "50m"
+              memory = "64Mi"
+            }
+          }
+
           volume_mount {
             name       = "redisdata"
             mount_path = "/data"

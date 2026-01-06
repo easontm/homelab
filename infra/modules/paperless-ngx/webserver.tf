@@ -145,6 +145,17 @@ resource "kubernetes_deployment_v1" "webserver" {
             protocol       = "TCP"
           }
 
+          resources {
+            limits = {
+              cpu    = "500m"
+              memory = "1024Mi"
+            }
+            requests = {
+              cpu    = "100m"
+              memory = "256Mi"
+            }
+          }
+
           volume_mount {
             name       = "data"
             mount_path = "/usr/src/paperless/data"

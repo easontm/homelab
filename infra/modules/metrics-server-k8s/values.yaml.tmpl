@@ -1,0 +1,12 @@
+replicas: 1
+args:
+  - --kubelet-insecure-tls
+  - --kubelet-preferred-address-types=InternalIP,Hostname,ExternalIP
+  - --metric-resolution=30s
+nodeSelector: {}
+tolerations:
+  - operator: Exists
+
+affinity: {}
+
+priorityClassName: system-cluster-critical

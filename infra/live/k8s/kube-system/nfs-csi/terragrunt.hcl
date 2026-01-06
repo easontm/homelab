@@ -3,12 +3,12 @@ include "root" {
 }
 
 terraform {
-  source = "../../../modules/nfs-csi"
+  source = "../../../../modules/nfs-csi"
 }
 
 inputs = {
   kubeconfig_paths = [
-    "${get_terragrunt_dir()}/.kube/config",
+    "${get_terragrunt_dir()}/../.kube/config",
     "${get_env("HOME")}/.kube/config",
   ]
   chart_version  = "4.12.1"

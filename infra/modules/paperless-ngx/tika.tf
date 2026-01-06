@@ -31,6 +31,17 @@ resource "kubernetes_deployment_v1" "tika" {
         container {
           name  = "tika"
           image = var.tika_image
+
+          resources {
+            limits = {
+              cpu    = "500m"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "100m"
+              memory = "256Mi"
+            }
+          }
         }
 
         restart_policy = "Always"

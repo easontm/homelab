@@ -55,6 +55,17 @@ resource "kubernetes_deployment_v1" "db" {
           name  = "db"
           image = var.postgres_image
 
+          resources {
+            limits = {
+              cpu    = "500m"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "100m"
+              memory = "256Mi"
+            }
+          }
+
           env {
             name  = "POSTGRES_DB"
             value = "paperless"

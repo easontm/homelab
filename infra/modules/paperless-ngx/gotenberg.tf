@@ -32,6 +32,17 @@ resource "kubernetes_deployment_v1" "gotenberg" {
           name  = "gotenberg"
           image = var.gotenberg_image
 
+          resources {
+            limits = {
+              cpu    = "500m"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "100m"
+              memory = "256Mi"
+            }
+          }
+
           args = [
             "gotenberg",
             "--chromium-disable-javascript=true",

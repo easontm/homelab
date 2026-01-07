@@ -1,3 +1,5 @@
+deployment:
+  replicas: 2
 experimental:
   kubernetesGateway:
     enabled: true
@@ -30,3 +32,10 @@ gateway:
       certificateRefs:
       - kind: Secret
         name: ${cert_secret_name}
+topologySpreadConstraints:
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: '{{ template "traefik.name" . }}'
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule

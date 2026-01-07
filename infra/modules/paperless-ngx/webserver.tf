@@ -147,8 +147,8 @@ resource "kubernetes_deployment_v1" "webserver" {
 
           resources {
             limits = {
-              cpu    = "500m"
-              memory = "1024Mi"
+              cpu    = "1"
+              memory = "1536Mi"
             }
             requests = {
               cpu    = "100m"

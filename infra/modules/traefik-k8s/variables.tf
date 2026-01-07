@@ -1,3 +1,8 @@
+variable "replica_count" {
+  description = "Number of Traefik replicas to deploy"
+  type        = number
+  default     = 1
+}
 variable "kubeconfig_paths" {
   description = "List of paths to kubeconfig files"
   type        = list(string)

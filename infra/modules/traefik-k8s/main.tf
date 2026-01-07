@@ -17,6 +17,7 @@ resource "helm_release" "traefik" {
   timeout    = 120
   values = [
     templatefile("${path.module}/values.yaml.tmpl", {
+      replica_count    = var.replica_count
       domain_name      = var.domain_name
       cert_secret_name = local.use_origin_cert ? kubernetes_manifest.cloudflare_origin_ca_cert[0].manifest.metadata.name : kubernetes_manifest.traefik_certificate[0].manifest.spec.secretName
     })

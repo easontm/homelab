@@ -23,4 +23,5 @@ inputs = {
   dns_names   = ["*.${local.traefik_vars.domain}"]
   cloudflare_origin_ca_cert = local.traefik_vars.cloudflare_origin_cert
   cloudflare_origin_ca_key  = local.traefik_vars.cloudflare_origin_key
+  replica_count = 2
 }

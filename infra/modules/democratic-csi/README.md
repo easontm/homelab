@@ -23,4 +23,5 @@
     ```
 4. On TrueNAS, add the saved Initiator Names from the k8s nodes to the 
    initiator list. (`Shares` -> `Block (iSCSI) Shares Targets` -> `Initiators`)
+   1. If the initiator was blank (`GenerateName=yes`), run: `sudo systemctl enable --now iscsid` and try again.
 5. Apply the module

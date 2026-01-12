@@ -1,3 +1,7 @@
+include {
+  path = find_in_parent_folders("root.hcl")
+}
+
 locals {
   api_token = get_env("CLOUDFLARE_API_TOKEN")
   account_id = get_env("CLOUDFLARE_ACCOUNT_ID")

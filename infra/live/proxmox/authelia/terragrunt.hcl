@@ -2,6 +2,10 @@ include "root" {
   path = find_in_parent_folders("root.hcl")
 }
 
+include "root" {
+  path = find_in_parent_folders("proxmox.hcl")
+}
+
 locals {
   proxmox_vars = read_terragrunt_config(find_in_parent_folders("proxmox.hcl"))
   ansible_vars = read_terragrunt_config(find_in_parent_folders("ansible.hcl"))
@@ -9,7 +13,7 @@ locals {
 }
 
 terraform {
-  source = "../../modules/authelia"
+  source = "../../../modules/authelia"
 }
 
 inputs = {
@@ -22,6 +26,7 @@ inputs = {
   container_repository      = "authelia/authelia"
   container_tag             = "4.39.15"
   template_storage          = "pve-shared"
+  mac_address               = "bc:24:11:91:2f:d9"
 
   domain = local.authelia_vars.domain
   authelia_url = local.authelia_vars.authelia_url

@@ -37,9 +37,11 @@ data "proxmox_virtual_environment_hosts" "target_node" {
 # }
 
 resource "proxmox_virtual_environment_oci_image" "authelia" {
-  node_name    = var.target_node
-  datastore_id = var.template_storage
-  reference    = "${var.container_repository}:${var.container_tag}"
+  node_name           = var.target_node
+  datastore_id        = var.template_storage
+  reference           = "${var.container_repository}:${var.container_tag}"
+  overwrite           = true
+  overwrite_unmanaged = true
 }
 
 resource "proxmox_virtual_environment_container" "authelia" {
@@ -61,8 +63,9 @@ resource "proxmox_virtual_environment_container" "authelia" {
     swap      = 512
   }
   network_interface {
-    name     = "eth0"
-    firewall = true
+    name        = "eth0"
+    firewall    = true
+    mac_address = var.mac_address
   }
   initialization {
     hostname = var.host_name

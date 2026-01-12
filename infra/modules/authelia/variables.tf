@@ -58,6 +58,12 @@ variable "rootfs" {
   }
 }
 
+variable "mac_address" {
+  description = "MAC address for the container's network interface"
+  type        = string
+  default     = ""
+}
+
 ##############
 # Authelia
 ##############

@@ -18,12 +18,8 @@ inputs = {
 
   namespace = "paperless-ngx"
   ingress_namespaces = ["traefik"]
-
-  # Database password - SECURITY: Set via environment variable or SOPS-encrypted .env file
-  # The default "paperless" password is ONLY for initial testing - change immediately!
   postgres_password = local.sensitive_vars.postgres_password
 
-  # Storage class names
   nfs_storage_class_name   = "nfs-retain"
   consume_storage_class_name = "scan"
   iscsi_storage_class_name = "iscsi-retain"

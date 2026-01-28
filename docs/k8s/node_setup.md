@@ -53,3 +53,9 @@ network:
 8. Generate k8s join command from control node
    1. `sudo kubeadm token create --print-join-command`
       1. Run the output on your worker node
+
+## TrueNAS nodes
+
+- Ensure that the host has a bridge interface, and set that as the NIC for the VM.
+  - [Forum thread](https://www.truenas.com/community/threads/vms-cant-see-host.88517/page-3)
+  - [docs](https://www.truenas.com/docs/scale/scaletutorials/network/containernasbridge/)

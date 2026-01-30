@@ -2,7 +2,7 @@ include "root" {
   path = find_in_parent_folders("root.hcl")
 }
 
-include "root" {
+include "proxmox" {
   path = find_in_parent_folders("proxmox.hcl")
 }
 
@@ -41,17 +41,17 @@ inputs = {
   ]
   vlans = [
     {
-      id   = 10
-      name = "MGMT"
+      id          = 10
+      description = "MGMT"
       has_gateway = true
     },
     {
-      id   = 20
-      name = "STORAGE"
+      id          = 20
+      description = "STORAGE"
     },
     {
-      id   = 30
-      name = "SERVERS"
+      id          = 30
+      description = "SERVERS"
     }
   ]
 }

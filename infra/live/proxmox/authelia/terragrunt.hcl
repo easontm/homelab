@@ -2,7 +2,7 @@ include "root" {
   path = find_in_parent_folders("root.hcl")
 }
 
-include "root" {
+include "proxmox" {
   path = find_in_parent_folders("proxmox.hcl")
 }
 

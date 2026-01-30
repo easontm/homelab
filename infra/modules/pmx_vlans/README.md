@@ -1,7 +1,7 @@
 # Proxmox VLANs
 
 > [!WARNING]
-> This module modifies the network interfaces on your Proxmox host. You should probably ensure you have direct physical access to your machines just in case something goes wrong
+> This module modifies the network interfaces on your Proxmox host. You should probably ensure you have direct physical access to your machines just in case something goes wrong.
 
 This module sets up VLANs and Linux Bridges on your Proxmox hosts. If you
 aren't using VLANs just skip this one.

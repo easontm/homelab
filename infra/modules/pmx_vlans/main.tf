@@ -6,8 +6,8 @@ locals {
         interface   = host.interface_name
         final_octet = host.final_octet
         vlan_id     = vlan.id
-        vlan_desc   = try(vlan.description, "")
-        has_gateway = try(vlan.has_gateway, false)
+        vlan_desc   = vlan.description
+        has_gateway = vlan.has_gateway
       }
     ]
   ])
@@ -24,11 +24,12 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr" {
   depends_on = [
     proxmox_virtual_environment_network_linux_vlan.vlan
   ]
-  node_name = each.value.hostname
-  name      = "vmbr${each.value.vlan_id}"
-  address   = "${var.octet_prefix}.${each.value.vlan_id}.${each.value.final_octet}/24"
-  gateway   = each.value.has_gateway ? "${var.octet_prefix}.${each.value.vlan_id}.1" : null
-  comment   = each.value.vlan_desc
-  ports     = ["${each.value.interface}.${each.value.vlan_id}"]
+  node_name  = each.value.hostname
+  name       = "vmbr${each.value.vlan_id}"
+  address    = "${var.octet_prefix}.${each.value.vlan_id}.${each.value.final_octet}/24"
+  gateway    = each.value.has_gateway ? "${var.octet_prefix}.${each.value.vlan_id}.1" : null
+  comment    = each.value.vlan_desc
+  ports      = ["${each.value.interface}.${each.value.vlan_id}"]
+  vlan_aware = false
 }
 

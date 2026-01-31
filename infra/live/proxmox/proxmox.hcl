@@ -1,7 +1,13 @@
 locals {
   terraform_source_root = "${get_repo_root()}/infra/modules"
-  proxmox_api_url = get_env("PROXMOX_API_URL")
-  api_token       = "${get_env("PROXMOX_TF_USER_TOKEN_ID")}=${get_env("PROXMOX_TF_USER_TOKEN_VALUE")}"
+  proxmox_api_url       = get_env("PROXMOX_API_URL")
+  api_token             = "${get_env("PROXMOX_TF_USER_TOKEN_ID")}=${get_env("PROXMOX_TF_USER_TOKEN_VALUE")}"
+}
+
+# Expose locals for child configurations
+inputs = {
+  proxmox_api_url   = local.proxmox_api_url
+  proxmox_api_token = local.api_token
 }
 
 generate "provider" {

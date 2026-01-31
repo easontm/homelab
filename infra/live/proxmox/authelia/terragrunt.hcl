@@ -3,11 +3,12 @@ include "root" {
 }
 
 include "proxmox" {
-  path = find_in_parent_folders("proxmox.hcl")
+  path           = find_in_parent_folders("proxmox.hcl")
+  expose         = true
+  merge_strategy = "deep"
 }
 
 locals {
-  proxmox_vars = read_terragrunt_config(find_in_parent_folders("proxmox.hcl"))
   ansible_vars = read_terragrunt_config(find_in_parent_folders("ansible.hcl"))
   authelia_vars = yamldecode(sops_decrypt_file("./authelia_vars.sops.yaml"))
 }
@@ -17,8 +18,6 @@ terraform {
 }
 
 inputs = {
-  proxmox_api_url          = local.proxmox_vars.locals.proxmox_api_url
-  proxmox_api_token        = local.proxmox_vars.locals.api_token  
   ansible_user              = local.ansible_vars.locals.ansible_user
 
   target_node               = "pve4"

@@ -13,7 +13,8 @@ terraform {
 }
 
 locals {
-  domain = "lab.home"
+  dns_vars = yamldecode(sops_decrypt_file("./dns_vars.sops.yaml"))
+  domain = local.dns_vars.domain
   nodes = ["pve1", "pve3", "pve4", "pve5"]
   servers = ["10.10.10.1"]
 }

@@ -1,0 +1,7 @@
+machine:
+  kernel:
+    modules:
+%{ for mod in kernels ~}
+      - name: ${mod}
+%{ endfor ~}
+

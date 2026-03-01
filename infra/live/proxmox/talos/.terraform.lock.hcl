@@ -1,0 +1,69 @@
+# This file is maintained automatically by "tofu init".
+# Manual edits may be lost in future updates.
+
+provider "registry.opentofu.org/ansible/ansible" {
+  version     = "1.3.0"
+  constraints = "~> 1.3.0"
+  hashes = [
+    "h1:X2gqMF6zc+J5VxAkJGwxOO6XXNWpX+8m6MRVETzKr2g=",
+    "zh:0307c80c6a890b629e866318688ac6c73acd99dfd61c371e9036feb001baff45",
+    "zh:28bddf36dce285d79391b7bbceae08e33533da4412f9c9434eb769a1e75c3992",
+    "zh:3979596203cc64fd602a1e03cca198c2071f85ec29bf8c8816b35cc74b271411",
+    "zh:3bd68c5c9344e5de161688d49b286d25f32aaa9b47418ff4025db42b1a00fdf9",
+    "zh:415c46bd16f57e54564366ebdfed3dc69b0a27ef6f02828dbdbd874dee11627a",
+    "zh:4e7a47e95f8bb5e1d8b39be49e57101c820ae2a8a998fb9cc0ce56badea1b26a",
+    "zh:59e29ff43ddd0afb8341b45b3456c457ef9bfd091e2e6b4dafa0aaa4c0aa1c75",
+    "zh:7e3572a8654cd4e814077e3622bb9224b02c6fd59a9728049e22dc9d62bfdd1d",
+    "zh:82d4b17b383a78e0ba5c0639c1d92edcc5ece8dc73bda5f9235c0f7f2330618b",
+    "zh:8833120ae5bad12fb0b7bb6f50770b66ed9a8441c8c126f68969d45985a6d600",
+    "zh:a9c042b23d24d5a10eabb012bdd5ca0b0766074019d2380f713fcbfaf7c55c31",
+    "zh:b9756dd7aa0da71de765d9ec5faf03b26fe0d212af517cc8b453b17f673d64c0",
+    "zh:c73c81d669b5be4f6cc900277a42b14b73dc96ebd7bbc518ccd7984c26761c65",
+    "zh:e9e76b2d86a96f90168b06e411281cae5b2b01b260cd6211b9d67923e8414072",
+    "zh:f569b65999264a9416862bca5cd2a6177d94ccb0424f3a4ef424428912b9cb3c",
+  ]
+}
+
+provider "registry.opentofu.org/bpg/proxmox" {
+  version     = "0.97.0"
+  constraints = ">= 0.87.0"
+  hashes = [
+    "h1:YUG0ZSqyfzM22vY+rBca6TTVdLolTtt3vUwJabKco3M=",
+    "zh:143e98a81d91c98346884e74ed3a2cd9225e1f4dfcd14cee0f7d14b466f64cf7",
+    "zh:268b8240918f4391dea9c8a93889ee2a97dd8227494c02f859e258cf3908abbb",
+    "zh:281b614e5bcb8f9bf97c8ebc14cef59106cc4884fd224746c57faa9391b185c6",
+    "zh:2865827ad63f63fe16fbecad62e22fb4c6e86cf3343c249fb85c373ed79e3439",
+    "zh:4352c6260db920330f7555db01324810e0aadb1b4e788c5990acf0c077ade5a6",
+    "zh:50c5bccdeaf6df00ccbd32f2d9fb9d9c63aa0956d370948ffd2877edabdcf294",
+    "zh:5c314068003c7a7fae4eb12edd6ad112dfc4db68d2a4c4d37b4e4ba5c23ce021",
+    "zh:82cb7a7ecfa576498ed74b1d7addbb7a023e9e9ff5a6e5f8899402e447efeaa3",
+    "zh:bb19c004591f9ff83d520703972acd1be470dd240883fe013d990a6847eaecd9",
+    "zh:cbd216bc26ee448392685cd2b261ad4b799b09ac87531ac08da225297958676e",
+    "zh:eaa0fdad896cf7f70ee8dcdbbf41c84c79f45517997a5a50dbeb690507f4c87f",
+    "zh:f26e0763dbe6a6b2195c94b44696f2110f7f55433dc142839be16b9697fa5597",
+    "zh:f8a5ca008567a5989cd8f551f652489c2e6083d926071bc753fe6b2f817c4f0b",
+    "zh:fb27a6b03ee97163f4be79b7150a9503f2370af90f27d6dfa87a6dd1c22255bc",
+  ]
+}
+
+provider "registry.opentofu.org/siderolabs/talos" {
+  version     = "0.11.0-beta.1"
+  constraints = "0.11.0-beta.1"
+  hashes = [
+    "h1:RRwAFVBIzHkriBOoaxXuTzbDckHA+dSTzQSOx5JIxSQ=",
+    "zh:003baffa5fe8d68eca225a31625f0fe9d94d79695f00ca1234f6f5905d80b937",
+    "zh:034e99275a257612ba49f01c95285d9ff8e82f0ffe9124f6ea90ba78bf41a536",
+    "zh:0fa82a384b25a58b65523e0ea4768fa1212b1f5cfc0c9379d31162454fedcc9d",
+    "zh:59f79217425a912be270ec8fc0a77fd7b4203098e68474122e7364ae9aeaab26",
+    "zh:622f017edd68260aa129f47b45a0d5f9e2c63cffff1e16f7d594fe0bb055f0a1",
+    "zh:62bf17a048ac6a771a5687fd968ce2784cfc10144c3786e554c7189ffde527f4",
+    "zh:787376be95f5eea67a531f5e6a56c7b328b323c59629e3460e4877e2984f7f34",
+    "zh:8e48433bde019bf2df0249e8603174604de4d01399f67e39c40003fda9b01df6",
+    "zh:911f9d86aef6eabcfb8f55929e1f2cd0cda48b1a694b822dfdbe04f026a09592",
+    "zh:c3b197acff0ceb83871b968cc58a92be2cb88a33c333fab34f9d4c40486f0c61",
+    "zh:cd4e85af3fab7a18a5c6ccfb7c567a3f9530b0fc4cd50b572879c503086c3c10",
+    "zh:dfee4a46854e5f47733c2391767014a2a169c70bd6afaa6b2086ba901e225546",
+    "zh:ed6ad49d534986b302fbf336a901ca463ca4c749acf40e0f0145d73d2562f74e",
+    "zh:f87e43e8db8f7466de8b58017849e94292b37292ae11b9f5841b406665519ef4",
+  ]
+}

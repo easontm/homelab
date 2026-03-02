@@ -1,0 +1,17 @@
+# Also update the kernel with this:
+#     kernel:
+#       modules:
+#         - name: dm_multipath
+#         - name: dm_round-robin
+
+apiVersion: v1alpha1
+kind: ExtensionServiceConfig
+name: multipathd
+configFiles:
+    - mountPath: /etc/multipath.conf
+      content: |
+        defaults {
+            user_friendly_names yes
+            find_multipaths yes
+            path_selector "round-robin 0"
+        }

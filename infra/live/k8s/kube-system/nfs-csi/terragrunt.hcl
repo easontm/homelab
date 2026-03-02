@@ -15,12 +15,12 @@ inputs = {
   storage_classes = [
     {
       name                   = "nfs-retain"
-      nfs_server             = "192.168.1.254"
+      nfs_server             = "10.10.20.2"
       nfs_path               = "/mnt/volume1/proxmox/k8s/nfs/nfs-01"
     },
     {
       name                   = "scan"
-      nfs_server             = "192.168.1.254"
+      nfs_server             = "10.10.20.2"
       nfs_path               = "/mnt/volume1/proxmox/k8s/nfs/scan"
     }
   ]

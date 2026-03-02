@@ -46,8 +46,8 @@ resource "proxmox_virtual_environment_vm" "talos_vms" {
   }
 
   network_device {
-    disconnected = "false"
-    firewall     = "true"
+    disconnected = false
+    firewall     = true
     bridge       = var.vm_network_bridge
   }
 

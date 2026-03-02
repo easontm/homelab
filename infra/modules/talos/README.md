@@ -17,13 +17,13 @@ patch to enable iSCSI.
 ## Post-apply
 
 Once the module is applied, you can get the kubeconfig either from the `output`
-or by getting the the `talosctl` config first, then running
+or by getting the `talosctl` config first, then running
 
 ```shell
 talosctl --nodes $CONTROL_PLANE_IP kubeconfig
 ```
 
-If you want to use iSCSI, you'll need set up `talosctl` regardless because
+If you want to use iSCSI, you'll need to set up `talosctl` regardless because
 that's how we get the initiator names:
 
 ```shell

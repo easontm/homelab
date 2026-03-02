@@ -38,9 +38,6 @@ resource "talos_machine_configuration_apply" "controlplane" {
     templatefile("${path.module}/patches/install-disk.yaml.tmpl", {
       install_disk = each.value.install_disk
     }),
-    templatefile("${path.module}/patches/install-disk.yaml.tmpl", {
-      install_disk = each.value.install_disk
-    }),
     templatefile("${path.module}/patches/kernel.yaml.tmpl", {
       kernels = each.value.kernels
     }),
@@ -48,6 +45,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
       allow_scheduling = each.value.allow_scheduling
     }),
     file("${path.module}/patches/cluster-discovery.yaml"),
+    file("${path.module}/patches/multipathd_extension.yaml"),
   ]
 }
 
@@ -67,6 +65,7 @@ resource "talos_machine_configuration_apply" "worker" {
       kernels = each.value.kernels
     }),
     file("${path.module}/patches/cluster-discovery.yaml"),
+    file("${path.module}/patches/multipathd_extension.yaml"),
   ]
 }
 

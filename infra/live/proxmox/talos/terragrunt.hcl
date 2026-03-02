@@ -30,6 +30,9 @@ locals {
 }
 
 inputs = {
+  talos_version      = "1.12.4"
+  kubernetes_version = "1.35.0"
+
   vm_disk_datastore_id = "pve-shared"
   vm_network_bridge = "vmbr30"
   gateway_ip = "10.10.30.1"

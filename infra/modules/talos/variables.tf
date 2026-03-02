@@ -48,6 +48,16 @@ variable "gateway_ip" {
   type        = string
 }
 
+variable "talos_version" {
+  description = "Talos version to use for the cluster."
+  type        = string
+}
+
+variable "kubernetes_version" {
+  description = "Kubernetes version to use for the cluster."
+  type        = string
+}
+
 variable "cluster_name" {
   description = "A name to provide for the Talos cluster"
   type        = string

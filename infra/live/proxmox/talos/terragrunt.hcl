@@ -8,6 +8,16 @@ include "proxmox" {
   merge_strategy = "deep"
 }
 
+generate "provider" {
+  path      = "providers.tf"
+  if_exists = "overwrite"
+  contents = replace(
+    file("${get_repo_root()}/infra/modules/providers.tf"),
+    "  }\n}",
+    "    talos = {\n      source  = \"siderolabs/talos\"\n      version = \"0.11.0-beta.1\"\n    }\n  }\n}"
+  )
+}
+
 terraform {
   source = "../../../modules/talos"
 }

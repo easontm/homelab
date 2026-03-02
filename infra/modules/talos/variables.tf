@@ -68,6 +68,7 @@ variable "node_data" {
       hostname         = string
       cpu_cores        = optional(number)
       memory_mb        = optional(number)
+      disk_size_gb     = optional(number)
       kernels          = optional(list(string))
       allow_scheduling = optional(bool, false)
     }))
@@ -78,6 +79,7 @@ variable "node_data" {
       hostname     = string
       cpu_cores    = optional(number)
       memory_mb    = optional(number)
+      disk_size_gb = optional(number)
       kernels      = optional(list(string))
     }))
   })

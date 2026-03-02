@@ -23,6 +23,6 @@ inputs = {
   volume_path     = "volume1/proxmox/k8s/iscsi/volumes"
   snapshot_path   = "volume1/proxmox/k8s/iscsi/snapshots"
   portal_group_id = 1
-  initiator_group_id = 2
+  initiator_group_id = 3
   test = false
 }

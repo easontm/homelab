@@ -34,7 +34,7 @@ resource "helm_release" "democratic_csi" {
   chart      = "democratic-csi"
   version    = var.csi_chart_version
   namespace  = var.csi_namespace
-  timeout    = 120
+  timeout    = 300
   values = [
     templatefile("${path.module}/values.yaml.tmpl", {
       truenas_host       = var.truenas_host

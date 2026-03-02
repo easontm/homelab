@@ -58,3 +58,14 @@ driver:
       extentXenCompat: false
       # really not sure about this one but online research says it's good for DB use cases.
       extentDisablePhysicalBlocksize: true
+
+node:
+  hostPID: true
+  driver:
+    extraEnv:
+      - name: ISCSIADM_HOST_STRATEGY
+        value: nsenter
+      - name: ISCSIADM_HOST_PATH
+        value: /usr/local/sbin/iscsiadm
+    iscsiDirHostPath: /var/iscsi
+    iscsiDirHostPathType: ""

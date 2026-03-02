@@ -43,6 +43,7 @@ variable "nfs_shares" {
     content = set(string)
     disable = optional(bool, false)
     nodes   = optional(set(string), [])
+    options = optional(string)
     backups = optional(object({
       keep_all              = optional(bool)
       keep_daily            = optional(number)

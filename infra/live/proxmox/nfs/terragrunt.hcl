@@ -15,16 +15,18 @@ terraform {
 inputs = {
   nfs_shares = [
     {
-      export = "/mnt/volume1/proxmox/pve-shared"
-      id     = "pve-shared"
-      server = "10.10.20.2"
+      export  = "/mnt/volume1/proxmox/pve-shared"
+      id      = "pve-shared"
+      server  = "10.10.20.2"
       content = toset(["images", "iso", "vztmpl", "rootdir", "snippets", "import"])
+      options = "vers=4.2"
     },
     {
-      export = "/mnt/volume1/proxmox/pve-backups"
-      id     = "pve-backups"
-      server = "10.10.20.2"
+      export  = "/mnt/volume1/proxmox/pve-backups"
+      id      = "pve-backups"
+      server  = "10.10.20.2"
       content = toset(["backup"])
+      options = "vers=4.2"
     }
   ]
 }

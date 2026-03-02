@@ -1,12 +1,13 @@
 resource "proxmox_virtual_environment_storage_nfs" "nfs_storage" {
   for_each = { for share in var.nfs_shares : share.id => share }
 
-  export  = each.value.export
-  id      = each.value.id
-  server  = each.value.server
-  content = each.value.content
-  disable = each.value.disable
-  nodes   = each.value.nodes
+  export   = each.value.export
+  id       = each.value.id
+  server   = each.value.server
+  content  = each.value.content
+  disable  = each.value.disable
+  nodes    = each.value.nodes
+  options  = each.value.options
 
   dynamic "backups" {
     for_each = each.value.backups != null ? [each.value.backups] : []

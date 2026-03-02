@@ -69,7 +69,7 @@ variable "node_data" {
       cpu_cores        = optional(number)
       memory_mb        = optional(number)
       disk_size_gb     = optional(number)
-      kernels          = optional(list(string))
+      kernels          = optional(list(string), [])
       allow_scheduling = optional(bool, false)
     }))
     workers = map(object({
@@ -80,7 +80,7 @@ variable "node_data" {
       cpu_cores    = optional(number)
       memory_mb    = optional(number)
       disk_size_gb = optional(number)
-      kernels      = optional(list(string))
+      kernels      = optional(list(string), [])
     }))
   })
 }

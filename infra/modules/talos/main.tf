@@ -29,18 +29,18 @@ resource "proxmox_virtual_environment_vm" "talos_vms" {
     type = "l26"
   }
   cpu {
-    cores = lookup(each.value, "cpu_cores", var.default_cpu_cores)
+    cores = coalesce(each.value.cpu_cores, var.default_cpu_cores)
     type  = "x86-64-v2-AES"
   }
   memory {
-    dedicated = lookup(each.value, "memory_mb", var.default_memory_mb)
+    dedicated = coalesce(each.value.memory_mb, var.default_memory_mb)
   }
   disk {
     datastore_id = var.vm_disk_datastore_id
     import_from  = data.proxmox_virtual_environment_file.talos_disk.id
     interface    = "virtio0"
     iothread     = true
-    size         = lookup(each.value, "disk_size_gb", var.default_disk_size_gb)
+    size         = coalesce(each.value.disk_size_gb, var.default_disk_size_gb)
     backup       = false
     discard      = "on"
   }

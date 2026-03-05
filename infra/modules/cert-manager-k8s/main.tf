@@ -8,13 +8,13 @@ provider "kubernetes" {
 }
 
 resource "helm_release" "cert_manager" {
-  name       = "cert-manager"
-  repository = "oci://quay.io/jetstack/charts"
-  chart      = "cert-manager"
-  version    = var.chart_version
-  namespace  = var.namespace
-  create_namespace = false
-  timeout    = 30
+  name             = "cert-manager"
+  repository       = "oci://quay.io/jetstack/charts"
+  chart            = "cert-manager"
+  version          = var.chart_version
+  namespace        = var.namespace
+  create_namespace = true
+  timeout          = 30
   set = [
     {
       name  = "crds.enabled"
@@ -24,7 +24,7 @@ resource "helm_release" "cert_manager" {
 }
 
 resource "kubernetes_manifest" "cluster_issuer" {
-  depends_on = [ helm_release.cert_manager ]
+  depends_on = [helm_release.cert_manager]
   manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "ClusterIssuer"
@@ -32,7 +32,7 @@ resource "kubernetes_manifest" "cluster_issuer" {
       name = "selfsigned"
     }
     spec = {
-      selfSigned: {}
+      selfSigned : {}
     }
   }
 }

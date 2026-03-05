@@ -51,7 +51,7 @@ inputs = {
         install_disk = "/dev/sda"
         hostname     = "k8s-controlplane-1"
         cpu_cores    = 2
-        memory_mb    = 2048
+        memory_mb    = 4096
         kernels      = local.kernels
         allow_scheduling = true
       },

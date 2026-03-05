@@ -1,9 +1,9 @@
 # k8s LIVE!
 
-This foler contains my live Kubernetes configurations. Each folder in this
+This folder contains my live Kubernetes configurations. Each folder in this
 one represents a kubernetes namespace. Correspondingly, it has a `.kube/config`
 file which gets loaded via the `.envrc` script. Generally, one namespace is
-one installatioin, but the `kube-system` directory is a case where more than
+one installation, but the `kube-system` directory is a case where more than
 one thing is installed in the same place, and it therefore has subdirectories.
 
 The general order for installing k8s infra from nothing is:
@@ -17,7 +17,7 @@ The general order for installing k8s infra from nothing is:
 5. `traefik`
 6. Applications
 
-> ![NOTE]
+> [!NOTE]
 > My Traefik config uses an Authelia middleware managed as a Proxmox LXC.
 > If using this, it should be installed before the applications.
 

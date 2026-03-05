@@ -21,6 +21,7 @@ resource "helm_release" "traefik" {
   chart      = "traefik"
   version    = var.chart_version
   namespace  = var.traefik_namespace
+  depends_on = [kubernetes_namespace_v1.traefik]
   timeout    = 180
   values = [
     templatefile("${path.module}/values.yaml.tmpl", {

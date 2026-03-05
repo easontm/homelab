@@ -21,9 +21,8 @@ variable "chart_version" {
 }
 
 variable "authelia_service_url" {
-  description = "URL of the Authelia service for forward authentication"
+  description = "URL of the Authelia service for forward authentication. Should be in host:port format."
   type        = string
-  default     = ""
 }
 
 variable "domain_name" {

@@ -127,7 +127,6 @@ resource "kubernetes_manifest" "authelia_endpoint" {
     }
     subsets = [
       {
-        # TODO: parameterize
         addresses = [{ ip = split(":", var.authelia_service_url)[0] }]
         ports     = [{ port = local.authelia_service_port }]
       }

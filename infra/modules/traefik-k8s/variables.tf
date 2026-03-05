@@ -57,5 +57,6 @@ variable "cloudflare_origin_ca_key" {
 }
 
 locals {
-  use_origin_cert = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != ""
+  use_origin_cert       = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != ""
+  authelia_service_port = tonumber(split(":", var.authelia_service_url)[1])
 }

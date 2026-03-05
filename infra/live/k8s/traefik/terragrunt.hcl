@@ -18,7 +18,7 @@ inputs = {
   chart_version = "38.0.0"
 
   domain_name = local.traefik_vars.domain
-  authelia_service_url = "http://192.168.1.103:9091/api/authz/forward-auth"
+  authelia_service_url = "10.10.30.2:9091"
   common_name = "*.${local.traefik_vars.domain}"
   dns_names   = ["*.${local.traefik_vars.domain}"]
   cloudflare_origin_ca_cert = local.traefik_vars.cloudflare_origin_cert

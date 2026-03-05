@@ -85,7 +85,7 @@ resource "kubernetes_manifest" "authelia_http_route" {
             {
               name = "authelia-external"
               kind = "Service"
-              port = 9091
+              port = local.authelia_service_port
             }
           ]
         }
@@ -107,8 +107,8 @@ resource "kubernetes_manifest" "authelia_service" {
     spec = {
       ports = [
         {
-          port       = 9091
-          targetPort = 9091
+          port       = local.authelia_service_port
+          targetPort = local.authelia_service_port
           protocol   = "TCP"
         }
       ]
@@ -128,8 +128,8 @@ resource "kubernetes_manifest" "authelia_endpoint" {
     subsets = [
       {
         # TODO: parameterize
-        addresses = [{ ip = "192.168.1.103" }]
-        ports     = [{ port = 9091 }]
+        addresses = [{ ip = split(":", var.authelia_service_url)[0] }]
+        ports     = [{ port = local.authelia_service_port }]
       }
     ]
   }

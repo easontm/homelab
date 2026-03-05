@@ -21,7 +21,8 @@ resource "kubernetes_manifest" "traefik_certificate" {
 }
 
 resource "kubernetes_manifest" "cloudflare_origin_ca_cert" {
-  count = local.use_origin_cert ? 1 : 0
+  depends_on = [kubernetes_namespace_v1.traefik]
+  count      = local.use_origin_cert ? 1 : 0
   manifest = {
     apiVersion = "v1"
     kind       = "Secret"

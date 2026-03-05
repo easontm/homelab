@@ -8,13 +8,20 @@ provider "kubernetes" {
   config_paths = var.kubeconfig_paths
 }
 
+resource "kubernetes_namespace_v1" "traefik" {
+  metadata {
+    name = var.traefik_namespace
+  }
+}
+
+
 resource "helm_release" "traefik" {
   name       = "traefik"
   repository = "https://traefik.github.io/charts"
   chart      = "traefik"
   version    = var.chart_version
   namespace  = var.traefik_namespace
-  timeout    = 120
+  timeout    = 180
   values = [
     templatefile("${path.module}/values.yaml.tmpl", {
       replica_count    = var.replica_count

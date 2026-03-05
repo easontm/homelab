@@ -17,6 +17,14 @@ Cloudflared on a Debian LXC so here we are.
 1. You must own a domain
 2. This domain must be managed by Cloudflare
 3. Your account has a Cloudflare One team
+4. You should be able to direct traffic from the Cloudflare tunnel to your
+   service.
+   
+>[!NOTE]
+> Previous versions of this module included a Cloudflare DNS `A`
+> record with a `192.168.1.0/24` IP, but upon teardown and rebuild, having a local
+> IP raised an `Error 1000` on Cloudflare. I now have OPNsense deployed in the
+> lab and no longer require Cloudflare to answer this DNS query.
 
 ## Installation
 

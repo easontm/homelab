@@ -21,9 +21,8 @@ variable "chart_version" {
 }
 
 variable "authelia_service_url" {
-  description = "URL of the Authelia service for forward authentication"
+  description = "URL of the Authelia service for forward authentication. Should be in host:port format."
   type        = string
-  default     = ""
 }
 
 variable "domain_name" {
@@ -57,5 +56,6 @@ variable "cloudflare_origin_ca_key" {
 }
 
 locals {
-  use_origin_cert = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != ""
+  use_origin_cert       = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != ""
+  authelia_service_port = tonumber(split(":", var.authelia_service_url)[1])
 }

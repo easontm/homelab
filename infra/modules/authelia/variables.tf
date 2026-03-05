@@ -64,6 +64,23 @@ variable "mac_address" {
   default     = ""
 }
 
+variable "network_bridge" {
+  description = "Network bridge for the container"
+  type        = string
+  default     = "vmbr0"
+}
+
+variable "ipv4_address" {
+  description = "IPv4 address for the container. Can be set to 'dhcp' for dynamic assignment."
+  type        = string
+  default     = "dhcp"
+}
+
+variable "gateway_ip" {
+  description = "Gateway IP for the container's network configuration. Omit if using DHCP."
+  type        = string
+  default     = null
+}
 ##############
 # Authelia
 ##############

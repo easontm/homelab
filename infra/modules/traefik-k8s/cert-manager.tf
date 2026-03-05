@@ -6,7 +6,7 @@ resource "kubernetes_manifest" "traefik_certificate" {
     kind       = "Certificate"
     metadata = {
       name      = "traefik-dummy-cert"
-      namespace = var.traefik_namespace
+      namespace = kubernetes_namespace_v1.traefik.metadata[0].name
     }
     spec = {
       secretName = "gateway-dummy-tls"
@@ -27,7 +27,7 @@ resource "kubernetes_manifest" "cloudflare_origin_ca_cert" {
     kind       = "Secret"
     metadata = {
       name      = "cloudflare-origin-cert"
-      namespace = var.traefik_namespace
+      namespace = kubernetes_namespace_v1.traefik.metadata[0].name
     }
     type = "kubernetes.io/tls"
     data = {

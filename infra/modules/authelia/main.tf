@@ -66,13 +66,15 @@ resource "proxmox_virtual_environment_container" "authelia" {
     name        = "eth0"
     firewall    = true
     mac_address = var.mac_address
+    bridge      = var.network_bridge
   }
   initialization {
     hostname = var.host_name
 
     ip_config {
       ipv4 {
-        address = "dhcp"
+        address = var.ipv4_address
+        gateway = var.gateway_ip
       }
     }
   }

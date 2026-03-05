@@ -12,5 +12,5 @@ inputs = {
     "${get_env("HOME")}/.kube/config",
   ]
   chart_version = "0.15.3"
-  ip_ranges = ["192.168.1.240-192.168.1.253"]
+  ip_ranges = ["10.10.30.240-10.10.30.253"]
 }

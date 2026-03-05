@@ -25,6 +25,8 @@ inputs = {
       origin_request = {
         no_tls_verify = false
       }
+      # There is a matching override rule in OPNsense to forward traffic to
+      # the Traefik service.
       service        = "https://traefik.${local.cloudflare_vars.domain}:443"
     }
   ]
@@ -32,5 +34,4 @@ inputs = {
   cloudflare_one_team_name             = local.cloudflare_vars.one_team_name
   allowed_emails                       = local.cloudflare_vars.allowed_emails
   cloudflare_access_application_domain = "*.${local.cloudflare_vars.domain}"
-  traefik_service_ip                   = "192.168.1.240"
 }

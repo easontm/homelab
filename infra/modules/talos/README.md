@@ -34,3 +34,4 @@ talosctl read /etc/iscsi/initiatorname.iscsi -n $NODE_IP
 - [Talos Terraform Provider](https://search.opentofu.org/provider/siderolabs/talos/latest)
 - [Talos multipath-tools extension](https://github.com/siderolabs/extensions/blob/main/storage/multipath-tools/README.md)
 - [Talos iscsi-tools extension](https://github.com/siderolabs/extensions/blob/main/storage/iscsi-tools/iscsid.yaml)
+- [TrueNAS backed PVCs on Talos Kubernetes using Democratic CSI](https://wazaari.dev/blog/truenas-talos-democratic-csi)

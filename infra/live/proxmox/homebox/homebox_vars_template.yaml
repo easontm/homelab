@@ -1,0 +1,15 @@
+container_tag: "latest"
+public_hostname: "homebox.example.com"
+
+homebox_config:
+  oidc_enabled: false
+  oidc_issuer_url: "https://auth.example.com/application/o/homebox/"
+  oidc_client_id: "homebox"
+  oidc_client_secret: "replace-me"
+
+environment_overrides:
+  HBOX_MAILER_HOST: "smtp.example.com"
+  HBOX_MAILER_PORT: "587"
+  HBOX_MAILER_USERNAME: "homebox@example.com"
+  HBOX_MAILER_PASSWORD: "replace-me"
+  HBOX_MAILER_FROM: "homebox@example.com"

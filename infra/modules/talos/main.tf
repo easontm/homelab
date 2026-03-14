@@ -58,5 +58,8 @@ resource "proxmox_virtual_environment_vm" "talos_vms" {
         gateway = var.gateway_ip
       }
     }
+    dns {
+      servers = var.dns_servers
+    }
   }
 }

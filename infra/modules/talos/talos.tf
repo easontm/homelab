@@ -45,6 +45,9 @@ resource "talos_machine_configuration_apply" "controlplane" {
     templatefile("${path.module}/patches/cp-scheduling.yaml.tmpl", {
       allow_scheduling = each.value.allow_scheduling
     }),
+    templatefile("${path.module}/patches/vip.yaml.tmpl", {
+      vip_ip = var.vip_ip
+    }),
     file("${path.module}/patches/cluster-discovery.yaml"),
     file("${path.module}/patches/multipathd_extension.yaml"),
   ]

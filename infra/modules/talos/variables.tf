@@ -48,6 +48,12 @@ variable "gateway_ip" {
   type        = string
 }
 
+variable "dns_servers" {
+  description = "DNS servers for the Talos cluster."
+  type        = list(string)
+  default     = []
+}
+
 variable "talos_version" {
   description = "Talos version to use for the cluster."
   type        = string
@@ -67,7 +73,10 @@ variable "cluster_endpoint" {
   description = "The endpoint for the Talos cluster"
   type        = string
 }
-
+variable "vip_ip" {
+  description = "The VIP IP for the Talos cluster"
+  type        = string
+}
 variable "node_data" {
   description = "A map of node data"
   type = object({

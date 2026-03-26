@@ -33,6 +33,11 @@ inputs = {
     PAPERLESS_OCR_LANGUAGE = "eng+jpn"
   }
 
+  # Backup
+  backup_enabled      = true
+  backup_schedule     = "0 2 * * *"
+  backup_storage_size = "20Gi"
+
   # These should be roughly unchanging
   webserver_consume_storage_size  = "20Gi"
   broker_storage_size             = "512Mi"

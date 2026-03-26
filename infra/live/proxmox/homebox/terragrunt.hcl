@@ -17,8 +17,8 @@ terraform {
 }
 
 inputs = {
-  target_node      = "pve4"
-  vmid             = 703
+  target_node      = "pve3"
+  vmid             = 600
   host_name        = "homebox"
   template_storage = "pve-shared"
   network_bridge   = "vmbr30"

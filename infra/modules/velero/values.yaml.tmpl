@@ -1,0 +1,38 @@
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.18.0
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+credentials:
+  secretContents:
+    cloud: |
+      [default]
+      aws_access_key_id=${aws_access_key_id}
+      aws_secret_access_key=${aws_secret_access_key}
+
+deployNodeAgent: true
+
+configuration:
+  # See https://velero.io/docs/v1.6/api-types/backupstoragelocation/
+  backupStorageLocation:
+    # name is the name of the backup storage location where backups should be stored. If a name is not provided,
+    # a backup storage location will be created with the name "default". Optional.
+  - name: backblaze-b2
+    provider: aws
+    bucket: drinkteason-homelab
+    prefix: velero-k8s-backups
+    default: true
+    accessMode: ReadWrite
+    credential:
+      # name of the secret used by this backupStorageLocation.
+      name:
+      # name of key that contains the secret data to be used.
+      key:
+    # Additional provider-specific configuration. See link above
+    # for details of required/optional fields for your provider.
+    config:
+      region: us-west-001
+      s3Url: https://s3.us-west-001.backblazeb2.com

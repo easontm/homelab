@@ -16,6 +16,7 @@ inputs = {
     "${get_env("HOME")}/.kube/config",
   ]
 
+  paperless_ngx_image = "ghcr.io/paperless-ngx/paperless-ngx:2.20.11"
   namespace = "paperless-ngx"
   ingress_namespaces = ["traefik"]
   postgres_password = local.sensitive_vars.postgres_password
@@ -32,6 +33,11 @@ inputs = {
     PAPERLESS_OCR_LANGUAGES = "eng jpn"
     PAPERLESS_OCR_LANGUAGE = "eng+jpn"
   }
+
+  # Backup
+  backup_enabled      = true
+  backup_schedule     = "0 2 * * *"
+  backup_storage_size = "20Gi"
 
   # These should be roughly unchanging
   webserver_consume_storage_size  = "20Gi"

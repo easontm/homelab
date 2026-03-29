@@ -108,6 +108,48 @@ variable "webserver_consume_storage_size" {
   default     = "100Mi"
 }
 
+# Backup configuration
+variable "backup_enabled" {
+  description = "Enable paperless-ngx document exporter backup CronJob"
+  type        = bool
+  default     = true
+}
+
+variable "backup_schedule" {
+  description = "Cron schedule for document exporter backups (default: daily at 2am)"
+  type        = string
+  default     = "0 2 * * *"
+}
+
+variable "backup_retention_days" {
+  description = "Number of days to retain export zip files before cleanup"
+  type        = number
+  default     = 7
+
+  validation {
+    condition     = var.backup_retention_days >= 1
+    error_message = "backup_retention_days must be at least 1."
+  }
+}
+
+variable "backup_storage_size" {
+  description = "Storage size for the NFS backup export PVC"
+  type        = string
+  default     = "20Gi"
+}
+
+variable "backup_successful_jobs_history_limit" {
+  description = "Number of successful backup jobs to retain in history"
+  type        = number
+  default     = 3
+}
+
+variable "backup_failed_jobs_history_limit" {
+  description = "Number of failed backup jobs to retain in history"
+  type        = number
+  default     = 1
+}
+
 # Paperless-ngx environment variables
 variable "paperless_env_vars" {
   description = "Additional environment variables for paperless-ngx webserver"

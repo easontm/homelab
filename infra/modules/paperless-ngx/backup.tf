@@ -59,14 +59,18 @@ resource "kubernetes_cron_job_v1" "document_export_backup" {
             container {
               name  = "document-export-backup"
               image = var.paperless_ngx_image
-              # Shell required for $(date) expansion in zip filename
-              command = ["/bin/bash", "-c"]
-              args    = ["document_exporter /usr/src/paperless/export-backup -z -zn \"export-$(date +%Y-%m-%d)\" --no-progress-bar"]
-
-              env_from {
-                config_map_ref {
-                  name = kubernetes_config_map_v1.webserver_env.metadata[0].name
-                }
+              # command = ["document_exporter", "/usr/src/paperless/export-backup", "-d", "--no-progress-bar"]
+              args = [
+                "/usr/local/bin/document_exporter",
+                "/usr/src/paperless/export-backup",
+                "--zip",
+                "--no-progress-bar"
+              ]
+              # I don't mount the whole configmap because then S6 tries to do a
+              #bunch of stuff I don't care about.
+              env {
+                name  = "PAPERLESS_DBHOST"
+                value = "db"
               }
 
               env {
@@ -77,6 +81,11 @@ resource "kubernetes_cron_job_v1" "document_export_backup" {
                     key  = "POSTGRES_PASSWORD"
                   }
                 }
+              }
+              env {
+                # https://github.com/paperless-ngx/paperless-ngx/issues/9631#issuecomment-2815816719
+                name  = "S6_STAGE2_HOOK"
+                value = "find /etc/s6-overlay/s6-rc.d/user/contents.d -type f -delete"
               }
 
               resources {
@@ -93,13 +102,11 @@ resource "kubernetes_cron_job_v1" "document_export_backup" {
               volume_mount {
                 name       = "data"
                 mount_path = "/usr/src/paperless/data"
-                read_only  = true
               }
 
               volume_mount {
                 name       = "media"
                 mount_path = "/usr/src/paperless/media"
-                read_only  = true
               }
 
               volume_mount {

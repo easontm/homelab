@@ -16,6 +16,7 @@ inputs = {
     "${get_env("HOME")}/.kube/config",
   ]
 
+  paperless_ngx_image = "ghcr.io/paperless-ngx/paperless-ngx:2.20.11"
   namespace = "paperless-ngx"
   ingress_namespaces = ["traefik"]
   postgres_password = local.sensitive_vars.postgres_password

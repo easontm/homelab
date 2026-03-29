@@ -1,0 +1,39 @@
+# Useful for having access to the volume mounts.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-pod
+  namespace: paperless-ngx
+  labels:
+    app: debug
+spec:
+  containers:
+  - name: debug
+    image: nicolaka/netshoot:latest
+    command: ["sleep", "infinity"]
+    tty: true
+    stdin: true
+    volumeMounts:
+    - name: data
+      mountPath: /usr/src/paperless/data
+    - name: media
+      mountPath: /usr/src/paperless/media
+    - name: backup-export
+      mountPath: /usr/src/paperless/export-backup
+    - name: webserver-export
+      mountPath: /usr/src/paperless/export
+      mountPropagation: None
+  restartPolicy: Always
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: data
+  - name: media
+    persistentVolumeClaim:
+      claimName: media
+  - name: backup-export
+    persistentVolumeClaim:
+      claimName: backup-export
+  - name: webserver-export
+    persistentVolumeClaim:
+      claimName: webserver-export

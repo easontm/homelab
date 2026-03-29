@@ -121,6 +121,17 @@ variable "backup_schedule" {
   default     = "0 2 * * *"
 }
 
+variable "backup_retention_days" {
+  description = "Number of days to retain export zip files before cleanup"
+  type        = number
+  default     = 7
+
+  validation {
+    condition     = var.backup_retention_days >= 1
+    error_message = "backup_retention_days must be at least 1."
+  }
+}
+
 variable "backup_storage_size" {
   description = "Storage size for the NFS backup export PVC"
   type        = string

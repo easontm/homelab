@@ -45,10 +45,23 @@ resource "kubernetes_cron_job_v1" "document_export_backup" {
           metadata {}
 
           spec {
-            container {
-              name    = "document-export-backup"
+            init_container {
+              name    = "cleanup-old-exports"
               image   = var.paperless_ngx_image
-              command = ["document_exporter", "/usr/src/paperless/export-backup", "-d", "--no-progress-bar"]
+              command = ["find", "/usr/src/paperless/export-backup", "-name", "export-*.zip", "-mtime", "+${var.backup_retention_days}", "-delete"]
+
+              volume_mount {
+                name       = "backup-export"
+                mount_path = "/usr/src/paperless/export-backup"
+              }
+            }
+
+            container {
+              name  = "document-export-backup"
+              image = var.paperless_ngx_image
+              # Shell required for $(date) expansion in zip filename
+              command = ["/bin/bash", "-c"]
+              args    = ["document_exporter /usr/src/paperless/export-backup -z -zn \"export-$(date +%Y-%m-%d)\" --no-progress-bar"]
 
               env_from {
                 config_map_ref {

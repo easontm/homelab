@@ -110,25 +110,19 @@ variable "webserver_consume_storage_size" {
 
 # Backup configuration
 variable "backup_enabled" {
-  description = "Enable PostgreSQL database backup CronJob"
+  description = "Enable paperless-ngx document exporter backup CronJob"
   type        = bool
   default     = true
 }
 
 variable "backup_schedule" {
-  description = "Cron schedule for database backups (default: daily at 2am)"
+  description = "Cron schedule for document exporter backups (default: daily at 2am)"
   type        = string
   default     = "0 2 * * *"
 }
 
-variable "backup_retention_days" {
-  description = "Number of days to retain backup files on the volume"
-  type        = number
-  default     = 7
-}
-
 variable "backup_storage_size" {
-  description = "Storage size for the NFS backup PVC"
+  description = "Storage size for the NFS backup export PVC"
   type        = string
   default     = "20Gi"
 }

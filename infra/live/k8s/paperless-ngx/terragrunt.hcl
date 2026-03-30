@@ -39,6 +39,7 @@ inputs = {
   backup_schedule     = "0 2 * * *"
   backup_storage_size = "20Gi"
 
+  webserver_replicas = 2
   # These should be roughly unchanging
   webserver_consume_storage_size  = "20Gi"
   broker_storage_size             = "512Mi"

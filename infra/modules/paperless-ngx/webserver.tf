@@ -98,7 +98,7 @@ resource "kubernetes_deployment_v1" "webserver" {
   }
 
   spec {
-    replicas = var.webserver_replicas
+    replicas = 1
 
     selector {
       match_labels = {

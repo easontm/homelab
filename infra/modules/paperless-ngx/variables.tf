@@ -84,12 +84,6 @@ variable "broker_storage_size" {
   default     = "100Mi"
 }
 
-variable "webserver_replicas" {
-  description = "Number of replicas for the paperless-ngx webserver Deployment"
-  type        = number
-  default     = 1
-}
-
 variable "webserver_data_storage_size" {
   description = "Storage size for webserver data"
   type        = string

@@ -8,6 +8,8 @@ terraform {
 
 locals {
   sensitive_vars = yamldecode(sops_decrypt_file("./paperless_vars.sops.yaml"))
+  # This matches the mapall UID/GID in TrueNAS, k8s-nfs
+  nfs_share_mapall_uid_gid = 3001
 }
 
 inputs = {
@@ -32,6 +34,9 @@ inputs = {
     PAPERLESS_CONSUMER_POLLING = "30"
     PAPERLESS_OCR_LANGUAGES = "eng jpn"
     PAPERLESS_OCR_LANGUAGE = "eng+jpn"
+    PAPERLESS_DATE_PARSER_LANGUAGES = "en+ja"
+    USERMAP_UID = local.nfs_share_mapall_uid_gid
+    USERMAP_GID = local.nfs_share_mapall_uid_gid
   }
 
   # Backup

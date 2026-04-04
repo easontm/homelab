@@ -34,4 +34,5 @@ inputs = {
   cloudflare_one_team_name             = local.cloudflare_vars.one_team_name
   allowed_emails                       = local.cloudflare_vars.allowed_emails
   cloudflare_access_application_domain = "*.${local.cloudflare_vars.domain}"
+  session_duration                     = "336h"
 }

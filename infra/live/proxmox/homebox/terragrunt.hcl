@@ -25,15 +25,15 @@ inputs = {
   ipv4_address     = "10.10.30.3/24"
   gateway_ip       = "10.10.30.1"
 
-  container_tag = try(local.homebox_vars.container_tag, "latest")
+  container_tag = "0.24.2"
 
-  homebox_config = merge(
+  homebox_env_vars = merge(
     {
-      options_trust_proxy = true
-      options_hostname    = try(local.homebox_vars.public_hostname, null)
+      HBOX_OPTIONS_TRUST_PROXY = "true"
     },
-    try(local.homebox_vars.homebox_config, {}),
+    try(local.homebox_vars.public_hostname, null) != null ? {
+      HBOX_OPTIONS_HOSTNAME = local.homebox_vars.public_hostname
+    } : {},
+    try(local.homebox_vars.homebox_env_vars, {}),
   )
-
-  homebox_environment_overrides = try(local.homebox_vars.environment_overrides, {})
 }

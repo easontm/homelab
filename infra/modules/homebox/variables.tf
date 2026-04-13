@@ -101,12 +101,6 @@ variable "memory" {
   }
 }
 
-variable "entrypoint" {
-  description = "Optional container init command override"
-  type        = string
-  default     = null
-}
-
 variable "tags" {
   description = "Tags to apply to the LXC container"
   type        = list(string)
@@ -191,67 +185,8 @@ variable "gateway_ip" {
 ##############
 # HomeBox configuration
 ##############
-variable "homebox_config" {
-  description = "HomeBox settings mapped to common HBOX_* environment variables"
-  type = object({
-    mode                            = optional(string, "production")
-    web_port                        = optional(number, 7745)
-    web_host                        = optional(string)
-    web_max_upload_size             = optional(number, 10)
-    web_read_timeout                = optional(string, "10s")
-    web_write_timeout               = optional(string, "10s")
-    web_idle_timeout                = optional(string, "30s")
-    storage_conn_string             = optional(string, "file:///?no_tmp_dir=true")
-    storage_prefix_path             = optional(string, "data")
-    log_level                       = optional(string, "info")
-    log_format                      = optional(string, "text")
-    database_driver                 = optional(string, "sqlite3")
-    database_sqlite_path            = optional(string, "/data/homebox.db?_pragma=busy_timeout=2000&_pragma=journal_mode=WAL&_fk=1&_time_format=sqlite")
-    database_pub_sub_conn_string    = optional(string, "mem://{{ .Topic }}")
-    options_allow_registration      = optional(bool, true)
-    options_auto_increment_asset_id = optional(bool, true)
-    options_allow_analytics         = optional(bool, false)
-    options_github_release_check    = optional(bool, true)
-    options_allow_local_login       = optional(bool, true)
-    options_trust_proxy             = optional(bool, false)
-    options_hostname                = optional(string)
-    auth_rate_limit_enabled         = optional(bool, true)
-    auth_rate_limit_max_attempts    = optional(number, 5)
-    auth_rate_limit_window          = optional(string, "1m")
-    auth_rate_limit_base_backoff    = optional(string, "10s")
-    auth_rate_limit_max_backoff     = optional(string, "5m")
-    debug_enabled                   = optional(bool, false)
-    debug_port                      = optional(number, 4000)
-    demo                            = optional(bool, false)
-    oidc_enabled                    = optional(bool, false)
-    oidc_issuer_url                 = optional(string)
-    oidc_client_id                  = optional(string)
-    oidc_client_secret              = optional(string)
-    oidc_scope                      = optional(string, "openid profile email")
-    oidc_allowed_groups             = optional(string)
-    oidc_auto_redirect              = optional(bool, false)
-    oidc_verify_email               = optional(bool, false)
-    oidc_group_claim                = optional(string, "groups")
-    oidc_email_claim                = optional(string, "email")
-    oidc_name_claim                 = optional(string, "name")
-    oidc_email_verified_claim       = optional(string, "email_verified")
-    oidc_button_text                = optional(string, "Sign in with OIDC")
-    oidc_state_expiry               = optional(string, "10m")
-    oidc_request_timeout            = optional(string, "30s")
-    mailer_host                     = optional(string)
-    mailer_port                     = optional(number, 587)
-    mailer_username                 = optional(string)
-    mailer_password                 = optional(string)
-    mailer_from                     = optional(string)
-    thumbnail_enabled               = optional(bool, true)
-    thumbnail_width                 = optional(number, 500)
-    thumbnail_height                = optional(number, 500)
-  })
-  default = {}
-}
-
-variable "homebox_environment_overrides" {
-  description = "Additional raw HBOX_* environment variable overrides for advanced HomeBox settings"
+variable "homebox_env_vars" {
+  description = "HomeBox environment variables passed directly to the container. Keys should match HBOX_* envvar names expected by the application."
   type        = map(string)
   default     = {}
 }

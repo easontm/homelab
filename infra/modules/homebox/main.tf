@@ -1,4 +1,4 @@
-resource "proxmox_virtual_environment_oci_image" "homebox" {
+resource "proxmox_oci_image" "homebox" {
   node_name           = var.target_node
   datastore_id        = var.template_storage
   reference           = "${var.container_repository}:${var.container_tag}"
@@ -10,6 +10,8 @@ resource "proxmox_virtual_environment_oci_image" "homebox" {
 # due to a bug in the module
 # https://github.com/bpg/terraform-provider-proxmox/issues/2789
 resource "proxmox_virtual_environment_container" "homebox" {
+  depends_on = [proxmox_virtual_environment_container.postgres]
+
   description   = var.description
   node_name     = var.target_node
   vm_id         = var.vmid
@@ -64,19 +66,19 @@ resource "proxmox_virtual_environment_container" "homebox" {
   }
 
   operating_system {
-    template_file_id = proxmox_virtual_environment_oci_image.homebox.id
+    template_file_id = proxmox_oci_image.homebox.id
     type             = "alpine"
   }
 
   environment_variables = merge(
     # These are some more defaults I'm setting here due to the provider bug
     {
-      PATH                      = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-      HBOX_DATABASE_SQLITE_PATH = "/data/homebox.db?_pragma=busy_timeout=2000&_pragma=journal_mode=WAL&_fk=1&_time_format=sqlite"
-      HBOX_MODE                 = "production"
-      HBOX_STORAGE_CONN_STRING  = "file:///?no_tmp_dir=true"
-      HBOX_STORAGE_PREFIX_PATH  = "data"
+      PATH                     = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      HBOX_MODE                = "production"
+      HBOX_STORAGE_CONN_STRING = "file:///?no_tmp_dir=true"
+      HBOX_STORAGE_PREFIX_PATH = "data"
     },
+    local.homebox_database_env,
     try(var.homebox_env_vars, {}),
   )
 

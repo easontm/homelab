@@ -1,3 +1,18 @@
+db_type: "sqlite"
+
+# Required when db_type is "postgres"
+postgres_vmid: 601
+postgres_host_name: "homebox-postgres"
+postgres_ipv4_address: "10.10.30.4/24"
+postgres_gateway_ip: "10.10.30.1"
+
+# Optional. Set this when HomeBox should connect to PostgreSQL using a DNS name
+# or a different address than postgres_ipv4_address.
+# postgres_database_host: "homebox-postgres"
+
+# The TurnKey PostgreSQL appliance is provisioned by Terraform, but you still
+# need to initialize matching PostgreSQL credentials inside that container.
+
 public_hostname: "homebox.example.com"
 
 homebox_env_vars:
@@ -5,6 +20,10 @@ homebox_env_vars:
   HBOX_OIDC_ISSUER_URL: "https://auth.example.com/application/o/homebox/"
   HBOX_OIDC_CLIENT_ID: "homebox"
   HBOX_OIDC_CLIENT_SECRET: "replace-me"
+  # Required when db_type is "postgres"
+  HBOX_DATABASE_USERNAME: "homebox"
+  HBOX_DATABASE_PASSWORD: "replace-me"
+  HBOX_DATABASE_DATABASE: "homebox"
   HBOX_MAILER_HOST: "smtp.example.com"
   HBOX_MAILER_PORT: "587"
   HBOX_MAILER_USERNAME: "homebox@example.com"

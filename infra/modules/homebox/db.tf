@@ -8,6 +8,11 @@ locals {
   postgres_pool_id     = try(coalesce(var.postgres_pool_id, var.pool_id), null)
 
   postgres_template_storage = coalesce(var.postgres_template_storage, var.template_storage)
+  postgres_data_mount = var.postgres_data_mount != null ? var.postgres_data_mount : {
+    storage = var.rootfs.storage
+    size    = "10G"
+    path    = "/var/lib/postgresql"
+  }
 
   postgres_rootfs = var.postgres_rootfs != null ? var.postgres_rootfs : {
     storage = var.rootfs.storage
@@ -37,25 +42,30 @@ locals {
   postgres_connection_target = coalesce(var.postgres_database_host, local.postgres_static_host, local.postgres_host_name)
 
   homebox_database_env = local.postgres_enabled ? {
-    HBOX_DATABASE_DRIVER = "postgres"
-    HBOX_DATABASE_HOST   = local.postgres_connection_target
-    HBOX_DATABASE_PORT   = "5432"
+    HBOX_DATABASE_DRIVER   = "postgres"
+    HBOX_DATABASE_HOST     = local.postgres_connection_target
+    HBOX_DATABASE_PORT     = "5432"
+    HBOX_DATABASE_USERNAME = var.postgres_user
+    HBOX_DATABASE_PASSWORD = var.postgres_password
+    HBOX_DATABASE_DATABASE = var.postgres_database_name
     } : {
     HBOX_DATABASE_SQLITE_PATH = "/data/homebox.db?_pragma=busy_timeout=2000&_pragma=journal_mode=WAL&_fk=1&_time_format=sqlite"
   }
+
+  postgres_container_env = local.postgres_enabled ? {
+    POSTGRES_USER     = var.postgres_user
+    POSTGRES_PASSWORD = var.postgres_password
+    POSTGRES_DB       = var.postgres_database_name
+  } : {}
 }
 
-resource "proxmox_download_file" "postgres_template" {
+resource "proxmox_oci_image" "postgres" {
   count = local.postgres_enabled ? 1 : 0
 
-  content_type        = "vztmpl"
   datastore_id        = local.postgres_template_storage
-  file_name           = var.postgres_template_file_name
   node_name           = local.postgres_target_node
-  url                 = var.postgres_template_url
-  checksum            = var.postgres_template_checksum
-  checksum_algorithm  = var.postgres_template_checksum_algorithm
-  overwrite           = false
+  reference           = var.postgres_image
+  overwrite           = true
   overwrite_unmanaged = true
 }
 
@@ -80,6 +90,12 @@ resource "proxmox_virtual_environment_container" "postgres" {
   disk {
     datastore_id = local.postgres_rootfs.storage
     size         = local.postgres_rootfs.size
+  }
+
+  mount_point {
+    volume = local.postgres_data_mount.storage
+    size   = local.postgres_data_mount.size
+    path   = local.postgres_data_mount.path
   }
 
   memory {
@@ -108,9 +124,14 @@ resource "proxmox_virtual_environment_container" "postgres" {
   }
 
   operating_system {
-    template_file_id = proxmox_download_file.postgres_template[0].id
-    type             = "debian"
+    template_file_id = proxmox_oci_image.postgres[0].id
+    type             = var.postgres_operating_system_type
   }
+
+  environment_variables = merge(
+    try(var.postgres_env_vars, {}),
+    local.postgres_container_env,
+  )
 
   wait_for_ip {
     ipv4 = local.postgres_started && local.postgres_wait_for_ipv4

@@ -24,7 +24,7 @@ variable "container_tag" {
 }
 
 variable "db_type" {
-  description = "Database backend for HomeBox. Use sqlite for the default single-container deployment or postgres to provision a separate PostgreSQL LXC."
+  description = "Database backend for HomeBox. Use sqlite for the default single-container deployment or postgres to provision a separate PostgreSQL OCI container."
   type        = string
   default     = "sqlite"
 
@@ -200,82 +200,111 @@ variable "homebox_env_vars" {
   description = "HomeBox environment variables passed directly to the container. Keys should match HBOX_* envvar names expected by the application."
   type        = map(string)
   default     = {}
-
-  validation {
-    condition = var.db_type != "postgres" || alltrue([
-      contains(keys(var.homebox_env_vars), "HBOX_DATABASE_USERNAME"),
-      contains(keys(var.homebox_env_vars), "HBOX_DATABASE_PASSWORD"),
-      contains(keys(var.homebox_env_vars), "HBOX_DATABASE_DATABASE"),
-    ])
-    error_message = "When db_type is postgres, homebox_env_vars must include HBOX_DATABASE_USERNAME, HBOX_DATABASE_PASSWORD, and HBOX_DATABASE_DATABASE."
-  }
 }
 
 ##############
 # PostgreSQL
 ##############
+variable "postgres_image" {
+  description = "PostgreSQL image reference."
+  type        = string
+  default     = "docker.io/library/postgres:18"
+}
+
+variable "postgres_operating_system_type" {
+  description = "Operating system type for the PostgreSQL image. Use alpine when selecting an Alpine-based postgres image tag."
+  type        = string
+  default     = "debian"
+}
+
+variable "postgres_user" {
+  description = "PostgreSQL username shared between the PostgreSQL container initialization and HomeBox connection settings."
+  type        = string
+  default     = "homebox"
+
+  validation {
+    condition     = var.db_type != "postgres" || trimspace(var.postgres_user) != ""
+    error_message = "postgres_user must not be empty when db_type is postgres."
+  }
+}
+
+variable "postgres_password" {
+  description = "PostgreSQL password shared between the PostgreSQL container initialization and HomeBox connection settings."
+  type        = string
+  default     = null
+  sensitive   = true
+
+  validation {
+    condition     = var.db_type != "postgres" || (var.postgres_password != null && trimspace(var.postgres_password) != "")
+    error_message = "postgres_password must be set when db_type is postgres."
+  }
+}
+
+variable "postgres_database_name" {
+  description = "PostgreSQL database name shared between the PostgreSQL container initialization and HomeBox connection settings."
+  type        = string
+  default     = "homebox"
+
+  validation {
+    condition     = var.db_type != "postgres" || trimspace(var.postgres_database_name) != ""
+    error_message = "postgres_database_name must not be empty when db_type is postgres."
+  }
+}
+
+variable "postgres_env_vars" {
+  description = "Additional environment variables for the PostgreSQL container, such as PGDATA or POSTGRES_INITDB_ARGS. Shared POSTGRES_* values are derived from typed inputs."
+  type        = map(string)
+  default     = {}
+}
+
 variable "postgres_target_node" {
-  description = "Optional Proxmox target node for the PostgreSQL LXC. Defaults to target_node."
+  description = "Optional Proxmox target node for the PostgreSQL container. Defaults to target_node."
   type        = string
   default     = null
 }
 
 variable "postgres_vmid" {
-  description = "Optional VMID for the PostgreSQL LXC. Defaults to vmid + 1."
+  description = "Optional VMID for the PostgreSQL container. Defaults to vmid + 1."
   type        = number
   default     = null
 }
 
 variable "postgres_host_name" {
-  description = "Optional hostname for the PostgreSQL LXC. Defaults to <host_name>-postgres."
+  description = "Optional hostname for the PostgreSQL container. Defaults to <host_name>-postgres."
   type        = string
   default     = null
 }
 
 variable "postgres_description" {
-  description = "Optional description for the PostgreSQL LXC. Defaults to the HomeBox description with a PostgreSQL suffix."
+  description = "Optional description for the PostgreSQL container. Defaults to the HomeBox description with a PostgreSQL suffix."
   type        = string
   default     = null
 }
 
 variable "postgres_pool_id" {
-  description = "Optional Proxmox pool assignment for the PostgreSQL LXC. Defaults to pool_id."
+  description = "Optional Proxmox pool assignment for the PostgreSQL container. Defaults to pool_id."
   type        = string
   default     = null
 }
 
 variable "postgres_template_storage" {
-  description = "Datastore where the PostgreSQL LXC template is stored. Defaults to template_storage."
+  description = "Datastore where the PostgreSQL image template is stored. Defaults to template_storage."
   type        = string
   default     = null
 }
 
-variable "postgres_template_url" {
-  description = "URL for the TurnKey PostgreSQL LXC template."
-  type        = string
-  default     = "http://mirror.turnkeylinux.org/turnkeylinux/images/proxmox/debian-12-turnkey-postgresql_18.1-1_amd64.tar.gz"
-}
-
-variable "postgres_template_file_name" {
-  description = "Filename to use for the downloaded TurnKey PostgreSQL LXC template."
-  type        = string
-  default     = "debian-12-turnkey-postgresql_18.1-1_amd64.tar.gz"
-}
-
-variable "postgres_template_checksum" {
-  description = "Checksum for the downloaded TurnKey PostgreSQL LXC template."
-  type        = string
-  default     = "f06f18a350b318be2f20357d420be2d56259b9420b9d1e7452243b104fc4d7c8"
-}
-
-variable "postgres_template_checksum_algorithm" {
-  description = "Checksum algorithm for postgres_template_checksum."
-  type        = string
-  default     = "sha256"
+variable "postgres_data_mount" {
+  description = "Persistent volume mount for PostgreSQL data. Defaults to a 10G volume mounted at /var/lib/postgresql, which matches the postgres:18 image layout."
+  type = object({
+    storage = string
+    size    = string
+    path    = string
+  })
+  default = null
 }
 
 variable "postgres_rootfs" {
-  description = "Root filesystem configuration for the PostgreSQL LXC container. Defaults to the HomeBox rootfs storage with a larger disk."
+  description = "Root filesystem configuration for the PostgreSQL container. Defaults to the HomeBox rootfs storage with a larger disk."
   type = object({
     storage = string
     size    = number
@@ -284,7 +313,7 @@ variable "postgres_rootfs" {
 }
 
 variable "postgres_cpu" {
-  description = "CPU configuration for the PostgreSQL LXC container. Defaults to the HomeBox CPU settings."
+  description = "CPU configuration for the PostgreSQL container. Defaults to the HomeBox CPU settings."
   type = object({
     architecture = string
     cores        = number
@@ -294,7 +323,7 @@ variable "postgres_cpu" {
 }
 
 variable "postgres_memory" {
-  description = "Memory configuration for the PostgreSQL LXC container. Defaults to at least 1024 MB plus the HomeBox swap setting."
+  description = "Memory configuration for the PostgreSQL container. Defaults to at least 1024 MB plus the HomeBox swap setting."
   type = object({
     dedicated = number
     swap      = number
@@ -303,7 +332,7 @@ variable "postgres_memory" {
 }
 
 variable "postgres_tags" {
-  description = "Tags to apply to the PostgreSQL LXC container. Defaults to the HomeBox tags plus postgres."
+  description = "Tags to apply to the PostgreSQL container. Defaults to the HomeBox tags plus postgres."
   type        = list(string)
   default     = null
 }

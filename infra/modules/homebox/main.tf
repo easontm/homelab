@@ -78,8 +78,8 @@ resource "proxmox_virtual_environment_container" "homebox" {
       HBOX_STORAGE_CONN_STRING = "file:///?no_tmp_dir=true"
       HBOX_STORAGE_PREFIX_PATH = "data"
     },
-    local.homebox_database_env,
     try(var.homebox_env_vars, {}),
+    local.homebox_database_env,
   )
 
   wait_for_ip {

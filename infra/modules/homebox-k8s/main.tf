@@ -18,7 +18,7 @@ resource "kubernetes_manifest" "traefik_httproute_service_grant" {
     kind       = "ReferenceGrant"
     metadata = {
       name      = "allow-${each.value}-access"
-      namespace = var.namespace
+      namespace = kubernetes_namespace_v1.homebox.metadata[0].name
     }
     spec = {
       from = [

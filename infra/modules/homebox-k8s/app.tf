@@ -6,11 +6,11 @@ resource "kubernetes_config_map_v1" "homebox_env" {
   }
 
   data = merge(
+    var.homebox_env_vars,
+    local.homebox_database_env,
     {
       HBOX_MODE = "production"
     },
-    local.homebox_database_env,
-    var.homebox_env_vars,
   )
 }
 

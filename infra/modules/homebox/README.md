@@ -1,5 +1,10 @@
 # HomeBox
 
+> [!WARNING]
+> This module has some issues due to some funky OCI behavior on the part of Proxmox
+> and the Terraform provider. See "Development Notes" down below. I am not currently
+> deploying this module; I have reimplemented Homebox as a k8s module in homebox-k8s.
+
 This module provisions [HomeBox](https://homebox.software/) as a Proxmox LXC created directly from the upstream OCI image.
 
 HomeBox configuration is supplied through `HBOX_*` environment variables using the `environment_variables` support built into `proxmox_virtual_environment_container`.

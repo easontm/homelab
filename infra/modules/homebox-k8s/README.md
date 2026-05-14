@@ -1,23 +1,35 @@
 # homebox-k8s
 
-This module installs [Homebox](https://homebox.software/) on Kubernetes using native Terraform resources. It is the Kubernetes counterpart to the Proxmox-based `homebox` module and follows the resource conventions established by the `paperless-ngx` module.
+This module installs [Homebox](https://homebox.software/) on Kubernetes using
+native Terraform resources. It is the Kubernetes counterpart to the
+Proxmox-based `homebox` module and follows the resource conventions established
+by the `paperless-ngx` module.
 
 ## Pre-requisites
 
-You must know your StorageClass name(s) for provisioning PersistentVolumes. One StorageClass is sufficient for both the app data and the database, but you can specify a separate class for each.
+You must know your StorageClass name(s) for provisioning PersistentVolumes. One
+StorageClass is sufficient for both the app data and the database, but you can
+specify a separate class for each.
 
 ## Database modes
 
 The module supports two database backends via `db_type`:
 
-- `sqlite` (default): A single PVC is provisioned for `/data` and `HBOX_DATABASE_SQLITE_PATH` is set automatically. No additional pods are created.
-- `postgres`: A PostgreSQL `Deployment` and `Service` are provisioned alongside Homebox. The DB credentials are stored in a Kubernetes `Secret` and injected into both pods automatically.
+- `sqlite` (default): A single PVC is provisioned for `/data` and 
+  `HBOX_DATABASE_SQLITE_PATH` is set automatically. No additional pods are
+  created.
+- `postgres`: A PostgreSQL `Deployment` and `Service` are provisioned
+  alongside Homebox. The DB credentials are stored in a Kubernetes `Secret`
+  and injected into both pods automatically.
 
-> **Note:** SQLite storage over NFS is discouraged by SQLite upstream. If your `storage_class_name` is NFS-backed, prefer `db_type = "postgres"` with an iSCSI/block-backed `db_storage_class_name`.
+> **Note:** SQLite storage over NFS is discouraged by SQLite upstream. If your 
+> `storage_class_name` is NFS-backed, prefer `db_type = "postgres"` with an 
+> iSCSI/block-backed `db_storage_class_name`.
 
 ## Environment variables
 
-Homebox is configured via `HBOX_*` environment variables. Use `homebox_env_vars` to pass additional variables:
+Homebox is configured via `HBOX_*` environment variables. Use
+`homebox_env_vars` to pass additional variables:
 
 ```hcl
 homebox_env_vars = {
@@ -25,21 +37,29 @@ homebox_env_vars = {
 }
 ```
 
-The following variables are set automatically and **should not** be included in `homebox_env_vars`:
+The following variables are set automatically and **should not** be included in
+`homebox_env_vars`:
 
 - `HBOX_MODE` — always set to `production`
-- `HBOX_DATABASE_DRIVER`, `HBOX_DATABASE_HOST`, `HBOX_DATABASE_PORT`, `HBOX_DATABASE_USERNAME`, `HBOX_DATABASE_DATABASE`, `HBOX_DATABASE_PASSWORD` — set when `db_type = "postgres"`
-- `HBOX_STORAGE_CONN_STRING`, `HBOX_STORAGE_PREFIX_PATH`, `HBOX_DATABASE_SQLITE_PATH` — set when `db_type = "sqlite"`
+- `HBOX_DATABASE_DRIVER`, `HBOX_DATABASE_HOST`, `HBOX_DATABASE_PORT`, 
+  `HBOX_DATABASE_USERNAME`, `HBOX_DATABASE_DATABASE`, `HBOX_DATABASE_PASSWORD` 
+  — set when `db_type = "postgres"`
+- `HBOX_STORAGE_CONN_STRING`, `HBOX_STORAGE_PREFIX_PATH`,
+  `HBOX_DATABASE_SQLITE_PATH` — set when `db_type = "sqlite"`
 
 ## Ingress
 
-This module creates a `ReferenceGrant` for each namespace in `ingress_namespaces`, allowing those namespaces to route to the `homebox` Service (port 7745). This is the same pattern used by `paperless-ngx` for Traefik Gateway API integration.
+This module creates a `ReferenceGrant` for each namespace in
+`ingress_namespaces`, allowing those namespaces to route to the `homebox`
+Service (port 7745). This is the same pattern used by `paperless-ngx` for
+Traefik Gateway API integration.
 
 ```hcl
 ingress_namespaces = ["traefik"]
 ```
 
-You still need to create the `HTTPRoute` in your Traefik stack (outside this module).
+You still need to create the `HTTPRoute` in your Traefik stack (outside this
+module).
 
 ## Example live-stack configuration
 
@@ -89,7 +109,11 @@ postgres_password: replace-me
 
 ## Backup (pg_dump)
 
-When `db_type = "postgres"`, you can enable an automated pg_dump CronJob with `backup_enabled = true`. The job runs on the schedule defined by `backup_schedule` (default: daily at 2am), dumps the database in custom format (`.pgdump`) to a dedicated PVC, and an init container prunes files older than `backup_retention_days`.
+When `db_type = "postgres"`, you can enable an automated pg_dump CronJob with 
+`backup_enabled = true`. The job runs on the schedule defined by
+`backup_schedule` (default: daily at 2am), dumps the database in custom format
+(`.pgdump`) to a dedicated PVC, and an init container prunes files older than
+`backup_retention_days`.
 
 ```hcl
 backup_enabled            = true

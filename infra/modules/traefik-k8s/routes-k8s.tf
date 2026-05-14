@@ -1,14 +1,12 @@
-#################
-# Paperless-ngx
-#################
-# TODO: turn into a loop of objs
-resource "kubernetes_manifest" "paperlessngx_http_route" {
+resource "kubernetes_manifest" "k8s_http_route" {
+  for_each = var.k8s_service_routes
+
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind       = "HTTPRoute"
     metadata = {
-      name      = "paperless-ngx"
-      namespace = "traefik"
+      name      = each.key
+      namespace = var.traefik_namespace
     }
     spec = {
       parentRefs = [
@@ -17,7 +15,7 @@ resource "kubernetes_manifest" "paperlessngx_http_route" {
           namespace = var.traefik_namespace
         }
       ]
-      hostnames = ["paperless.${var.domain_name}"]
+      hostnames = ["${each.value.subdomain}.${var.domain_name}"]
       rules = [
         {
           matches = [
@@ -28,7 +26,7 @@ resource "kubernetes_manifest" "paperlessngx_http_route" {
               }
             }
           ]
-          filters = [
+          filters = each.value.auth ? [
             {
               type = "ExtensionRef"
               extensionRef = {
@@ -37,13 +35,13 @@ resource "kubernetes_manifest" "paperlessngx_http_route" {
                 name  = "authelia"
               }
             }
-          ]
+          ] : []
           backendRefs = [
             {
-              name      = "webserver"
+              name      = each.value.service
               kind      = "Service"
-              namespace = "paperless-ngx"
-              port      = 8000
+              namespace = each.value.namespace
+              port      = each.value.port
             }
           ]
         }

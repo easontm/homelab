@@ -20,7 +20,21 @@ inputs = {
   domain_name = local.traefik_vars.domain
   external_service_urls = {
     authelia = { url = "10.10.30.2:9091", subdomain = "auth" }
-    homebox  = { url = "10.10.30.3:7745", subdomain = "homebox" }
+    # homebox  = { url = "10.10.30.3:7745", subdomain = "homebox" }
+  }
+  k8s_service_routes = {
+    "paperless-ngx" = {
+      subdomain = "paperless"
+      namespace = "paperless-ngx"
+      service   = "webserver"
+      port      = 8000
+    }
+    "homebox" = {
+      subdomain = "homebox"
+      namespace = "homebox"
+      service   = "homebox"
+      port      = 7745
+    }
   }
   common_name = "*.${local.traefik_vars.domain}"
   dns_names   = ["*.${local.traefik_vars.domain}"]

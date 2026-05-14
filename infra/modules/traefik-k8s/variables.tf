@@ -28,6 +28,18 @@ variable "external_service_urls" {
   }))
 }
 
+variable "k8s_service_routes" {
+  description = "Map of in-cluster HTTPRoutes to create. The map key is used as the route name and resource identifier. Each entry specifies the subdomain, backend service namespace/name/port, and whether the authelia auth middleware should be applied."
+  type = map(object({
+    subdomain = string
+    namespace = string
+    service   = string
+    port      = number
+    auth      = optional(bool, true)
+  }))
+  default = {}
+}
+
 variable "domain_name" {
   description = "Domain name for Traefik"
   type        = string

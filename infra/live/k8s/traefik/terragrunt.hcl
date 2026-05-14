@@ -18,7 +18,24 @@ inputs = {
   chart_version = "38.0.0"
 
   domain_name = local.traefik_vars.domain
-  authelia_service_url = "10.10.30.2:9091"
+  external_service_urls = {
+    authelia = { url = "10.10.30.2:9091", subdomain = "auth" }
+    # homebox  = { url = "10.10.30.3:7745", subdomain = "homebox" }
+  }
+  k8s_service_routes = {
+    "paperless-ngx" = {
+      subdomain = "paperless"
+      namespace = "paperless-ngx"
+      service   = "webserver"
+      port      = 8000
+    }
+    "homebox" = {
+      subdomain = "homebox"
+      namespace = "homebox"
+      service   = "homebox"
+      port      = 7745
+    }
+  }
   common_name = "*.${local.traefik_vars.domain}"
   dns_names   = ["*.${local.traefik_vars.domain}"]
   cloudflare_origin_ca_cert = local.traefik_vars.cloudflare_origin_cert

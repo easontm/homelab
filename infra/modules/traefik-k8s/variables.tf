@@ -20,9 +20,24 @@ variable "chart_version" {
   type        = string
 }
 
-variable "authelia_service_url" {
-  description = "URL of the Authelia service for forward authentication. Should be in host:port format."
-  type        = string
+variable "external_service_urls" {
+  description = "Map of external service names to their URL and subdomain. URL should be in host:port format."
+  type = map(object({
+    url       = string
+    subdomain = string
+  }))
+}
+
+variable "k8s_service_routes" {
+  description = "Map of in-cluster HTTPRoutes to create. The map key is used as the route name and resource identifier. Each entry specifies the subdomain, backend service namespace/name/port, and whether the authelia auth middleware should be applied."
+  type = map(object({
+    subdomain = string
+    namespace = string
+    service   = string
+    port      = number
+    auth      = optional(bool, true)
+  }))
+  default = {}
 }
 
 variable "domain_name" {
@@ -56,6 +71,5 @@ variable "cloudflare_origin_ca_key" {
 }
 
 locals {
-  use_origin_cert       = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != ""
-  authelia_service_port = tonumber(split(":", var.authelia_service_url)[1])
+  use_origin_cert = var.cloudflare_origin_ca_cert != "" && var.cloudflare_origin_ca_key != ""
 }

@@ -1,0 +1,72 @@
+# Authelia Helm chart values
+# Reference: https://github.com/authelia/chartrepo/blob/master/charts/authelia/values.yaml
+#
+# This file is a starting-point example. Copy it to your live stack directory, rename it
+# (e.g. values.yaml), and customise as needed.
+#
+# Sensitive values (session/storage encryption keys, passwords) do NOT belong here.
+# Pass them via the sensitive_values_yaml module variable in your terragrunt.hcl instead.
+
+image:
+  tag: ''   # pin to a specific tag, e.g. '4.38.10'
+
+configMap:
+  theme: auto
+
+  log:
+    level: info
+
+  totp:
+    issuer: homelab
+
+  authentication_backend:
+    file:
+      enabled: true
+      path: /config/users_database.yml
+      password:
+        algorithm: argon2
+
+  session:
+    name: authelia_session
+    same_site: lax
+    inactivity: 1h
+    expiration: 12h
+    remember_me: 7d
+    cookies:
+      - domain: example.com
+        authelia_url: https://auth.example.com
+
+  storage:
+    # encryption_key is passed via sensitive_values_yaml
+    postgres:
+      enabled: true
+      address: 'tcp://db.authelia.svc.cluster.local:5432'
+      database: authelia
+      username: authelia
+      # password is passed via sensitive_values_yaml
+
+  notifier:
+    filesystem:
+      enabled: true
+      filename: /config/notification.txt
+    # smtp:
+    #   enabled: true
+    #   address: 'smtp://smtp.example.com:587'
+    #   sender: 'Authelia <authelia@example.com>'
+    #   username: 'authelia@example.com'
+
+  access_control:
+    default_policy: deny
+    rules:
+      - domain: '*.example.com'
+        policy: one_factor
+
+  regulation:
+    max_retries: 5
+    find_time: 2m
+    ban_time: 5m
+
+persistence:
+  enabled: true
+  storageClass: nfs-retain
+  size: 1Gi

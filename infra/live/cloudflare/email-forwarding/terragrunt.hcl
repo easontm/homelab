@@ -10,7 +10,7 @@ locals {
 }
 
 terraform {
-  source = "../../../modules/cloudflare-email-forwarding"
+  source = "../../../modules/cloudflare/email-forwarding"
 }
 
 inputs = {

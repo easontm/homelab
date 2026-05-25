@@ -9,7 +9,7 @@ locals {
 }
 
 terraform {
-  source = "../../../modules/cloudflare-access-control"
+  source = "../../../modules/cloudflare/access-control"
 }
 
 inputs = {

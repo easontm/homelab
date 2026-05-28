@@ -1,0 +1,9 @@
+# Template for lldap_vars.sops.yaml
+# Encrypt this file with: sops --encrypt --in-place lldap_vars.sops.yaml
+#
+# Generate jwt_secret and key_seed with: openssl rand -hex 32
+
+ldap_base_dn: dc=example,dc=com
+jwt_secret: REPLACE_WITH_RANDOM_32_BYTE_HEX
+key_seed: REPLACE_WITH_RANDOM_32_BYTE_HEX
+admin_password: REPLACE_WITH_SECURE_PASSWORD

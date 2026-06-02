@@ -135,6 +135,7 @@ variable "bootstrap_user_configs" {
   description = "Map of filename to JSON content for bootstrap user config files (mounted at /bootstrap/user-configs). Each map value must be a single JSON object (not an array) — use one key per user. Example: { \"alice.json\" = jsonencode({ id = \"alice\", email = \"alice@example.com\", groups = [\"lldap_admin\"] }) }"
   type        = map(string)
   default     = {}
+  sensitive   = true
 }
 
 variable "bootstrap_group_configs" {

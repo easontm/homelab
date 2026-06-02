@@ -35,12 +35,12 @@ inputs = {
     "lldap_password_manager.json" = jsonencode({ name = "lldap_password_manager" })
   }
   bootstrap_user_configs = {
-    "testuser.json" = jsonencode({
-      id          = "test"
-      email       = "drinkteason+testuser@gmail.com"
-      displayName = "test"
-      password    = "changeme"
-      groups      = ["lldap_password_manager"]
+    for user in local.sensitive_vars.users : "${user.username}.json" => jsonencode({
+      id          = user.username
+      email       = user.email
+      displayName = user.username
+      password    = user.password
+      groups      = user.groups
     })
   }
 }

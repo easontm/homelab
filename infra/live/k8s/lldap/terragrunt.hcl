@@ -28,7 +28,7 @@ inputs = {
   storage_class_name = "iscsi-retain"
   data_storage_size  = "1Gi"
 
-  # Optional: uncomment and populate to seed initial users and groups on first apply
+  # Optional: set to true and populate to seed initial users and groups on first apply
   bootstrap_enabled = true
   bootstrap_group_configs = {
     "lldap_admin.json"            = jsonencode({ name = "lldap_admin" })

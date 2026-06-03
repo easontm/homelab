@@ -7,3 +7,4 @@ ldap_base_dn: dc=example,dc=com
 jwt_secret: REPLACE_WITH_RANDOM_32_BYTE_HEX
 key_seed: REPLACE_WITH_RANDOM_32_BYTE_HEX
 admin_password: REPLACE_WITH_SECURE_PASSWORD
+users: []

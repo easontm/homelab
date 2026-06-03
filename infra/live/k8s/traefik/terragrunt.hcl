@@ -35,6 +35,12 @@ inputs = {
       service   = "homebox"
       port      = 7745
     }
+    "lldap" = {
+      subdomain = "lldap"
+      namespace = "lldap"
+      service   = "lldap-web"
+      port      = 17170
+    }
   }
   common_name = "*.${local.traefik_vars.domain}"
   dns_names   = ["*.${local.traefik_vars.domain}"]

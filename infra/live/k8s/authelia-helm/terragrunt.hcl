@@ -26,6 +26,15 @@ inputs = {
   valkey_storage_size  = "256Mi"
   # valkey_password = local.secrets.valkey_password  # optional; add to sops if auth is desired
 
+  # PostgreSQL for persistent storage
+  db_type               = "postgres"
+  db_storage_class      = "iscsi-retain"
+  db_storage_size       = "2Gi"
+  postgres_password     = local.secrets.postgres_password
+  backup_enabled        = false
+  backup_storage_class  = "nfs-retain"
+  backup_storage_size   = "5Gi"
+
   values_files = ["${get_terragrunt_dir()}/values.yaml"]
 
   # Secrets are generated from sops at plan-time as a YAML string.
@@ -73,8 +82,9 @@ inputs = {
       }
       notifier = {
         smtp = {
-          # Uncomment and add smtp_password to sops when ready.
-          # password = { value = local.secrets.smtp_password }
+          username = local.secrets.domain
+          password = { value = local.secrets.smtp_password }
+          sender = "Authelia <authelia@${local.secrets.domain}>"
         }
       }
     }

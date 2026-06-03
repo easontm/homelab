@@ -72,8 +72,145 @@ variable "sensitive_values_yaml" {
 }
 
 ##############
-# Valkey
+# Database
 ##############
+variable "db_type" {
+  description = "Database backend for Authelia. 'sqlite' uses local file storage; 'postgres' deploys an in-cluster PostgreSQL pod."
+  type        = string
+  default     = "sqlite"
+
+  validation {
+    condition     = contains(["sqlite", "postgres"], var.db_type)
+    error_message = "db_type must be either 'sqlite' or 'postgres'."
+  }
+}
+
+variable "db_storage_class" {
+  description = "StorageClass for the PostgreSQL PVC. Only used when db_type is 'postgres'."
+  type        = string
+  default     = ""
+}
+
+variable "db_storage_size" {
+  description = "Size of the PostgreSQL PVC (e.g. '5Gi'). Only used when db_type is 'postgres'."
+  type        = string
+  default     = "5Gi"
+}
+
+variable "postgres_image" {
+  description = "PostgreSQL container image. Only used when db_type is 'postgres'."
+  type        = string
+  default     = "docker.io/library/postgres:17"
+}
+
+variable "postgres_user" {
+  description = "PostgreSQL username for Authelia. Only used when db_type is 'postgres'."
+  type        = string
+  default     = "authelia"
+
+  validation {
+    condition     = var.db_type != "postgres" || trimspace(var.postgres_user) != ""
+    error_message = "postgres_user must not be empty when db_type is 'postgres'."
+  }
+}
+
+variable "postgres_password" {
+  description = "PostgreSQL password for Authelia. Required when db_type is 'postgres'. Supply from sops."
+  type        = string
+  default     = null
+  sensitive   = true
+
+  validation {
+    condition     = var.db_type != "postgres" || (var.postgres_password != null && trimspace(var.postgres_password) != "")
+    error_message = "postgres_password must be set when db_type is 'postgres'."
+  }
+}
+
+variable "postgres_database_name" {
+  description = "PostgreSQL database name. Only used when db_type is 'postgres'."
+  type        = string
+  default     = "authelia"
+
+  validation {
+    condition     = var.db_type != "postgres" || trimspace(var.postgres_database_name) != ""
+    error_message = "postgres_database_name must not be empty when db_type is 'postgres'."
+  }
+}
+
+variable "postgres_resources" {
+  description = "CPU and memory resource limits and requests for the PostgreSQL container. Only used when db_type is 'postgres'."
+  type = object({
+    limits = object({
+      cpu    = string
+      memory = string
+    })
+    requests = object({
+      cpu    = string
+      memory = string
+    })
+  })
+  default = {
+    limits = {
+      cpu    = "500m"
+      memory = "512Mi"
+    }
+    requests = {
+      cpu    = "100m"
+      memory = "256Mi"
+    }
+  }
+}
+
+##############
+# Backup
+##############
+variable "backup_enabled" {
+  description = "Enable the pg_dump backup CronJob. Only takes effect when db_type is 'postgres'."
+  type        = bool
+  default     = false
+}
+
+variable "backup_schedule" {
+  description = "Cron schedule for the pg_dump backup job."
+  type        = string
+  default     = "0 2 * * *"
+}
+
+variable "backup_storage_class" {
+  description = "StorageClass for the backup PVC. Defaults to db_storage_class."
+  type        = string
+  default     = ""
+}
+
+variable "backup_storage_size" {
+  description = "Size of the backup PVC (e.g. '10Gi')."
+  type        = string
+  default     = "10Gi"
+}
+
+variable "backup_retention_days" {
+  description = "Number of days to retain pg_dump files."
+  type        = number
+  default     = 7
+
+  validation {
+    condition     = var.backup_retention_days >= 1
+    error_message = "backup_retention_days must be at least 1."
+  }
+}
+
+variable "backup_successful_jobs_history_limit" {
+  description = "Number of successful backup jobs to retain in history."
+  type        = number
+  default     = 3
+}
+
+variable "backup_failed_jobs_history_limit" {
+  description = "Number of failed backup jobs to retain in history."
+  type        = number
+  default     = 3
+}
+
 variable "valkey_enabled" {
   description = "Deploy a Valkey instance (official Redis fork, BSD-licensed) for Authelia session storage. When true, Authelia's session redis config is auto-wired."
   type        = bool

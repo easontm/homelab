@@ -15,6 +15,9 @@ resource "kubernetes_namespace_v1" "authelia" {
 }
 
 locals {
+  postgres_enabled = var.db_type == "postgres"
+  backup_active    = local.postgres_enabled && var.backup_enabled
+
   # When Valkey is enabled, auto-wire Authelia's session redis config.
   # Injected after values_files so it overrides any redis.enabled: false in the user's YAML,
   # but before sensitive_values_yaml so the user can still override individual fields.
@@ -30,6 +33,27 @@ locals {
           password = {
             disabled = var.valkey_password == null
             value    = var.valkey_password != null ? var.valkey_password : ""
+          }
+        }
+      }
+    }
+  }) : null
+
+  # When Postgres is enabled, auto-wire Authelia's storage config.
+  postgres_service_host = "db.${kubernetes_namespace_v1.authelia.metadata[0].name}.svc.cluster.local"
+
+  postgres_authelia_values = local.postgres_enabled ? yamlencode({
+    configMap = {
+      storage = {
+        local = { enabled = false }
+        postgres = {
+          enabled  = true
+          address  = "tcp://${local.postgres_service_host}:5432"
+          database = var.postgres_database_name
+          username = var.postgres_user
+          password = {
+            disabled = false
+            value    = var.postgres_password
           }
         }
       }
@@ -87,6 +111,7 @@ resource "helm_release" "authelia" {
   values = concat(
     [for f in var.values_files : file(f)],
     local.valkey_authelia_values != null ? [local.valkey_authelia_values] : [],
+    local.postgres_authelia_values != null ? [local.postgres_authelia_values] : [],
     var.sensitive_values_yaml != null ? [var.sensitive_values_yaml] : [],
   )
 }

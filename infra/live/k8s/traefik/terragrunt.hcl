@@ -40,6 +40,11 @@ inputs = {
       namespace = "lldap"
       service   = "lldap-web"
       port      = 17170
+    "authelia-helm" = {
+      subdomain = "authelia"
+      namespace = "authelia"
+      service   = "authelia"
+      port      = 80
     }
   }
   common_name = "*.${local.traefik_vars.domain}"

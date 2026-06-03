@@ -56,17 +56,17 @@ configMap:
         policy: 'one_factor'
 
   session:
-    name: 'authelia_session'
+    name: 'authelia_session2'  # TODO: revert
     same_site: 'lax'
     expiration: '1 hour'
     inactivity: '30 minutes'
     remember_me: '1 month'
 
     cookies:
-      - domain: 'easontm.com'
+      - domain: 'authelia.easontm.com'  # TODO: revert to just domain
         # subdomain: 'auth'
-        subdomain: 'authelia'
-        default_redirection_url: 'https://easontm.com'
+        # subdomain: 'authelia'
+        # default_redirection_url: 'https://easontm.com'
 
     # Redis/Valkey session backend is auto-wired by the module when valkey_enabled = true.
     # Do not configure session.redis here; it is injected via the module's valkey_* variables.
@@ -79,12 +79,14 @@ configMap:
     ban_time: '5 minutes'
 
   storage:
-    # Explicitly disable non-local backends.
+    # Storage backend is auto-wired by the module via the db_type variable.
+    # When db_type = "postgres", the module enables postgres and disables local.
+    # When db_type = "sqlite", the module leaves this section alone and the
+    # local block below takes effect.
     mysql:
       enabled: false
     postgres:
       enabled: false
-    # Use SQLite for local storage.
     local:
       enabled: true
       path: '/config/db.sqlite3'
@@ -92,16 +94,14 @@ configMap:
   notifier:
     disable_startup_check: false
     filesystem:
-      enabled: true
+      enabled: false
       filename: '/config/notification.txt'
     smtp:
-      enabled: false
-      # TODO: set your SMTP server — e.g. submission://smtp.sendgrid.net:587
-      address: 'submission://smtp.example.com:587'
-      sender: 'Authelia <authelia@easontm.com>'
+      enabled: true
+      address: 'smtp://mail.smtp2go.com:2525'
+      # sender: 'Authelia <authelia@easontm.com>'
       identifier: 'authelia'
       subject: '[Authelia] {title}'
-      startup_check_address: 'authelia@easontm.com'
       # smtp password is injected via sensitive_values_yaml in terragrunt.hcl
 
 persistence:

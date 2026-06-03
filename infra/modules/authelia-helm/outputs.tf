@@ -17,3 +17,8 @@ output "valkey_service_host" {
   description = "In-cluster hostname of the Valkey service, or null when valkey_enabled is false"
   value       = var.valkey_enabled ? "valkey.${kubernetes_namespace_v1.authelia.metadata[0].name}.svc.cluster.local" : null
 }
+
+output "postgres_service_host" {
+  description = "In-cluster hostname of the PostgreSQL service, or null when db_type is not 'postgres'"
+  value       = local.postgres_enabled ? local.postgres_service_host : null
+}

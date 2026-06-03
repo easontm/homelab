@@ -1,5 +1,5 @@
-# ConfigMap for bootstrap user config JSON files
-resource "kubernetes_config_map_v1" "bootstrap_users" {
+# Secret for bootstrap user config JSON files
+resource "kubernetes_secret_v1" "bootstrap_users" {
   count = var.bootstrap_enabled ? 1 : 0
 
   metadata {
@@ -10,8 +10,8 @@ resource "kubernetes_config_map_v1" "bootstrap_users" {
   data = var.bootstrap_user_configs
 }
 
-# ConfigMap for bootstrap group config JSON files
-resource "kubernetes_config_map_v1" "bootstrap_groups" {
+# Secret for bootstrap group config JSON files
+resource "kubernetes_secret_v1" "bootstrap_groups" {
   count = var.bootstrap_enabled ? 1 : 0
 
   metadata {
@@ -86,14 +86,14 @@ resource "kubernetes_job_v1" "bootstrap" {
 
         volume {
           name = "user-configs"
-          config_map {
-            name = kubernetes_config_map_v1.bootstrap_users[0].metadata[0].name
+          secret {
+            secret_name = kubernetes_secret_v1.bootstrap_users[0].metadata[0].name
           }
         }
         volume {
           name = "group-configs"
-          config_map {
-            name = kubernetes_config_map_v1.bootstrap_groups[0].metadata[0].name
+          secret {
+            secret_name = kubernetes_secret_v1.bootstrap_groups[0].metadata[0].name
           }
         }
       }

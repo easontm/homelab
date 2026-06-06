@@ -1,7 +1,8 @@
 # vim: set ft=yaml:
 # Authelia Helm values for authelia-helm live stack.
-# Secrets (encryption keys, jwt secret, smtp password, users DB) are NOT here.
+# Secrets (encryption keys, jwt secret, smtp password) are NOT here.
 # They are injected via sensitive_values_yaml in terragrunt.hcl from authelia_vars.sops.yaml.
+# The LLDAP authentication backend is auto-wired by the module (lldap_enabled = true).
 
 image:
   tag: '4.39.19'
@@ -10,18 +11,6 @@ pod:
   kind: 'Deployment'
 
   replicas: 1
-
-  # Mount the users database from a secret created via extraObjects in sensitive_values_yaml.
-  extraVolumes:
-    - name: users-database
-      secret:
-        secretName: authelia-users-db
-
-  extraVolumeMounts:
-    - name: users-database
-      mountPath: /config/users_database.yml
-      subPath: users_database.yml
-      readOnly: true
 
 configMap:
   theme: 'light'
@@ -37,13 +26,8 @@ configMap:
     password_reset:
       disable: false
     refresh_interval: '5 minutes'
-    file:
-      enabled: true
-      path: '/config/users_database.yml'
-      watch: true
-      search:
-        email: false
-        case_insensitive: false
+    # LDAP backend (LLDAP) is auto-wired by the module when lldap_enabled = true.
+    # Do not configure authentication_backend.ldap here.
 
   access_control:
     default_policy: 'deny'

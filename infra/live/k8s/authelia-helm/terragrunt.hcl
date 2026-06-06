@@ -35,39 +35,22 @@ inputs = {
   backup_storage_class  = "nfs-retain"
   backup_storage_size   = "5Gi"
 
+  # LLDAP as the authentication backend.
+  # The module auto-wires the LDAP configMap block and disables the file backend.
+  lldap_enabled  = true
+  lldap_address  = "ldap://lldap-ldap.lldap.svc.cluster.local:3890"
+  lldap_base_dn  = local.secrets.lldap_base_dn
+  lldap_user     = local.secrets.lldap_user
+  lldap_password = local.secrets.lldap_password
+
   values_files = ["${get_terragrunt_dir()}/values.yaml"]
 
   # Secrets are generated from sops at plan-time as a YAML string.
   # Later values_files entries and this value override earlier ones.
   # NOTE: authelia_vars.sops.yaml must contain:
   #   session_encryption_key, storage_encryption_key, jwt_secret,
-  #   smtp_password (optional), and a users list.
+  #   smtp_password (optional), lldap_base_dn, lldap_user, lldap_password.
   sensitive_values_yaml = yamlencode({
-    # Create a K8s Secret containing the users database YAML. Mounted by the pod
-    # via pod.extraVolumes / pod.extraVolumeMounts defined in values.yaml.
-    extraObjects = [
-      {
-        apiVersion = "v1"
-        kind       = "Secret"
-        metadata = {
-          name      = "authelia-users-db"
-          namespace = "authelia"
-        }
-        stringData = {
-          "users_database.yml" = yamlencode({
-            users = {
-              for u in local.secrets.users : u.username => {
-                displayname = u.display_name
-                password    = u.password
-                email       = u.email
-                groups      = u.groups
-              }
-            }
-          })
-        }
-      }
-    ]
-
     configMap = {
       identity_validation = {
         reset_password = {

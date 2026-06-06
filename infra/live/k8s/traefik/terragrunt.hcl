@@ -35,11 +35,6 @@ inputs = {
       service   = "homebox"
       port      = 7745
     }
-    "lldap" = {
-      subdomain = "lldap"
-      namespace = "lldap"
-      service   = "lldap-web"
-      port      = 17170
     "authelia-helm" = {
       subdomain = "authelia"
       namespace = "authelia"

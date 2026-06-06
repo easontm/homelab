@@ -59,6 +59,29 @@ locals {
       }
     }
   }) : null
+
+  # When lldap_enabled is true, auto-wire Authelia's LDAP authentication backend
+  # using the built-in LLDAP implementation preset. The file backend is disabled.
+  lldap_authelia_values = var.lldap_enabled ? yamlencode({
+    configMap = {
+      authentication_backend = {
+        file = {
+          enabled = false
+        }
+        ldap = {
+          enabled        = true
+          implementation = "lldap"
+          address        = var.lldap_address
+          base_dn        = var.lldap_base_dn
+          user           = var.lldap_user
+          password = {
+            disabled = false
+            value    = var.lldap_password
+          }
+        }
+      }
+    }
+  }) : null
 }
 
 resource "helm_release" "valkey" {
@@ -112,6 +135,7 @@ resource "helm_release" "authelia" {
     [for f in var.values_files : file(f)],
     local.valkey_authelia_values != null ? [local.valkey_authelia_values] : [],
     local.postgres_authelia_values != null ? [local.postgres_authelia_values] : [],
+    local.lldap_authelia_values != null ? [local.lldap_authelia_values] : [],
     var.sensitive_values_yaml != null ? [var.sensitive_values_yaml] : [],
   )
 }

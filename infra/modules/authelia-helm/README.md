@@ -72,6 +72,55 @@ storage_encryption_key: "<random 64-char string>"
 postgres_password: "<strong password>"
 ```
 
+## Auto-wired backends
+
+The module can automatically configure Authelia backends when you set the corresponding variables.
+
+### Session storage: Valkey
+
+```hcl
+valkey_enabled       = true
+valkey_chart_version = "0.9.4"
+valkey_storage_class = "iscsi-retain"
+valkey_storage_size  = "256Mi"
+# valkey_password = local.secrets.valkey_password  # optional
+```
+
+### Persistent storage: PostgreSQL
+
+```hcl
+db_type           = "postgres"
+db_storage_class  = "iscsi-retain"
+db_storage_size   = "2Gi"
+postgres_password = local.secrets.postgres_password
+```
+
+### Authentication backend: LLDAP
+
+When `lldap_enabled = true`, the module injects the Authelia LDAP configuration using the
+built-in `lldap` implementation preset (sets correct LLDAP-specific attribute defaults) and
+disables the file backend. You must already have LLDAP deployed (see `infra/modules/lldap-k8s`)
+with a dedicated bind user for Authelia.
+
+```hcl
+lldap_enabled  = true
+lldap_address  = "ldap://lldap-ldap.lldap.svc.cluster.local:3890"
+lldap_base_dn  = local.secrets.lldap_base_dn
+lldap_user     = local.secrets.lldap_user     # full bind DN, e.g. uid=authelia,ou=people,dc=example,dc=com
+lldap_password = local.secrets.lldap_password
+```
+
+The `lldap_authelia_values` local is injected after Valkey and Postgres wiring but before
+`sensitive_values_yaml`, so any field can still be overridden in `sensitive_values_yaml`.
+
+The LLDAP `implementation` preset applies these defaults automatically:
+- `username_attribute: uid`
+- `additional_users_dn: ou=people`
+- `additional_groups_dn: ou=groups`
+- `group_search_mode: filter`
+- `mail_attribute: mail`
+- `display_name_attribute: displayName`
+
 ## Values file reference
 
 See [`values.example.yaml`](./values.example.yaml) for a commented starting point.

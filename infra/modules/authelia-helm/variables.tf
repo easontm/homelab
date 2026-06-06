@@ -211,6 +211,40 @@ variable "backup_failed_jobs_history_limit" {
   default     = 3
 }
 
+##############
+# LLDAP
+##############
+variable "lldap_enabled" {
+  description = "Configure Authelia to use LLDAP as its authentication backend. When true, the LDAP backend is auto-wired and the file backend is disabled."
+  type        = bool
+  default     = false
+}
+
+variable "lldap_address" {
+  description = "LDAP address for LLDAP (e.g. 'ldap://lldap-ldap.lldap.svc.cluster.local:3890'). Only used when lldap_enabled is true."
+  type        = string
+  default     = ""
+}
+
+variable "lldap_base_dn" {
+  description = "LDAP base distinguished name (e.g. 'dc=example,dc=com'). Only used when lldap_enabled is true."
+  type        = string
+  default     = ""
+}
+
+variable "lldap_user" {
+  description = "Full bind DN of the LLDAP service account used by Authelia (e.g. 'uid=authelia,ou=people,dc=example,dc=com'). Only used when lldap_enabled is true."
+  type        = string
+  default     = ""
+}
+
+variable "lldap_password" {
+  description = "Password for the LLDAP bind user. Supply from sops. Only used when lldap_enabled is true."
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
 variable "valkey_enabled" {
   description = "Deploy a Valkey instance (official Redis fork, BSD-licensed) for Authelia session storage. When true, Authelia's session redis config is auto-wired."
   type        = bool

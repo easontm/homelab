@@ -1,0 +1,27 @@
+# Template for authelia_vars.sops.yaml
+# Encrypt this file with: sops --encrypt --in-place authelia_vars.sops.yaml
+#
+# Generate session_encryption_key and storage_encryption_key with:
+#   openssl rand -hex 32
+# Generate jwt_secret with:
+#   openssl rand -hex 32
+
+# Authelia core secrets
+jwt_secret: REPLACE_WITH_RANDOM_32_BYTE_HEX
+session_encryption_key: REPLACE_WITH_RANDOM_32_BYTE_HEX
+storage_encryption_key: REPLACE_WITH_RANDOM_32_BYTE_HEX
+
+# PostgreSQL password (for the in-cluster Postgres instance)
+postgres_password: REPLACE_WITH_SECURE_PASSWORD
+
+# SMTP (optional — used for email notifications)
+domain: example.com
+smtp_password: REPLACE_WITH_SMTP_PASSWORD
+
+# LLDAP authentication backend credentials.
+# lldap_base_dn: must match the base DN configured in the LLDAP live stack.
+# lldap_user: full bind DN of the Authelia service account in LLDAP.
+# lldap_password: password for that service account (set via LLDAP bootstrap).
+lldap_base_dn: dc=example,dc=com
+lldap_user: uid=authelia,ou=people,dc=example,dc=com
+lldap_password: REPLACE_WITH_AUTHELIA_LLDAP_USER_PASSWORD

@@ -37,7 +37,15 @@ inputs = {
     PAPERLESS_DATE_PARSER_LANGUAGES = "en+ja"
     USERMAP_UID = local.nfs_share_mapall_uid_gid
     USERMAP_GID = local.nfs_share_mapall_uid_gid
+    # OIDC via Authelia — non-secret vars (client secret goes via oidc_client_secret below)
+    PAPERLESS_APPS = "allauth.socialaccount.providers.openid_connect"
   }
+
+  # OIDC client secret — raw (unhashed) secret shared with Authelia.
+  # Add 'oidc_client_secret: <raw_secret>' to paperless_vars.sops.yaml, then re-encrypt.
+  # Generate with: openssl rand -base64 48
+  # Hash for values.yaml: docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password '<raw_secret>'
+  oidc_client_secret = try(local.sensitive_vars.oidc_client_secret, null)
 
   # Backup
   backup_enabled      = true

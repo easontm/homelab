@@ -14,6 +14,21 @@ resource "kubernetes_config_map_v1" "homebox_env" {
   )
 }
 
+# OIDC Secret — created only when oidc_client_secret is provided.
+# Contains the raw client secret as HBOX_OPTIONS_OAUTH2_CLIENT_SECRET.
+resource "kubernetes_secret_v1" "oidc" {
+  count = var.oidc_client_secret != null ? 1 : 0
+
+  metadata {
+    name      = "homebox-oidc"
+    namespace = kubernetes_namespace_v1.homebox.metadata[0].name
+  }
+
+  data = {
+    HBOX_OPTIONS_OAUTH2_CLIENT_SECRET = var.oidc_client_secret
+  }
+}
+
 # Homebox data PVC
 resource "kubernetes_persistent_volume_claim_v1" "data" {
   wait_until_bound = false
@@ -86,6 +101,19 @@ resource "kubernetes_deployment_v1" "homebox" {
                 secret_key_ref {
                   name = kubernetes_secret_v1.db_secret[0].metadata[0].name
                   key  = "POSTGRES_PASSWORD"
+                }
+              }
+            }
+          }
+
+          dynamic "env" {
+            for_each = var.oidc_client_secret != null ? [1] : []
+            content {
+              name = "HBOX_OPTIONS_OAUTH2_CLIENT_SECRET"
+              value_from {
+                secret_key_ref {
+                  name = kubernetes_secret_v1.oidc[0].metadata[0].name
+                  key  = "HBOX_OPTIONS_OAUTH2_CLIENT_SECRET"
                 }
               }
             }

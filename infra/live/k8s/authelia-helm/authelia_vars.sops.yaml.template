@@ -37,3 +37,15 @@ users:
     email: alice@example.com
     groups:
       - admins
+
+# OIDC identity provider secrets.
+# Generate oidc_hmac_secret with:
+#   openssl rand -hex 64
+# Generate oidc_jwks_private_key with:
+#   openssl genrsa 4096
+# Include the full PEM block (-----BEGIN RSA PRIVATE KEY----- ... -----END RSA PRIVATE KEY-----).
+oidc_hmac_secret: REPLACE_WITH_64_BYTE_HEX
+oidc_jwks_private_key: |
+  -----BEGIN RSA PRIVATE KEY-----
+  REPLACE_WITH_RSA_PRIVATE_KEY_PEM
+  -----END RSA PRIVATE KEY-----

@@ -86,6 +86,35 @@ resource "kubernetes_config_map_v1" "webserver_env" {
   )
 }
 
+# OIDC Secret — created only when oidc_client_secret is provided.
+# Contains the full PAPERLESS_SOCIALACCOUNT_PROVIDERS JSON with the raw client secret.
+resource "kubernetes_secret_v1" "oidc" {
+  count = var.oidc_client_secret != null ? 1 : 0
+
+  metadata {
+    name      = "paperless-oidc"
+    namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
+  }
+
+  data = {
+    PAPERLESS_SOCIALACCOUNT_PROVIDERS = jsonencode({
+      openid_connect = {
+        APPS = [
+          {
+            provider_id = "authelia"
+            name        = "Authelia"
+            client_id   = "paperless"
+            secret      = var.oidc_client_secret
+            settings = {
+              server_url = "https://auth.easontm.com"
+            }
+          }
+        ]
+      }
+    })
+  }
+}
+
 # Webserver Deployment
 resource "kubernetes_deployment_v1" "webserver" {
   metadata {
@@ -127,6 +156,15 @@ resource "kubernetes_deployment_v1" "webserver" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map_v1.webserver_env.metadata[0].name
+            }
+          }
+
+          dynamic "env_from" {
+            for_each = var.oidc_client_secret != null ? [1] : []
+            content {
+              secret_ref {
+                name = kubernetes_secret_v1.oidc[0].metadata[0].name
+              }
             }
           }
 

@@ -86,6 +86,45 @@ configMap:
       subject: '[Authelia] {title}'
       # smtp password is injected via sensitive_values_yaml in terragrunt.hcl
 
+  identity_providers:
+    oidc:
+      cors:
+        endpoints:
+          - authorization
+          - token
+          - revocation
+          - introspection
+          - userinfo
+        allowed_origins_from_client_redirect_uris: true
+      authorization_policies:
+        default_policy: one_factor
+      clients:
+        - client_id: paperless
+          client_name: Paperless-ngx
+          client_secret: 'REPLACE_WITH_ARGON2_HASH'
+          public: false
+          authorization_policy: one_factor
+          redirect_uris:
+            - 'https://paperless.easontm.com/accounts/oidc/authelia/login/callback/'
+          scopes:
+            - openid
+            - profile
+            - email
+            - groups
+          userinfo_signed_response_alg: none
+        - client_id: homebox
+          client_name: Homebox
+          client_secret: 'REPLACE_WITH_ARGON2_HASH'
+          public: false
+          authorization_policy: one_factor
+          redirect_uris:
+            - 'https://homebox.easontm.com/api/v1/oauth/callback'
+          scopes:
+            - openid
+            - profile
+            - email
+          userinfo_signed_response_alg: none
+
 persistence:
   # Persist the SQLite database across pod restarts.
   enabled: false

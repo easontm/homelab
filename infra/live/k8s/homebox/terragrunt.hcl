@@ -22,7 +22,17 @@ inputs = {
   homebox_env_vars = {
     HBOX_OPTIONS_TRUST_PROXY = "true"
     HBOX_DATABASE_SSL_MODE  = "disable"
+    # OIDC via Authelia — non-secret vars (client secret goes via oidc_client_secret below)
+    HBOX_OPTIONS_OAUTH2_PROVIDER   = "generic-oidc"
+    HBOX_OPTIONS_OAUTH2_CLIENT_ID  = "homebox"
+    HBOX_OPTIONS_OAUTH2_ISSUER_URL = "https://auth.easontm.com"
   }
+
+  # OIDC client secret — raw (unhashed) secret shared with Authelia.
+  # Add 'oidc_client_secret: <raw_secret>' to homebox_vars.sops.yaml, then re-encrypt.
+  # Generate with: openssl rand -base64 48
+  # Hash for values.yaml: docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password '<raw_secret>'
+  oidc_client_secret = try(local.sensitive_vars.oidc_client_secret, null)
   data_storage_size = "5Gi"
 
   storage_class_name   = "nfs-retain"

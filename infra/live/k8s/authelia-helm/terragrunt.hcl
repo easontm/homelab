@@ -51,7 +51,8 @@ inputs = {
   # Later values_files entries and this value override earlier ones.
   # NOTE: authelia_vars.sops.yaml must contain:
   #   session_encryption_key, storage_encryption_key, jwt_secret,
-  #   smtp_password, lldap_base_dn, lldap_user, lldap_password.
+  #   smtp_password, lldap_base_dn, lldap_user, lldap_password,
+  #   oidc_hmac_secret, oidc_jwks_private_key.
   #   (Add 'users' list only if switching auth_backend to "file".)
   sensitive_values_yaml = yamlencode({
     configMap = {
@@ -75,4 +76,14 @@ inputs = {
       }
     }
   })
+
+  # OIDC identity provider secrets — injected via the module's oidc_* variables.
+  # Add to authelia_vars.sops.yaml:
+  #   oidc_hmac_secret: <hex>    (generate: openssl rand -hex 64)
+  #   oidc_jwks_private_key: |   (generate: openssl genrsa 4096)
+  #     -----BEGIN RSA PRIVATE KEY-----
+  #     ...
+  #     -----END RSA PRIVATE KEY-----
+  oidc_hmac_secret      = try(local.secrets.oidc_hmac_secret, null)
+  oidc_jwks_private_key = try(local.secrets.oidc_jwks_private_key, null)
 }

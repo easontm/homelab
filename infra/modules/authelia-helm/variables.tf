@@ -212,34 +212,69 @@ variable "backup_failed_jobs_history_limit" {
 }
 
 ##############
-# LLDAP
+# Authentication backend
 ##############
-variable "lldap_enabled" {
-  description = "Configure Authelia to use LLDAP as its authentication backend. When true, the LDAP backend is auto-wired and the file backend is disabled."
-  type        = bool
-  default     = false
+variable "auth_backend" {
+  description = "Which authentication backend Authelia should use. Authelia supports exactly one backend at a time. Use 'file' for a local users_database.yml (supply file_auth_users), or 'lldap' for an LLDAP LDAP backend (supply lldap_* variables). Omit or set to null to leave backend configuration entirely to values_files / sensitive_values_yaml."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.auth_backend == null || contains(["file", "lldap"], var.auth_backend)
+    error_message = "auth_backend must be one of: \"file\", \"lldap\", or null."
+  }
 }
 
+variable "file_auth_users" {
+  description = <<-EOT
+    List of users to write into the Authelia users_database.yml file backend.
+    Each entry requires: username, display_name, password (hashed), email, groups (list of strings).
+    Passwords must be pre-hashed (argon2id recommended). Only used when auth_backend is "file".
+    Supply from sops — this is sensitive.
+
+    Example sops YAML:
+      users:
+        - username: alice
+          display_name: Alice
+          password: "$argon2id$v=19$m=65536,t=3,p=4$..."
+          email: alice@example.com
+          groups: [admins]
+  EOT
+  type = list(object({
+    username     = string
+    display_name = string
+    password     = string
+    email        = string
+    groups       = list(string)
+  }))
+  default   = []
+  sensitive = true
+}
+
+##############
+# LLDAP
+##############
+
 variable "lldap_address" {
-  description = "LDAP address for LLDAP (e.g. 'ldap://lldap-ldap.lldap.svc.cluster.local:3890'). Only used when lldap_enabled is true."
+  description = "LDAP address for LLDAP (e.g. 'ldap://lldap-ldap.lldap.svc.cluster.local:3890'). Only used when auth_backend is \"lldap\"."
   type        = string
   default     = ""
 }
 
 variable "lldap_base_dn" {
-  description = "LDAP base distinguished name (e.g. 'dc=example,dc=com'). Only used when lldap_enabled is true."
+  description = "LDAP base distinguished name (e.g. 'dc=example,dc=com'). Only used when auth_backend is \"lldap\"."
   type        = string
   default     = ""
 }
 
 variable "lldap_user" {
-  description = "Full bind DN of the LLDAP service account used by Authelia (e.g. 'uid=authelia,ou=people,dc=example,dc=com'). Only used when lldap_enabled is true."
+  description = "Full bind DN of the LLDAP service account used by Authelia (e.g. 'uid=authelia,ou=people,dc=example,dc=com'). Only used when auth_backend is \"lldap\"."
   type        = string
   default     = ""
 }
 
 variable "lldap_password" {
-  description = "Password for the LLDAP bind user. Supply from sops. Only used when lldap_enabled is true."
+  description = "Password for the LLDAP bind user. Supply from sops. Only used when auth_backend is \"lldap\"."
   type        = string
   default     = null
   sensitive   = true

@@ -36,12 +36,14 @@ inputs = {
   backup_storage_size   = "5Gi"
 
   # LLDAP as the authentication backend.
-  # The module auto-wires the LDAP configMap block and disables the file backend.
-  lldap_enabled  = true
+  # The module auto-wires the LDAP configMap block using the "lldap" implementation preset.
+  auth_backend   = "lldap"
   lldap_address  = "ldap://lldap-ldap.lldap.svc.cluster.local:3890"
   lldap_base_dn  = local.secrets.lldap_base_dn
   lldap_user     = local.secrets.lldap_user
   lldap_password = local.secrets.lldap_password
+  # The module creates the users_database.yml Secret and mounts it automatically.
+  # file_auth_users   = local.secrets.users
 
   values_files = ["${get_terragrunt_dir()}/values.yaml"]
 
@@ -49,7 +51,8 @@ inputs = {
   # Later values_files entries and this value override earlier ones.
   # NOTE: authelia_vars.sops.yaml must contain:
   #   session_encryption_key, storage_encryption_key, jwt_secret,
-  #   smtp_password (optional), lldap_base_dn, lldap_user, lldap_password.
+  #   smtp_password, lldap_base_dn, lldap_user, lldap_password.
+  #   (Add 'users' list only if switching auth_backend to "file".)
   sensitive_values_yaml = yamlencode({
     configMap = {
       identity_validation = {

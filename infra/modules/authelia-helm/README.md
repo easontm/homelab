@@ -95,23 +95,50 @@ db_storage_size   = "2Gi"
 postgres_password = local.secrets.postgres_password
 ```
 
-### Authentication backend: LLDAP
+### Authentication backend: file
 
-When `lldap_enabled = true`, the module injects the Authelia LDAP configuration using the
-built-in `lldap` implementation preset (sets correct LLDAP-specific attribute defaults) and
-disables the file backend. You must already have LLDAP deployed (see `infra/modules/lldap-k8s`)
-with a dedicated bind user for Authelia.
+Authelia supports exactly one authentication backend at a time. Set `auth_backend = "file"` to use
+a local `users_database.yml`. The module creates the `kubernetes_secret_v1` containing the file
+(built from `file_auth_users`) and auto-mounts it into the Authelia pod — no manual `extraObjects`,
+`extraVolumes`, or `extraVolumeMounts` needed.
 
 ```hcl
-lldap_enabled  = true
+auth_backend    = "file"
+file_auth_users = local.secrets.users  # list from sops
+```
+
+In your sops file:
+
+```yaml
+users:
+  - username: alice
+    display_name: Alice
+    password: "$argon2id$v=19$m=65536,t=3,p=4$..."  # pre-hashed
+    email: alice@example.com
+    groups:
+      - admins
+```
+
+Generate password hashes with:
+```sh
+docker run --rm authelia/authelia:latest authelia crypto hash generate argon2
+```
+
+### Authentication backend: LLDAP
+
+Set `auth_backend = "lldap"` to use LLDAP as the authentication backend. The module injects the
+Authelia LDAP configuration using the built-in `lldap` implementation preset.
+
+```hcl
+auth_backend   = "lldap"
 lldap_address  = "ldap://lldap-ldap.lldap.svc.cluster.local:3890"
 lldap_base_dn  = local.secrets.lldap_base_dn
 lldap_user     = local.secrets.lldap_user     # full bind DN, e.g. uid=authelia,ou=people,dc=example,dc=com
 lldap_password = local.secrets.lldap_password
 ```
 
-The `lldap_authelia_values` local is injected after Valkey and Postgres wiring but before
-`sensitive_values_yaml`, so any field can still be overridden in `sensitive_values_yaml`.
+The injected LLDAP values are applied after Valkey and Postgres wiring but before
+`sensitive_values_yaml`, so individual fields can still be overridden in `sensitive_values_yaml`.
 
 The LLDAP `implementation` preset applies these defaults automatically:
 - `username_attribute: uid`

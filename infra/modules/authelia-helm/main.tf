@@ -60,14 +60,11 @@ locals {
     }
   }) : null
 
-  # When lldap_enabled is true, auto-wire Authelia's LDAP authentication backend
-  # using the built-in LLDAP implementation preset. The file backend is disabled.
-  lldap_authelia_values = var.lldap_enabled ? yamlencode({
+  # When auth_backend is "lldap", auto-wire Authelia's LDAP authentication backend
+  # using the built-in LLDAP implementation preset.
+  lldap_authelia_values = var.auth_backend == "lldap" ? yamlencode({
     configMap = {
       authentication_backend = {
-        file = {
-          enabled = false
-        }
         ldap = {
           enabled        = true
           implementation = "lldap"
@@ -82,6 +79,69 @@ locals {
       }
     }
   }) : null
+
+  # When auth_backend is "file", auto-wire Authelia's file authentication backend.
+  # Creates a K8s Secret from the file_auth_users list and mounts it into the pod.
+  file_auth_authelia_values = var.auth_backend == "file" ? yamlencode({
+    configMap = {
+      authentication_backend = {
+        file = {
+          enabled = true
+          path    = "/config/users_database.yml"
+          watch   = true
+        }
+      }
+    }
+    pod = {
+      extraVolumes = [
+        {
+          name = "users-database"
+          secret = {
+            secretName = "authelia-users-db"
+          }
+        }
+      ]
+      extraVolumeMounts = [
+        {
+          name      = "users-database"
+          mountPath = "/config/users_database.yml"
+          subPath   = "users_database.yml"
+          readOnly  = true
+        }
+      ]
+    }
+  }) : null
+}
+
+# Secret containing the users_database.yml for the file authentication backend.
+# Only created when auth_backend is "file".
+resource "kubernetes_secret_v1" "users_db" {
+  count = var.auth_backend == "file" ? 1 : 0
+
+  metadata {
+    name      = "authelia-users-db"
+    namespace = kubernetes_namespace_v1.authelia.metadata[0].name
+  }
+
+  lifecycle {
+    precondition {
+      condition     = length(var.file_auth_users) > 0
+      error_message = "file_auth_users must not be empty when auth_backend is \"file\". Add a 'users' list to your sops file and pass it as file_auth_users."
+    }
+  }
+
+  data = {
+    "users_database.yml" = yamlencode({
+      users = {
+        for u in var.file_auth_users : u.username => {
+          displayname = u.display_name
+          password    = u.password
+          email       = u.email
+          groups      = u.groups
+        }
+      }
+    })
+  }
 }
 
 resource "helm_release" "valkey" {
@@ -129,13 +189,14 @@ resource "helm_release" "authelia" {
   namespace  = kubernetes_namespace_v1.authelia.metadata[0].name
   timeout    = var.timeout
 
-  depends_on = [kubernetes_namespace_v1.authelia]
+  depends_on = [kubernetes_namespace_v1.authelia, kubernetes_secret_v1.users_db]
 
   values = concat(
     [for f in var.values_files : file(f)],
     local.valkey_authelia_values != null ? [local.valkey_authelia_values] : [],
     local.postgres_authelia_values != null ? [local.postgres_authelia_values] : [],
     local.lldap_authelia_values != null ? [local.lldap_authelia_values] : [],
+    local.file_auth_authelia_values != null ? [local.file_auth_authelia_values] : [],
     var.sensitive_values_yaml != null ? [var.sensitive_values_yaml] : [],
   )
 }

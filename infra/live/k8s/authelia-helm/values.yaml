@@ -2,7 +2,6 @@
 # Authelia Helm values for authelia-helm live stack.
 # Secrets (encryption keys, jwt secret, smtp password) are NOT here.
 # They are injected via sensitive_values_yaml in terragrunt.hcl from authelia_vars.sops.yaml.
-# The LLDAP authentication backend is auto-wired by the module (lldap_enabled = true).
 
 image:
   tag: '4.39.19'
@@ -26,8 +25,7 @@ configMap:
     password_reset:
       disable: false
     refresh_interval: '5 minutes'
-    # LDAP backend (LLDAP) is auto-wired by the module when lldap_enabled = true.
-    # Do not configure authentication_backend.ldap here.
+    # "file" or "ldap" are automatically wired by the module. Do not add them here.
 
   access_control:
     default_policy: 'deny'

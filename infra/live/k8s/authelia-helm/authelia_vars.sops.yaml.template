@@ -25,3 +25,15 @@ smtp_password: REPLACE_WITH_SMTP_PASSWORD
 lldap_base_dn: dc=example,dc=com
 lldap_user: uid=authelia,ou=people,dc=example,dc=com
 lldap_password: REPLACE_WITH_AUTHELIA_LLDAP_USER_PASSWORD
+
+# File authentication backend users.
+# Passwords must be pre-hashed. Generate with:
+#   docker run --rm authelia/authelia:latest authelia crypto hash generate argon2
+# The module creates and mounts the users_database.yml Secret automatically.
+users:
+  - username: alice
+    display_name: Alice
+    password: "$argon2id$v=19$m=65536,t=3,p=4$REPLACE_WITH_HASH"
+    email: alice@example.com
+    groups:
+      - admins

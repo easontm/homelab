@@ -32,7 +32,7 @@ inputs = {
   # Add 'oidc_client_secret: <raw_secret>' to homebox_vars.sops.yaml, then re-encrypt.
   # Generate with: openssl rand -base64 48
   # Hash for values.yaml: docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password '<raw_secret>'
-  oidc_client_secret = try(local.sensitive_vars.oidc_client_secret, null)
+  oidc_client_secret = local.sensitive_vars.oidc_client_secret
   data_storage_size = "5Gi"
 
   storage_class_name   = "nfs-retain"

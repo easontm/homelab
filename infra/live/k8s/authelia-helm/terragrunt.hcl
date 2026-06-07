@@ -84,6 +84,6 @@ inputs = {
   #     -----BEGIN RSA PRIVATE KEY-----
   #     ...
   #     -----END RSA PRIVATE KEY-----
-  oidc_hmac_secret      = try(local.secrets.oidc_hmac_secret, null)
-  oidc_jwks_private_key = try(local.secrets.oidc_jwks_private_key, null)
+  oidc_hmac_secret      = local.secrets.oidc.hmac_secret
+  oidc_jwks_private_key = local.secrets.oidc.jwks_private_key
 }

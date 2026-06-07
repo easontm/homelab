@@ -82,12 +82,18 @@ resource "kubernetes_config_map_v1" "webserver_env" {
       PAPERLESS_TIKA_ENDPOINT           = "http://tika:9998"
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT = "http://gotenberg:3000"
     },
+    # https://docs.paperless-ngx.com/configuration/#PAPERLESS_ENABLE_COMPRESSION
+    # See also OIDC secret below
+    var.oidc_provider_url != null ? {
+      PAPERLESS_APPS = "allauth.socialaccount.providers.openid_connect"
+    } : {},
     var.paperless_env_vars
   )
 }
 
 # OIDC Secret — created only when oidc_client_secret is provided.
 # Contains the full PAPERLESS_SOCIALACCOUNT_PROVIDERS JSON with the raw client secret.
+# https://docs.paperless-ngx.com/configuration/#PAPERLESS_SOCIALACCOUNT_PROVIDERS
 resource "kubernetes_secret_v1" "oidc" {
   count = var.oidc_client_secret != null ? 1 : 0
 
@@ -106,7 +112,7 @@ resource "kubernetes_secret_v1" "oidc" {
             client_id   = "paperless"
             secret      = var.oidc_client_secret
             settings = {
-              server_url = "https://auth.easontm.com"
+              server_url = var.oidc_provider_url
             }
           }
         ]

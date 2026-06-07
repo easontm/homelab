@@ -158,6 +158,13 @@ variable "paperless_env_vars" {
 }
 
 # OIDC
+variable "oidc_provider_url" {
+  description = "URL of the OIDC provider for Paperless-ngx to authenticate against Authelia."
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
 variable "oidc_client_secret" {
   description = "Raw (unhashed) OIDC client secret for Paperless-ngx to authenticate against Authelia. When set, a Kubernetes Secret is created containing the full PAPERLESS_SOCIALACCOUNT_PROVIDERS JSON (which embeds this secret) and mounted into the webserver container via env_from. Supply from sops. If null, OIDC is not configured."
   type        = string

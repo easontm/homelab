@@ -13,7 +13,7 @@ resource "kubernetes_manifest" "authelia_middleware" {
     spec = {
       forwardAuth = {
         # TODO: support https
-        address            = "http://${var.external_service_urls["authelia"].url}/api/authz/forward-auth"
+        address            = var.forward_auth_url
         trustForwardHeader = true
         authResponseHeaders = [
           "Remote-User",

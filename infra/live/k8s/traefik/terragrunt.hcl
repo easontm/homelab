@@ -18,6 +18,7 @@ inputs = {
   chart_version = "38.0.0"
 
   domain_name = local.traefik_vars.domain
+  forward_auth_url = "http://10.10.30.2:9091/api/authz/forward-auth"
   external_service_urls = {
     authelia = { url = "10.10.30.2:9091", subdomain = "auth" }
     # homebox  = { url = "10.10.30.3:7745", subdomain = "homebox" }

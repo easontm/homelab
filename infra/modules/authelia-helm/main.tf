@@ -212,12 +212,12 @@ resource "helm_release" "authelia" {
   depends_on = [kubernetes_namespace_v1.authelia, kubernetes_secret_v1.users_db]
 
   values = concat(
-    [for f in var.values_files : file(f)],
     local.valkey_authelia_values != null ? [local.valkey_authelia_values] : [],
     local.postgres_authelia_values != null ? [local.postgres_authelia_values] : [],
     local.lldap_authelia_values != null ? [local.lldap_authelia_values] : [],
     local.file_auth_authelia_values != null ? [local.file_auth_authelia_values] : [],
     local.oidc_authelia_values != null ? [local.oidc_authelia_values] : [],
+    [var.helm_values],
     var.sensitive_values_yaml != null ? [var.sensitive_values_yaml] : [],
   )
 }

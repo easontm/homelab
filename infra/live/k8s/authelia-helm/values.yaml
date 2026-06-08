@@ -19,7 +19,7 @@ configMap:
     format: 'text'
 
   totp:
-    issuer: 'easontm.com'
+    issuer: '${domain}'
 
   authentication_backend:
     password_reset:
@@ -31,10 +31,10 @@ configMap:
     default_policy: 'deny'
     rules:
       # The Authelia portal itself must be bypassed so users can log in.
-      - domain: 'auth.easontm.com'
+      - domain: 'auth.${domain}'
         policy: 'bypass'
       # Require single-factor for everything else under the domain.
-      - domain: '*.easontm.com'
+      - domain: '*.${domain}'
         policy: 'one_factor'
 
   session:
@@ -45,10 +45,10 @@ configMap:
     remember_me: '1 month'
 
     cookies:
-      - domain: 'authelia.easontm.com'  # TODO: revert to just domain
+      - domain: 'authelia.${domain}'  # TODO: revert to just domain
         # subdomain: 'auth'
         # subdomain: 'authelia'
-        # default_redirection_url: 'https://easontm.com'
+        # default_redirection_url: 'https://${domain}'
 
     # Redis/Valkey session backend is auto-wired by the module when valkey_enabled = true.
     # Do not configure session.redis here; it is injected via the module's valkey_* variables.
@@ -95,8 +95,13 @@ configMap:
           - introspection
           - userinfo
         allowed_origins_from_client_redirect_uris: true
-      authorization_policies:
-        default_policy: one_factor
+      authorization_policies: {}
+        # default_policy: one_factor
+              #   policy_name:
+      #     default_policy: 'deny'
+      #     rules:
+      #       - policy: 'two_factor'
+      #         subject: 'user:abc'
       clients:
         - client_id: paperless
           client_name: Paperless-ngx
@@ -104,7 +109,7 @@ configMap:
           public: false
           authorization_policy: one_factor
           redirect_uris:
-            - 'https://paperless.easontm.com/accounts/oidc/authelia/login/callback/'
+            - 'https://paperless.${domain}/accounts/oidc/authelia/login/callback/'
           scopes:
             - openid
             - profile
@@ -117,7 +122,7 @@ configMap:
           public: false
           authorization_policy: one_factor
           redirect_uris:
-            - 'https://homebox.easontm.com/api/v1/oauth/callback'
+            - 'https://homebox.${domain}/api/v1/oauth/callback'
           scopes:
             - openid
             - profile

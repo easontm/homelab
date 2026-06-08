@@ -36,15 +36,22 @@ variable "timeout" {
 ##############
 # Values
 ##############
-variable "values_files" {
+variable "helm_values" {
   description = <<-EOT
-    List of paths to Helm values YAML files. Files are loaded in order, with later files taking
-    precedence over earlier ones (standard Helm merge behaviour). Write your Authelia chart config
-    here — see https://github.com/authelia/chartrepo/blob/master/charts/authelia/values.yaml for
-    the full reference. Do not put secrets in these files.
+    A string of of Helm values. This will be merged with values from other configurations (such as
+    Valkey, Postgres, LLDAP, etc), but takes precedence over them. This is useful for generating
+    values from variables at plan-time, especially secrets from sops. For example:
+
+      helm_values = templatefile(
+        "${get_terragrunt_dir()}/values.yaml",
+        {
+          domain = local.secrets.domain
+        }
+      )
   EOT
-  type        = list(string)
-  default     = []
+  # type        = map(any)
+  type    = string
+  default = ""
 }
 
 variable "sensitive_values_yaml" {

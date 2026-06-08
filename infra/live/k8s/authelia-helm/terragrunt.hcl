@@ -45,7 +45,12 @@ inputs = {
   # The module creates the users_database.yml Secret and mounts it automatically.
   # file_auth_users   = local.secrets.users
 
-  values_files = ["${get_terragrunt_dir()}/values.yaml"]
+  helm_values = templatefile(
+    "${get_terragrunt_dir()}/values.yaml",
+    {
+      domain = local.secrets.domain
+    }
+  )
 
   # Secrets are generated from sops at plan-time as a YAML string.
   # Later values_files entries and this value override earlier ones.
@@ -55,6 +60,11 @@ inputs = {
   #   oidc_hmac_secret, oidc_jwks_private_key.
   #   (Add 'users' list only if switching auth_backend to "file".)
   sensitive_values_yaml = yamlencode({
+    pod = {
+      env = [
+        { name = "DOMAIN", value = local.secrets.domain }
+      ]
+    }
     configMap = {
       identity_validation = {
         reset_password = {

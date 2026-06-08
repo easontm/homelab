@@ -45,6 +45,11 @@ variable "domain_name" {
   type        = string
 }
 
+variable "forward_auth_url" {
+  description = "URL for the forward authentication service (e.g., Authelia)"
+  type        = string
+}
+
 #################
 # Cert Things
 #################

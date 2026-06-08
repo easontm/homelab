@@ -25,7 +25,7 @@ inputs = {
     # OIDC via Authelia — non-secret vars (client secret goes via oidc_client_secret below)
     HBOX_OPTIONS_OAUTH2_PROVIDER   = "generic-oidc"
     HBOX_OPTIONS_OAUTH2_CLIENT_ID  = "homebox"
-    HBOX_OPTIONS_OAUTH2_ISSUER_URL = "https://auth.easontm.com"
+    HBOX_OPTIONS_OAUTH2_ISSUER_URL = "https://auth.${local.sensitive_vars.domain}"
   }
 
   # OIDC client secret — raw (unhashed) secret shared with Authelia.

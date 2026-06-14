@@ -17,7 +17,7 @@ inputs = {
   ]
   ingress_namespaces = ["traefik"]
 
-  chart_version = "0.11.5"  # Authelia 4.39.19
+  chart_version = "0.11.6"  # Authelia 4.39.19
 
   # Valkey (Redis fork) for session storage
   valkey_enabled       = true

@@ -118,13 +118,16 @@ locals {
     configMap = {
       identity_providers = {
         oidc = {
+          enabled = true
           hmac_secret = {
             disabled = false
             value    = var.oidc_hmac_secret
           }
           jwks = [
             {
-              key = var.oidc_jwks_private_key
+              key = {
+                value = var.oidc_jwks_private_key
+              }
             }
           ]
         }

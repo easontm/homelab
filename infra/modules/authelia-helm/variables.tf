@@ -43,7 +43,7 @@ variable "helm_values" {
     values from variables at plan-time, especially secrets from sops. For example:
 
       helm_values = templatefile(
-        "${get_terragrunt_dir()}/values.yaml",
+        "$\{get_terragrunt_dir()}/values.yaml",
         {
           domain = local.secrets.domain
         }

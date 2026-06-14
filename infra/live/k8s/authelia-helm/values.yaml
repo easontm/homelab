@@ -4,7 +4,7 @@
 # They are injected via sensitive_values_yaml in terragrunt.hcl from authelia_vars.sops.yaml.
 
 image:
-  tag: '4.39.19'
+  tag: '4.39.20'
 
 pod:
   kind: 'Deployment'
@@ -38,17 +38,15 @@ configMap:
         policy: 'one_factor'
 
   session:
-    name: 'authelia_session2'  # TODO: revert
+    name: 'authelia_session'
     same_site: 'lax'
     expiration: '1 hour'
     inactivity: '30 minutes'
     remember_me: '1 month'
 
     cookies:
-      - domain: 'authelia.${domain}'  # TODO: revert to just domain
-        # subdomain: 'auth'
-        # subdomain: 'authelia'
-        # default_redirection_url: 'https://${domain}'
+      - domain: '${domain}'
+        subdomain: 'auth'
 
     # Redis/Valkey session backend is auto-wired by the module when valkey_enabled = true.
     # Do not configure session.redis here; it is injected via the module's valkey_* variables.
@@ -105,7 +103,7 @@ configMap:
       clients:
         - client_id: paperless
           client_name: Paperless-ngx
-          client_secret: '$argon2id$v=19$m=65536,t=3,p=4$oE4XcjivzWaYzzAJMjkOsw$5kPBwyOqTo03ZgLJjgIf0ct6RzfJkGFf4LAWD/vmcKw'
+          client_secret: '$argon2id$v=19$m=65536,t=3,p=4$PA61hTHjul7VjUyVrprMyA$ii07jnPy62yawoz3c5mWDPEZ9h4eMoODexbbMBXo7qA'
           public: false
           authorization_policy: one_factor
           redirect_uris:

@@ -113,6 +113,7 @@ configMap:
             - profile
             - email
             - groups
+          consent_mode: 'implicit'
           userinfo_signed_response_alg: none
         - client_id: homebox
           client_name: Homebox

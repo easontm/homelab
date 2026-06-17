@@ -78,6 +78,9 @@ configMap:
 
   identity_providers:
     oidc:
+      enabled: true
+      hmac_secret:
+        value: '${oidc_hmac_secret}'
       cors:
         endpoints:
           - authorization
@@ -87,12 +90,10 @@ configMap:
           - userinfo
         allowed_origins_from_client_redirect_uris: true
       authorization_policies: {}
-        # default_policy: one_factor
-              #   policy_name:
-      #     default_policy: 'deny'
-      #     rules:
-      #       - policy: 'two_factor'
-      #         subject: 'user:abc'
+      jwks:
+        - key:
+            value: |
+              ${indent(14, jwks_private_key)}
       clients:
         - client_id: paperless
           client_name: Paperless-ngx

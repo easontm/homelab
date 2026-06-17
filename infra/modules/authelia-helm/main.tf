@@ -118,29 +118,6 @@ locals {
       ]
     }
   }) : null
-  # When OIDC secrets are provided, auto-wire Authelia's OIDC identity provider config.
-  # Non-sensitive client definitions (hashed secrets, redirect URIs, scopes) belong in
-  # values_files / values.yaml. Only the HMAC secret and JWK private key are injected here.
-  oidc_authelia_values = var.oidc_hmac_secret != null && var.oidc_jwks_private_key != null ? yamlencode({
-    configMap = {
-      identity_providers = {
-        oidc = {
-          enabled = true
-          hmac_secret = {
-            disabled = false
-            value    = var.oidc_hmac_secret
-          }
-          jwks = [
-            {
-              key = {
-                value = var.oidc_jwks_private_key
-              }
-            }
-          ]
-        }
-      }
-    }
-  }) : null
 }
 
 # Secret containing the users_database.yml for the file authentication backend.
@@ -225,7 +202,6 @@ resource "helm_release" "authelia" {
     local.valkey_authelia_values != null ? [local.valkey_authelia_values] : [],
     local.lldap_authelia_values != null ? [local.lldap_authelia_values] : [],
     local.file_auth_authelia_values != null ? [local.file_auth_authelia_values] : [],
-    local.oidc_authelia_values != null ? [local.oidc_authelia_values] : [],
     [local.db_authelia_values],
     [var.helm_values],
     var.sensitive_values_yaml != null ? [var.sensitive_values_yaml] : [],

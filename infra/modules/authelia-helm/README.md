@@ -83,7 +83,9 @@ lldap_base_dn: dc=example,dc=com
 lldap_user: uid=authelia,ou=people,dc=example,dc=com
 lldap_password: 
 oidc:
+    # openssl rand -hex 64
     hmac_secret: 
+    # openssl genrsa 4096
     jwks_private_key: |
         -----BEGIN PRIVATE KEY-----
 ```

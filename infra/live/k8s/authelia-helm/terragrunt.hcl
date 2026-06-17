@@ -16,6 +16,7 @@ inputs = {
     "${get_env("HOME")}/.kube/config",
   ]
   ingress_namespaces = ["traefik"]
+  timeout = 60
 
   chart_version = "0.11.6"  # Authelia 4.39.19
 
@@ -49,16 +50,10 @@ inputs = {
     "${get_terragrunt_dir()}/values.yaml",
     {
       domain = local.secrets.domain
+      oidc_hmac_secret = local.secrets.oidc.hmac_secret
+      jwks_private_key = local.secrets.oidc.jwks_private_key
     }
   )
-
-  # Secrets are generated from sops at plan-time as a YAML string.
-  # Later values_files entries and this value override earlier ones.
-  # NOTE: authelia_vars.sops.yaml must contain:
-  #   session_encryption_key, storage_encryption_key, jwt_secret,
-  #   smtp_password, lldap_base_dn, lldap_user, lldap_password,
-  #   oidc_hmac_secret, oidc_jwks_private_key.
-  #   (Add 'users' list only if switching auth_backend to "file".)
   sensitive_values_yaml = yamlencode({
     pod = {
       env = [
@@ -71,9 +66,6 @@ inputs = {
           secret = { value = local.secrets.jwt_secret }
         }
       }
-      # session = {
-      #   encryption_key = { value = local.secrets.session_encryption_key }
-      # }
       storage = {
         encryption_key = { value = local.secrets.storage_encryption_key }
       }
@@ -86,14 +78,4 @@ inputs = {
       }
     }
   })
-
-  # OIDC identity provider secrets — injected via the module's oidc_* variables.
-  # Add to authelia_vars.sops.yaml:
-  #   oidc_hmac_secret: <hex>    (generate: openssl rand -hex 64)
-  #   oidc_jwks_private_key: |   (generate: openssl genrsa 4096)
-  #     -----BEGIN RSA PRIVATE KEY-----
-  #     ...
-  #     -----END RSA PRIVATE KEY-----
-  oidc_hmac_secret      = local.secrets.oidc.hmac_secret
-  oidc_jwks_private_key = local.secrets.oidc.jwks_private_key
 }

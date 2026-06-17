@@ -317,20 +317,3 @@ variable "valkey_password" {
   default     = null
   sensitive   = true
 }
-
-##############
-# OIDC
-##############
-variable "oidc_hmac_secret" {
-  description = "HMAC secret used by Authelia to sign OIDC tokens. Generate with: openssl rand -hex 64. Supply from sops. If null, OIDC is not configured by the module."
-  type        = string
-  default     = null
-  sensitive   = true
-}
-
-variable "oidc_jwks_private_key" {
-  description = "RSA private key (PEM format) used by Authelia as the OIDC JWK signing key. Generate with: openssl genrsa 4096. Include the full PEM block. Supply from sops. If null, OIDC is not configured by the module."
-  type        = string
-  default     = null
-  sensitive   = true
-}

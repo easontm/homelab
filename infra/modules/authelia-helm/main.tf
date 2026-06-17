@@ -42,7 +42,7 @@ locals {
   # When Postgres is enabled, auto-wire Authelia's storage config.
   postgres_service_host = "db.${kubernetes_namespace_v1.authelia.metadata[0].name}.svc.cluster.local"
 
-  postgres_authelia_values = local.postgres_enabled ? yamlencode({
+  db_authelia_values = local.postgres_enabled ? yamlencode({
     configMap = {
       storage = {
         local = { enabled = false }
@@ -58,7 +58,14 @@ locals {
         }
       }
     }
-  }) : null
+    }) : yamlencode({
+    configMap = {
+      storage = {
+        postgres = { enabled = false }
+        local    = { enabled = true }
+      }
+    }
+  })
 
   # When auth_backend is "lldap", auto-wire Authelia's LDAP authentication backend
   # using the built-in LLDAP implementation preset.
@@ -216,10 +223,10 @@ resource "helm_release" "authelia" {
 
   values = concat(
     local.valkey_authelia_values != null ? [local.valkey_authelia_values] : [],
-    local.postgres_authelia_values != null ? [local.postgres_authelia_values] : [],
     local.lldap_authelia_values != null ? [local.lldap_authelia_values] : [],
     local.file_auth_authelia_values != null ? [local.file_auth_authelia_values] : [],
     local.oidc_authelia_values != null ? [local.oidc_authelia_values] : [],
+    [local.db_authelia_values],
     [var.helm_values],
     var.sensitive_values_yaml != null ? [var.sensitive_values_yaml] : [],
   )

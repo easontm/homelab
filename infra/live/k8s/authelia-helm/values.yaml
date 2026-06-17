@@ -12,7 +12,7 @@ pod:
   replicas: 1
 
 configMap:
-  theme: 'light'
+  theme: 'dark'
 
   log:
     level: 'info'
@@ -58,18 +58,11 @@ configMap:
     find_time: '2 minutes'
     ban_time: '5 minutes'
 
-  storage:
-    # Storage backend is auto-wired by the module via the db_type variable.
-    # When db_type = "postgres", the module enables postgres and disables local.
-    # When db_type = "sqlite", the module leaves this section alone and the
-    # local block below takes effect.
-    mysql:
-      enabled: false
-    postgres:
-      enabled: false
-    local:
-      enabled: true
-      path: '/config/db.sqlite3'
+  # Storage can be ignored if you don't have override settings. The db_type
+  # variable will generate this section for postgresl and sqlite cases. However
+  # the contents of this file is applied after the generated DB block, so you can
+  # override the generated settings here if you need to.
+  # storage:
 
   notifier:
     disable_startup_check: false
@@ -127,11 +120,3 @@ configMap:
             - profile
             - email
           userinfo_signed_response_alg: none
-
-persistence:
-  # Persist the SQLite database across pod restarts.
-  enabled: false
-  storageClass: 'nfs-retain'
-  size: '500Mi'
-  accessModes:
-    - 'ReadWriteOnce'

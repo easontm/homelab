@@ -45,7 +45,7 @@ resource "cloudflare_zero_trust_access_application" "app_launcher" {
 
 resource "cloudflare_zero_trust_access_application" "homelab" {
   name             = "Homelab"
-  domain           = var.cloudflare_access_application_domain
+  domain           = "*.${var.cloudflare_access_application_domain}"
   type             = "self_hosted"
   session_duration = var.session_duration
   # may need this later

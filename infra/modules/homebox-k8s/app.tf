@@ -15,7 +15,7 @@ resource "kubernetes_config_map_v1" "homebox_env" {
 }
 
 # OIDC Secret — created only when oidc_client_secret is provided.
-# Contains the raw client secret as HBOX_OPTIONS_OAUTH2_CLIENT_SECRET.
+# Contains the raw client secret as HBOX_OIDC_CLIENT_SECRET.
 resource "kubernetes_secret_v1" "oidc" {
   count = var.oidc_client_secret != null ? 1 : 0
 
@@ -25,7 +25,7 @@ resource "kubernetes_secret_v1" "oidc" {
   }
 
   data = {
-    HBOX_OPTIONS_OAUTH2_CLIENT_SECRET = var.oidc_client_secret
+    HBOX_OIDC_CLIENT_SECRET = var.oidc_client_secret
   }
 }
 
@@ -109,11 +109,11 @@ resource "kubernetes_deployment_v1" "homebox" {
           dynamic "env" {
             for_each = var.oidc_client_secret != null ? [1] : []
             content {
-              name = "HBOX_OPTIONS_OAUTH2_CLIENT_SECRET"
+              name = "HBOX_OIDC_CLIENT_SECRET"
               value_from {
                 secret_key_ref {
                   name = kubernetes_secret_v1.oidc[0].metadata[0].name
-                  key  = "HBOX_OPTIONS_OAUTH2_CLIENT_SECRET"
+                  key  = "HBOX_OIDC_CLIENT_SECRET"
                 }
               }
             }

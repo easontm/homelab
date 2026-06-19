@@ -111,13 +111,14 @@ configMap:
           userinfo_signed_response_alg: none
         - client_id: homebox
           client_name: Homebox
-          client_secret: '$argon2id$v=19$m=65536,t=3,p=4$bkiIEfb9DPRKndh/KyFiqQ$JPA8VW+9cS5kSr3ixogP/Di0W3BAYn2SNway0vHY+S8'
+          client_secret: '$argon2id$v=19$m=65536,t=3,p=4$VWNmmxSEiubG1S7K/xZwZw$jEb/obhWxbPWuYI1M+g3JpIWBjjYuTxKS972DwN9tYI'
           public: false
           authorization_policy: one_factor
           redirect_uris:
-            - 'https://homebox.${domain}/api/v1/oauth/callback'
+            - 'https://homebox.${domain}/api/v1/users/login/oidc/callback'
           scopes:
             - openid
             - profile
             - email
+          consent_mode: 'implicit'
           userinfo_signed_response_alg: none

@@ -229,7 +229,7 @@ variable "postgres_database_name" {
 # OIDC
 ##############
 variable "oidc_client_secret" {
-  description = "Raw (unhashed) OIDC client secret for Homebox to authenticate against Authelia. When set, a Kubernetes Secret is created with HBOX_OPTIONS_OAUTH2_CLIENT_SECRET and injected into the Homebox container via a dynamic env block. Supply from sops. If null, OIDC is not configured by the module."
+  description = "Raw (unhashed) OIDC client secret for Homebox to authenticate against Authelia. When set, a Kubernetes Secret is created with HBOX_OIDC_CLIENT_SECRET and injected into the Homebox container via a dynamic env block. Supply from sops. If null, OIDC is not configured by the module."
   type        = string
   default     = null
   sensitive   = true

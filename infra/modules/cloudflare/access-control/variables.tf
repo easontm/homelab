@@ -30,3 +30,9 @@ variable "cloudflare_access_application_domain" {
   description = "Cloudflare Access Application Domain"
   type        = string
 }
+
+variable "enable_auth_bypass" {
+  description = "Enable auth bypass application for specific endpoints"
+  type        = bool
+  default     = false
+}

@@ -29,7 +29,7 @@ inputs = {
     HBOX_OPTIONS_ALLOW_LOCAL_LOGIN = false
     HBOX_OIDC_ISSUER_URL = "https://auth.${local.sensitive_vars.domain}"
     HBOX_OIDC_BUTTON_TEXT = "Log in with Authelia"
-    HBOX_LOG_LEVEL = "debug"
+    HBOX_LOG_LEVEL = "info"
   }
 
   # OIDC client secret — raw (unhashed) secret shared with Authelia.

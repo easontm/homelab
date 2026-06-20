@@ -84,7 +84,7 @@ resource "kubernetes_config_map_v1" "webserver_env" {
     },
     # https://docs.paperless-ngx.com/configuration/#PAPERLESS_ENABLE_COMPRESSION
     # See also OIDC secret below
-    var.oidc_provider_url != null ? {
+    var.oidc_provider_url != null && var.oidc_client_secret != null ? {
       PAPERLESS_APPS = "allauth.socialaccount.providers.openid_connect"
     } : {},
     var.paperless_env_vars
@@ -100,6 +100,13 @@ resource "kubernetes_secret_v1" "oidc" {
   metadata {
     name      = "paperless-oidc"
     namespace = kubernetes_namespace_v1.paperless_ngx.metadata[0].name
+  }
+
+  lifecycle {
+    precondition {
+      condition     = var.oidc_provider_url != null && trimspace(var.oidc_provider_url) != ""
+      error_message = "oidc_provider_url must be set when oidc_client_secret is set."
+    }
   }
 
   data = {

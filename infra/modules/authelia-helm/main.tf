@@ -19,8 +19,7 @@ locals {
   backup_active    = local.postgres_enabled && var.backup_enabled
 
   # When Valkey is enabled, auto-wire Authelia's session redis config.
-  # Injected after values_files so it overrides any redis.enabled: false in the user's YAML,
-  # but before sensitive_values_yaml so the user can still override individual fields.
+  # These settings can be overridden by the user in helm_values, but this is a convenient default.
   valkey_service_host = "valkey.${kubernetes_namespace_v1.authelia.metadata[0].name}.svc.cluster.local"
 
   valkey_authelia_values = var.valkey_enabled ? yamlencode({

@@ -57,7 +57,7 @@ variable "helm_values" {
 variable "sensitive_values_yaml" {
   description = <<-EOT
     A YAML string containing sensitive Helm values that should not be stored on disk. This is merged
-    after all values_files so it takes final precedence. Generate this in your terragrunt.hcl with
+    after helm_values so it takes final precedence. Generate this in your terragrunt.hcl with
     yamlencode() from sops-decrypted variables. For example:
 
       sensitive_values_yaml = yamlencode({

@@ -1,0 +1,54 @@
+# Template for authelia_vars.sops.yaml
+# Encrypt this file with: sops --encrypt --in-place authelia_vars.sops.yaml
+#
+# Generate session_encryption_key and storage_encryption_key with:
+#   openssl rand -hex 32
+# Generate jwt_secret with:
+#   openssl rand -hex 32
+
+# Authelia core secrets
+jwt_secret: REPLACE_WITH_RANDOM_32_BYTE_HEX
+session_encryption_key: REPLACE_WITH_RANDOM_32_BYTE_HEX
+storage_encryption_key: REPLACE_WITH_RANDOM_32_BYTE_HEX
+
+# PostgreSQL password (for the in-cluster Postgres instance)
+postgres_password: REPLACE_WITH_SECURE_PASSWORD
+
+# SMTP (optional — used for email notifications)
+domain: example.com
+smtp_password: REPLACE_WITH_SMTP_PASSWORD
+
+# LLDAP authentication backend credentials.
+# lldap_base_dn: must match the base DN configured in the LLDAP live stack.
+# lldap_user: full bind DN of the Authelia service account in LLDAP.
+# lldap_password: password for that service account (set via LLDAP bootstrap).
+lldap:
+  address: ldap://lldap-ldap.lldap.svc.cluster.local:3890
+  base_dn: dc=example,dc=com
+  user: uid=authelia,ou=people,dc=example,dc=com
+  password: REPLACE_WITH_AUTHELIA_LLDAP_USER_PASSWORD
+
+# File authentication backend users.
+# Passwords must be pre-hashed. Generate with:
+#   docker run --rm authelia/authelia:latest authelia crypto hash generate argon2
+# The module creates and mounts the users_database.yml Secret automatically.
+users:
+  - username: alice
+    display_name: Alice
+    password: "$argon2id$v=19$m=65536,t=3,p=4$REPLACE_WITH_HASH"
+    email: alice@example.com
+    groups:
+      - admins
+
+# OIDC identity provider secrets.
+# Generate oidc_hmac_secret with:
+#   openssl rand -hex 64
+# Generate oidc_jwks_private_key with:
+#   openssl genrsa 4096
+# Include the full PEM block (-----BEGIN RSA PRIVATE KEY----- ... -----END RSA PRIVATE KEY-----).
+oidc:
+  hmac_secret: REPLACE_WITH_64_BYTE_HEX
+  jwks_private_key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    REPLACE_WITH_RSA_PRIVATE_KEY_PEM
+    -----END RSA PRIVATE KEY-----

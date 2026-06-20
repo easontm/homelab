@@ -1,0 +1,213 @@
+# authelia-helm
+
+Deploys [Authelia](https://www.authelia.com/) via the official [Helm chart](https://charts.authelia.com).
+
+## Design
+
+This chart does not try to expose every possible setting for Authelia via Terraform variables.
+However, it does provide some specific inputs for session and database storage.
+
+Non-secret configuration is written as a real Helm values YAML file alongside the live stack. Secrets are passed as a YAML string generated at plan-time in `terragrunt.hcl`
+from sops-decrypted variables.
+
+## Usage
+
+### 1. Copy the example values file to your live stack
+
+```sh
+cp ../../modules/authelia-helm/values.example.yaml infra/live/k8s/authelia/values.yaml
+# edit values.yaml to match your environment
+```
+
+### 2. Create your live `terragrunt.hcl`
+
+```hcl
+include "root" {
+  path = find_in_parent_folders("root.hcl")
+}
+
+terraform {
+  source = "../../../modules/authelia-helm"
+}
+
+locals {
+  secrets = yamldecode(sops_decrypt_file("./authelia_vars.sops.yaml"))
+}
+
+inputs = {
+  kubeconfig_paths = [
+    "${get_terragrunt_dir()}/.kube/config",
+    "${get_env("HOME")}/.kube/config",
+  ]
+
+  namespace          = "authelia"
+  ingress_namespaces = ["traefik"]
+
+  chart_version = "0.10.0"  # pin the chart version
+
+  # Another option is templatefile() if you want to structure your
+  # yaml to include secrets but not actually show them.
+  helm_values = file("${get_terragrunt_dir()}/values.yaml")
+
+  # Secrets are generated from sops at plan-time as a YAML string.
+  # sensitive_values_yaml is merged last and always wins.
+  sensitive_values_yaml = yamlencode({
+    configMap = {
+      session = {
+        encryption_key = { value = local.secrets.session_encryption_key }
+      }
+      storage = {
+        encryption_key = { value = local.secrets.storage_encryption_key }
+        postgres = {
+          password = { value = local.secrets.postgres_password }
+        }
+      }
+    }
+  })
+}
+```
+
+### 3. Structure your SOPS secrets file
+
+Not all of these are required, but it's here's a skeleton showing some things that are supported.
+
+```yaml
+# authelia_vars.sops.yaml (before encryption)
+domain: example.com
+authelia_url: https://auth.example.com
+storage_encryption_key: 
+postgres_password: 
+jwt_secret: 
+smtp_password: 
+users: []
+lldap:
+  address: lldap.example.com
+  base_dn: dc=example,dc=com
+  user: uid=authelia,ou=people,dc=example,dc=com
+  password: 
+oidc:
+    # openssl rand -hex 64
+    hmac_secret: 
+    # openssl genrsa 4096
+    jwks_private_key: |
+        -----BEGIN PRIVATE KEY-----
+```
+
+## Auto-wired backends
+
+The module can automatically configure Authelia backends when you set the corresponding variables.
+
+### Session storage: Valkey
+
+```hcl
+valkey_enabled       = true
+valkey_chart_version = "0.9.4"
+valkey_storage_class = "iscsi-retain"
+valkey_storage_size  = "256Mi"
+# valkey_password = local.secrets.valkey_password  # optional
+```
+
+### Persistent storage: PostgreSQL
+
+```hcl
+db_type           = "postgres"
+db_storage_class  = "iscsi-retain"
+db_storage_size   = "2Gi"
+postgres_password = local.secrets.postgres_password
+```
+
+### Authentication backend: file
+
+Authelia supports exactly one authentication backend at a time. Set `auth_backend = "file"` to use
+a local `users_database.yml`. The module creates the `kubernetes_secret_v1` containing the file
+(built from `file_auth_users`) and auto-mounts it into the Authelia pod — no manual `extraObjects`,
+`extraVolumes`, or `extraVolumeMounts` needed.
+
+```hcl
+auth_backend    = "file"
+file_auth_users = local.secrets.users  # list from sops
+```
+
+In your sops file:
+
+```yaml
+users:
+  - username: alice
+    display_name: Alice
+    password: "$argon2id$v=19$m=65536,t=3,p=4$..."  # pre-hashed
+    email: alice@example.com
+    groups:
+      - admins
+```
+
+Generate password hashes with:
+```sh
+docker run --rm authelia/authelia:latest authelia crypto hash generate argon2
+```
+
+### Authentication backend: LLDAP
+
+Set `auth_backend = "lldap"` to use LLDAP as the authentication backend. The module injects the
+Authelia LDAP configuration using the built-in `lldap` implementation preset.
+
+```hcl
+auth_backend   = "lldap"
+lldap_address  = local.secrets.lldap.address
+lldap_base_dn  = local.secrets.lldap.base_dn
+lldap_user     = local.secrets.lldap.user     # full bind DN, e.g. uid=authelia,ou=people,dc=example,dc=com
+lldap_password = local.secrets.lldap.password
+```
+
+The injected LLDAP values are applied after Valkey and Postgres wiring but before
+`sensitive_values_yaml`, so individual fields can still be overridden in `sensitive_values_yaml`.
+
+The LLDAP `implementation` preset applies these defaults automatically:
+- `username_attribute: uid`
+- `additional_users_dn: ou=people`
+- `additional_groups_dn: ou=groups`
+- `group_search_mode: filter`
+- `mail_attribute: mail`
+- `display_name_attribute: displayName`
+
+## Values file reference
+
+See [`values.example.yaml`](./values.example.yaml) for a commented starting point.
+
+The full chart values reference is at:
+https://github.com/authelia/chartrepo/blob/master/charts/authelia/values.yaml
+
+## Multiple values files
+
+`helm_values` is a single YAML string. If you want to keep config split across multiple files,
+concatenate them in Terragrunt:
+
+```hcl
+helm_values = join("\n", [
+  file("${get_terragrunt_dir()}/values.yaml"),
+  file("${get_terragrunt_dir()}/access-control.yaml"),
+])
+```
+
+Some values are generated by the module (such as valkey info for session or postgres for storage).
+The generated values are a lower priority than literals provided in values files, so you can override
+them.
+
+`sensitive_values_yaml` is always appended last, so it always wins.
+
+## ReferenceGrant
+
+A `ReferenceGrant` is created for each namespace listed in `ingress_namespaces`, allowing those
+namespaces to route to the `authelia` Service via Gateway API HTTPRoutes (the same pattern used by
+`homebox-k8s` and `traefik-k8s`).
+
+## Notes
+
+- Pin `chart_version` to avoid unexpected upgrades. Find available versions with:
+  ```sh
+  helm repo add authelia https://charts.authelia.com && helm search repo authelia/authelia --versions
+  ```
+- The chart creates and manages its own Kubernetes Secret for Authelia secrets when you pass
+  `value:` fields. Use `secret.existingSecret` in your values YAML if you'd rather manage the
+  secret yourself.
+- Although the base Authelia Helm chart has a section for auto-provisioning a Postgres subchart,
+  this module provides its own because I wanted to specify StorageClass.

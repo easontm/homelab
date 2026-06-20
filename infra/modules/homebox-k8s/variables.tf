@@ -224,3 +224,13 @@ variable "postgres_database_name" {
     error_message = "postgres_database_name must not be empty when db_type is postgres."
   }
 }
+
+##############
+# OIDC
+##############
+variable "oidc_client_secret" {
+  description = "Raw (unhashed) OIDC client secret for Homebox to authenticate against Authelia. When set, a Kubernetes Secret is created with HBOX_OIDC_CLIENT_SECRET and injected into the Homebox container via a dynamic env block. Supply from sops. If null, OIDC is not configured by the module."
+  type        = string
+  default     = null
+  sensitive   = true
+}

@@ -39,6 +39,13 @@ inputs = {
     USERMAP_GID = local.nfs_share_mapall_uid_gid
   }
 
+  # OIDC client secret — raw (unhashed) secret shared with Authelia.
+  # Add 'oidc_client_secret: <raw_secret>' to paperless_vars.sops.yaml, then re-encrypt.
+  # Generate with: openssl rand -base64 48
+  # Hash for values.yaml: docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password '<raw_secret>'
+  oidc_provider_url = "https://auth.${local.sensitive_vars.domain}"
+  oidc_client_secret = local.sensitive_vars.oidc_client_secret
+
   # Backup
   backup_enabled      = true
   backup_schedule     = "0 2 * * *"

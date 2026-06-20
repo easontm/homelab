@@ -1,0 +1,124 @@
+# vim: set ft=yaml:
+# Authelia Helm values for authelia-helm live stack.
+# Secrets (encryption keys, jwt secret, smtp password) are NOT here.
+# They are injected via sensitive_values_yaml in terragrunt.hcl from authelia_vars.sops.yaml.
+
+image:
+  tag: '4.39.20'
+
+pod:
+  kind: 'Deployment'
+
+  replicas: 1
+
+configMap:
+  theme: 'dark'
+
+  log:
+    level: 'info'
+    format: 'text'
+
+  totp:
+    issuer: '${domain}'
+
+  authentication_backend:
+    password_reset:
+      disable: false
+    refresh_interval: '5 minutes'
+    # "file" or "ldap" are automatically wired by the module. Do not add them here.
+
+  access_control:
+    default_policy: 'deny'
+    rules:
+      # The Authelia portal itself must be bypassed so users can log in.
+      - domain: 'auth.${domain}'
+        policy: 'bypass'
+      # Require single-factor for everything else under the domain.
+      - domain: '*.${domain}'
+        policy: 'one_factor'
+
+  session:
+    name: 'authelia_session'
+    same_site: 'lax'
+    expiration: '1 hour'
+    inactivity: '30 minutes'
+    remember_me: '1 month'
+
+    cookies:
+      - domain: '${domain}'
+        subdomain: 'auth'
+
+    # Redis/Valkey session backend is auto-wired by the module when valkey_enabled = true.
+    # Do not configure session.redis here; it is injected via the module's valkey_* variables.
+
+  regulation:
+    modes:
+      - 'user'
+    max_retries: 3
+    find_time: '2 minutes'
+    ban_time: '5 minutes'
+
+  # Storage can be ignored if you don't have override settings. The db_type
+  # variable will generate this section for postgresl and sqlite cases. However
+  # the contents of this file is applied after the generated DB block, so you can
+  # override the generated settings here if you need to.
+  # storage:
+
+  notifier:
+    disable_startup_check: false
+    filesystem:
+      enabled: false
+      filename: '/config/notification.txt'
+    smtp:
+      enabled: true
+      address: 'smtp://mail.smtp2go.com:2525'
+      identifier: 'authelia'
+      subject: '[Authelia] {title}'
+      # smtp password is injected via sensitive_values_yaml in terragrunt.hcl
+
+  identity_providers:
+    oidc:
+      enabled: true
+      hmac_secret:
+        value: '${oidc_hmac_secret}'
+      cors:
+        endpoints:
+          - authorization
+          - token
+          - revocation
+          - introspection
+          - userinfo
+        allowed_origins_from_client_redirect_uris: true
+      authorization_policies: {}
+      jwks:
+        - key:
+            value: |
+              ${indent(14, jwks_private_key)}
+      clients:
+        - client_id: paperless
+          client_name: Paperless-ngx
+          client_secret: '$argon2id$v=19$m=65536,t=3,p=4$PA61hTHjul7VjUyVrprMyA$ii07jnPy62yawoz3c5mWDPEZ9h4eMoODexbbMBXo7qA'
+          public: false
+          authorization_policy: one_factor
+          redirect_uris:
+            - 'https://paperless.${domain}/accounts/oidc/authelia/login/callback/'
+          scopes:
+            - openid
+            - profile
+            - email
+            - groups
+          consent_mode: 'implicit'
+          userinfo_signed_response_alg: none
+        - client_id: homebox
+          client_name: Homebox
+          client_secret: '$argon2id$v=19$m=65536,t=3,p=4$VWNmmxSEiubG1S7K/xZwZw$jEb/obhWxbPWuYI1M+g3JpIWBjjYuTxKS972DwN9tYI'
+          public: false
+          authorization_policy: one_factor
+          redirect_uris:
+            - 'https://homebox.${domain}/api/v1/users/login/oidc/callback'
+          scopes:
+            - openid
+            - profile
+            - email
+          consent_mode: 'implicit'
+          userinfo_signed_response_alg: none

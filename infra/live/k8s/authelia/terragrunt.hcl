@@ -18,7 +18,7 @@ inputs = {
   ingress_namespaces = ["traefik"]
   timeout = 60
 
-  chart_version = "0.11.6"  # Authelia 4.39.19
+  chart_version = "0.11.6"
 
   # Valkey (Redis fork) for session storage
   valkey_enabled       = true
@@ -39,10 +39,10 @@ inputs = {
   # LLDAP as the authentication backend.
   # The module auto-wires the LDAP configMap block using the "lldap" implementation preset.
   auth_backend   = "lldap"
-  lldap_address  = "ldap://lldap-ldap.lldap.svc.cluster.local:3890"
-  lldap_base_dn  = local.secrets.lldap_base_dn
-  lldap_user     = local.secrets.lldap_user
-  lldap_password = local.secrets.lldap_password
+  lldap_address  = local.secrets.lldap.address
+  lldap_base_dn  = local.secrets.lldap.base_dn
+  lldap_user     = local.secrets.lldap.user
+  lldap_password = local.secrets.lldap.password
   # The module creates the users_database.yml Secret and mounts it automatically.
   # file_auth_users   = local.secrets.users
 

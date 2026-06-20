@@ -7,8 +7,7 @@ Deploys [Authelia](https://www.authelia.com/) via the official [Helm chart](http
 This chart does not try to expose every possible setting for Authelia via Terraform variables.
 However, it does provide some specific inputs for session and database storage.
 
-Non-secret configuration is written as a real Helm values YAML file alongside the live stack (or
-anywhere on disk). Secrets are passed as a YAML string generated at plan-time in `terragrunt.hcl`
+Non-secret configuration is written as a real Helm values YAML file alongside the live stack. Secrets are passed as a YAML string generated at plan-time in `terragrunt.hcl`
 from sops-decrypted variables.
 
 ## Usage
@@ -79,9 +78,11 @@ postgres_password:
 jwt_secret: 
 smtp_password: 
 users: []
-lldap_base_dn: dc=example,dc=com
-lldap_user: uid=authelia,ou=people,dc=example,dc=com
-lldap_password: 
+lldap:
+  address: lldap.example.com
+  base_dn: dc=example,dc=com
+  user: uid=authelia,ou=people,dc=example,dc=com
+  password: 
 oidc:
     # openssl rand -hex 64
     hmac_secret: 
@@ -149,10 +150,10 @@ Authelia LDAP configuration using the built-in `lldap` implementation preset.
 
 ```hcl
 auth_backend   = "lldap"
-lldap_address  = "ldap://lldap-ldap.lldap.svc.cluster.local:3890"
-lldap_base_dn  = local.secrets.lldap_base_dn
-lldap_user     = local.secrets.lldap_user     # full bind DN, e.g. uid=authelia,ou=people,dc=example,dc=com
-lldap_password = local.secrets.lldap_password
+lldap_address  = local.secrets.lldap.address
+lldap_base_dn  = local.secrets.lldap.base_dn
+lldap_user     = local.secrets.lldap.user     # full bind DN, e.g. uid=authelia,ou=people,dc=example,dc=com
+lldap_password = local.secrets.lldap.password
 ```
 
 The injected LLDAP values are applied after Valkey and Postgres wiring but before

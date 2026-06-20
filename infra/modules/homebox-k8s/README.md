@@ -2,8 +2,9 @@
 
 This module installs [Homebox](https://homebox.software/) on Kubernetes using
 native Terraform resources. It is the Kubernetes counterpart to the
-Proxmox-based `homebox` module and follows the resource conventions established
-by the `paperless-ngx` module.
+Proxmox-based `homebox`. It does not try to provide levers for every single
+option through terraform variables, instead generally configure through
+`homebox_env_vars`.
 
 ## Pre-requisites
 
@@ -101,10 +102,13 @@ inputs = {
 }
 ```
 
-Typical `homebox_vars.sops.yaml` structure:
+Example `homebox_vars.sops.yaml` structure:
 
 ```yaml
-postgres_password: replace-me
+postgres_password: gibberish
+oidc_client_secret: more_gibberish
+domain: example.com
+api_key_pepper: even_more_gibberish
 ```
 
 ## Backup (pg_dump)

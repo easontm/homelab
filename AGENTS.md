@@ -1,0 +1,5 @@
+- Whenever possible, Terraform module design should be such that resources can be bootstrapped from nothing.
+  - e.g. if a module requires something to be installed, that other item should either
+    - be a separate module the user can install, or
+    - managed by the module itself or
+    - be explained via the module's README as a manual action for the user.

@@ -16,12 +16,11 @@ resource "kubernetes_namespace_v1" "traefik" {
 
 
 resource "helm_release" "traefik" {
-  name = "traefik"
-  # repository = "https://traefik.github.io/charts"
-  repository = "oci://ghcr.io/traefik/helm"
+  name       = "traefik"
+  repository = "oci://ghcr.io/traefik/helm" # backup: "https://traefik.github.io/charts"
   chart      = "traefik"
   version    = var.chart_version
-  # Cluster-level API bundles are managed in prerequisite Terragrunt units.
+  # Cluster-level API bundles are managed manually. See module README.
   skip_crds  = true
   namespace  = var.traefik_namespace
   depends_on = [kubernetes_namespace_v1.traefik]

@@ -14,8 +14,9 @@ The general order for installing k8s infra from nothing is:
 2. `metrics-server`
 3. `cert-manager`
 4. `metal-lb`
-5. `traefik`
-6. Applications
+5. Gateway API and Traefik CRDs (see Traefik README)
+6. `traefik`
+7. Applications
 
 > [!NOTE]
 > My Traefik config uses an Authelia middleware managed as a Proxmox LXC.

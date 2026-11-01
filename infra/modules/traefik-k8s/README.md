@@ -4,6 +4,8 @@ This module installs and configures Traefik in k8s from the Helm chart. It requi
 
 - [metal-lb](https://metallb.universe.tf/installation/)
 - [Authelia](https://www.authelia.com/)
+- [API Gateway CRDs](https://gateway-api.sigs.k8s.io/guides/getting-started/introduction/#installing-gateway-api)
+- [Traefik CRDs](https://doc.traefik.io/traefik/reference/install-configuration/providers/kubernetes/kubernetes-crd/)
 
 It assumes you are using Authelia as a middleware, but does not include any
 management of Authelia itself.
@@ -27,3 +29,27 @@ If you would like to use `no-tls-verify=false` on the Cloudflare tunnel
 (to secure communication between the tunnel and Traefik), then you must
 provide Traefik wth a Cloudflare Origin CA. If you don't, then this
 module will require [cert-manager](https://cert-manager.io/docs/installation/helm/) to issue a self-signed cert.
+
+## On CRDs
+
+### Upgrading
+
+```
+# Update the chart repository
+helm repo update
+# Check current chart & Traefik version
+helm search repo traefik/traefik
+# Update Traefik CRDs
+helm show crds traefik/traefik | kubectl apply --server-side --force-conflicts -f -
+# Update Gateway API CRDs, if needed
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/standard-install.yaml
+# Upgrade Traefik release
+# helm upgrade traefik traefik/traefik
+# We use IaC for this step.
+```
+
+### Why not manage them here?
+
+There's no *official* Gateway API helm chart as of the time of writing. Previously,
+this Helm chart included them but they were removed to make resource deployment
+more controllable.

@@ -107,7 +107,7 @@ variable "db_storage_size" {
 variable "postgres_image" {
   description = "PostgreSQL container image. Only used when db_type is 'postgres'."
   type        = string
-  default     = "docker.io/library/postgres:17"
+  default     = "docker.io/library/postgres:18"
 }
 
 variable "postgres_user" {

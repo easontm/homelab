@@ -16,7 +16,7 @@ inputs = {
     "${get_env("HOME")}/.kube/config",
   ]
   ingress_namespaces = ["traefik"]
-  timeout = 60
+  timeout            = 60
 
   chart_version = "0.11.6"
 
@@ -28,13 +28,13 @@ inputs = {
   # valkey_password = local.secrets.valkey_password  # optional; add to sops if auth is desired
 
   # PostgreSQL for persistent storage
-  db_type               = "postgres"
-  db_storage_class      = "iscsi-retain"
-  db_storage_size       = "2Gi"
-  postgres_password     = local.secrets.postgres_password
-  backup_enabled        = false
-  backup_storage_class  = "nfs-retain"
-  backup_storage_size   = "5Gi"
+  db_type              = "postgres"
+  db_storage_class     = "iscsi-retain"
+  db_storage_size      = "2Gi"
+  postgres_password    = local.secrets.postgres_password
+  backup_enabled       = false
+  backup_storage_class = "nfs-retain"
+  backup_storage_size  = "5Gi"
 
   # LLDAP as the authentication backend.
   # The module auto-wires the LDAP configMap block using the "lldap" implementation preset.
@@ -49,7 +49,7 @@ inputs = {
   helm_values = templatefile(
     "${get_terragrunt_dir()}/values.yaml",
     {
-      domain = local.secrets.domain
+      domain           = local.secrets.domain
       oidc_hmac_secret = local.secrets.oidc.hmac_secret
       jwks_private_key = local.secrets.oidc.jwks_private_key
     }
@@ -73,7 +73,7 @@ inputs = {
         smtp = {
           username = local.secrets.domain
           password = { value = local.secrets.smtp_password }
-          sender = "Authelia <authelia@${local.secrets.domain}>"
+          sender   = "Authelia <authelia@${local.secrets.domain}>"
         }
       }
     }

@@ -18,32 +18,32 @@ inputs = {
     "${get_env("HOME")}/.kube/config",
   ]
 
-  paperless_ngx_image = "ghcr.io/paperless-ngx/paperless-ngx:2.20.11"
-  namespace = "paperless-ngx"
-  ingress_namespaces = ["traefik"]
-  postgres_password = local.sensitive_vars.postgres_password
+  paperless_ngx_image = "ghcr.io/paperless-ngx/paperless-ngx:2.20.15"
+  namespace           = "paperless-ngx"
+  ingress_namespaces  = ["traefik"]
+  postgres_password   = local.sensitive_vars.postgres_password
 
-  nfs_storage_class_name   = "nfs-retain"
+  nfs_storage_class_name     = "nfs-retain"
   consume_storage_class_name = "scan"
-  iscsi_storage_class_name = "iscsi-retain"
+  iscsi_storage_class_name   = "iscsi-retain"
   paperless_env_vars = {
-    PAPERLESS_URL = local.sensitive_vars.paperless_url
-    PAPERLESS_CSRF_TRUSTED_ORIGINS = local.sensitive_vars.paperless_csrf_trusted_origins
-    PAPERLESS_USE_X_FORWARD_HOST = "true"
-    PAPERLESS_PROXY_SSL_HEADER = jsonencode(["HTTP_X_FORWARDED_PROTO", "https"])
-    PAPERLESS_CONSUMER_POLLING = "30"
-    PAPERLESS_OCR_LANGUAGES = "eng jpn"
-    PAPERLESS_OCR_LANGUAGE = "eng+jpn"
+    PAPERLESS_URL                   = local.sensitive_vars.paperless_url
+    PAPERLESS_CSRF_TRUSTED_ORIGINS  = local.sensitive_vars.paperless_csrf_trusted_origins
+    PAPERLESS_USE_X_FORWARD_HOST    = "true"
+    PAPERLESS_PROXY_SSL_HEADER      = jsonencode(["HTTP_X_FORWARDED_PROTO", "https"])
+    PAPERLESS_CONSUMER_POLLING      = "30"
+    PAPERLESS_OCR_LANGUAGES         = "eng jpn"
+    PAPERLESS_OCR_LANGUAGE          = "eng+jpn"
     PAPERLESS_DATE_PARSER_LANGUAGES = "en+ja"
-    USERMAP_UID = local.nfs_share_mapall_uid_gid
-    USERMAP_GID = local.nfs_share_mapall_uid_gid
+    USERMAP_UID                     = local.nfs_share_mapall_uid_gid
+    USERMAP_GID                     = local.nfs_share_mapall_uid_gid
   }
 
   # OIDC client secret — raw (unhashed) secret shared with Authelia.
   # Add 'oidc_client_secret: <raw_secret>' to paperless_vars.sops.yaml, then re-encrypt.
   # Generate with: openssl rand -base64 48
   # Hash for values.yaml: docker run --rm authelia/authelia:latest authelia crypto hash generate argon2 --password '<raw_secret>'
-  oidc_provider_url = "https://auth.${local.sensitive_vars.domain}"
+  oidc_provider_url  = "https://auth.${local.sensitive_vars.domain}"
   oidc_client_secret = local.sensitive_vars.oidc_client_secret
 
   # Backup
@@ -52,12 +52,12 @@ inputs = {
   backup_storage_size = "20Gi"
 
   # These should be roughly unchanging
-  webserver_consume_storage_size  = "20Gi"
-  broker_storage_size             = "512Mi"
+  webserver_consume_storage_size = "20Gi"
+  broker_storage_size            = "512Mi"
   # Both storage types support resizing (I tested), so these can be increased as needed.
-  db_storage_size                 = "10Gi"
-  webserver_data_storage_size     = "15Gi"
-  webserver_media_storage_size    = "200Gi"
-  webserver_export_storage_size   = "10Gi"
-  
+  db_storage_size               = "10Gi"
+  webserver_data_storage_size   = "15Gi"
+  webserver_media_storage_size  = "200Gi"
+  webserver_export_storage_size = "10Gi"
+
 }

@@ -76,6 +76,7 @@ resource "kubernetes_config_map_v1" "webserver_env" {
 
   data = merge(
     {
+      PAPERLESS_DBENGINE                = "postgresql"
       PAPERLESS_DBHOST                  = "db"
       PAPERLESS_REDIS                   = "redis://broker:6379"
       PAPERLESS_TIKA_ENABLED            = "1"
@@ -119,7 +120,8 @@ resource "kubernetes_secret_v1" "oidc" {
             client_id   = "paperless"
             secret      = var.oidc_client_secret
             settings = {
-              server_url = var.oidc_provider_url
+              server_url        = var.oidc_provider_url
+              token_auth_method = "client_secret_basic"
             }
           }
         ]
@@ -177,6 +179,16 @@ resource "kubernetes_deployment_v1" "webserver" {
             content {
               secret_ref {
                 name = kubernetes_secret_v1.oidc[0].metadata[0].name
+              }
+            }
+          }
+
+          env {
+            name = "PAPERLESS_SECRET_KEY"
+            value_from {
+              secret_key_ref {
+                name = kubernetes_secret_v1.paperless.metadata[0].name
+                key  = "PAPERLESS_SECRET_KEY"
               }
             }
           }

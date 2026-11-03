@@ -69,8 +69,23 @@ resource "kubernetes_cron_job_v1" "document_export_backup" {
               # I don't mount the whole configmap because then S6 tries to do a
               #bunch of stuff I don't care about.
               env {
+                name  = "PAPERLESS_DBENGINE"
+                value = "postgresql"
+              }
+
+              env {
                 name  = "PAPERLESS_DBHOST"
                 value = "db"
+              }
+
+              env {
+                name = "PAPERLESS_SECRET_KEY"
+                value_from {
+                  secret_key_ref {
+                    name = kubernetes_secret_v1.paperless.metadata[0].name
+                    key  = "PAPERLESS_SECRET_KEY"
+                  }
+                }
               }
 
               env {

@@ -18,7 +18,7 @@ inputs = {
     "${get_env("HOME")}/.kube/config",
   ]
 
-  paperless_ngx_image = "ghcr.io/paperless-ngx/paperless-ngx:2.20.15"
+  paperless_ngx_image = "ghcr.io/paperless-ngx/paperless-ngx:3.3.4"
   namespace           = "paperless-ngx"
   ingress_namespaces  = ["traefik"]
   postgres_password   = local.sensitive_vars.postgres_password
@@ -27,16 +27,21 @@ inputs = {
   consume_storage_class_name = "scan"
   iscsi_storage_class_name   = "iscsi-retain"
   paperless_env_vars = {
-    PAPERLESS_URL                   = local.sensitive_vars.paperless_url
-    PAPERLESS_CSRF_TRUSTED_ORIGINS  = local.sensitive_vars.paperless_csrf_trusted_origins
-    PAPERLESS_USE_X_FORWARD_HOST    = "true"
-    PAPERLESS_PROXY_SSL_HEADER      = jsonencode(["HTTP_X_FORWARDED_PROTO", "https"])
-    PAPERLESS_CONSUMER_POLLING      = "30"
-    PAPERLESS_OCR_LANGUAGES         = "eng jpn"
-    PAPERLESS_OCR_LANGUAGE          = "eng+jpn"
-    PAPERLESS_DATE_PARSER_LANGUAGES = "en+ja"
-    USERMAP_UID                     = local.nfs_share_mapall_uid_gid
-    USERMAP_GID                     = local.nfs_share_mapall_uid_gid
+    PAPERLESS_URL                       = local.sensitive_vars.paperless_url
+    PAPERLESS_CSRF_TRUSTED_ORIGINS      = local.sensitive_vars.paperless_csrf_trusted_origins
+    PAPERLESS_USE_X_FORWARD_HOST        = "true"
+    PAPERLESS_PROXY_SSL_HEADER          = jsonencode(["HTTP_X_FORWARDED_PROTO", "https"])
+    PAPERLESS_CONSUMER_POLLING_INTERVAL = "30"
+    # Preserve archive creation and prevent duplicate ingestion across the v3 upgrade.
+    PAPERLESS_OCR_MODE                = "auto"
+    PAPERLESS_ARCHIVE_FILE_GENERATION = "always"
+    # v3 deletes the incoming duplicate file when this is enabled.
+    PAPERLESS_CONSUMER_DELETE_DUPLICATES = "true"
+    PAPERLESS_OCR_LANGUAGES              = "eng jpn"
+    PAPERLESS_OCR_LANGUAGE               = "eng+jpn"
+    PAPERLESS_DATE_PARSER_LANGUAGES      = "en+ja"
+    USERMAP_UID                          = local.nfs_share_mapall_uid_gid
+    USERMAP_GID                          = local.nfs_share_mapall_uid_gid
   }
 
   # OIDC client secret — raw (unhashed) secret shared with Authelia.
